@@ -1,0 +1,12 @@
+{
+  "name": "design-studio",
+  "owner": { "name": "Martin Morin", "url": "https://github.com/MartinMrnn" },
+  "description": "Marketplace for the design-studio plugin.",
+  "plugins": [
+    {
+      "name": "design-studio",
+      "source": ".",
+      "description": "A web design studio run by agents. Design before you code."
+    }
+  ]
+}

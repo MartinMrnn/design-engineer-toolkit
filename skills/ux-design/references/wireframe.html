@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wireframe · [page name]</title>
+<link rel="icon" href="data:,">
+<style>
+  /* Grey wireframe kit. No colour, no brand font, no imagery: the art director decides those.
+     Replace every [slot] with real copy, or with [to provide: what] when a fact is missing.
+     Set lang on <html> to the language of the site's copy. */
+  :root {
+    --g0: #ffffff; --g1: #f2f2f2; --g2: #dddddd; --g3: #bbbbbb; --g4: #5e5e5e; --g5: #1f1f1f;
+    --space: clamp(16px, 2.5vw, 32px);
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font: 16px/1.5 system-ui, sans-serif; color: var(--g5); background: var(--g0); }
+  .wf-container { width: min(1200px, 100% - 2 * var(--space)); margin-inline: auto; }
+  .wf-header { display: flex; align-items: center; justify-content: space-between; gap: var(--space); padding-block: 16px; border-bottom: 1px solid var(--g2); }
+  .wf-nav { display: flex; gap: 20px; flex-wrap: wrap; }
+  .wf-nav a { color: var(--g5); }
+  .wf-section { padding-block: calc(var(--space) * 2.5); border-bottom: 1px dashed var(--g3); }
+  .wf-role { display: inline-block; font: 12px/1 ui-monospace, monospace; color: var(--g4); background: var(--g1); padding: 4px 8px; margin-bottom: 16px; }
+  .wf-grid { display: grid; gap: var(--space); grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+  .wf-media { background: var(--g2); color: var(--g4); display: grid; place-items: center; min-height: 240px; font: 13px ui-monospace, monospace; text-align: center; padding: 12px; }
+  .wf-button { display: inline-block; padding: 12px 20px; border: 2px solid var(--g5); color: var(--g5); text-decoration: none; font-weight: 600; }
+  .wf-button--primary { background: var(--g5); color: var(--g0); }
+  h1 { font-size: clamp(32px, 5vw, 56px); line-height: 1.1; margin: 0 0 16px; }
+  h2 { font-size: clamp(24px, 3vw, 36px); line-height: 1.2; margin: 0 0 12px; }
+  p { max-width: 60ch; }
+  .wf-menu { display: none; padding: 12px 16px; border: 2px solid var(--g5); background: var(--g0); font: inherit; font-weight: 600; min-height: 44px; }
+  .wf-legal { display: flex; gap: 20px; flex-wrap: wrap; font-size: 14px; }
+  /* Mobile header: replace this default (logo, main action, menu button) with the pattern of the
+     mobile plan in sitemap.md. It must not look crowded: few items, room around them. */
+  @media (max-width: 600px) {
+    .wf-header { gap: 12px; }
+    .wf-header .wf-nav { display: none; }
+    .wf-menu { display: inline-block; }
+    .wf-header .wf-button { padding: 10px 14px; }
+  }
+</style>
+</head>
+<body>
+<header class="wf-header wf-container">
+  <a href="index.html"><strong>[Client name]</strong></a>
+  <nav class="wf-nav" aria-label="Main">
+    <a href="index.html">[Page in scope]</a>
+    <a href="index.html">[Page in scope]</a>
+  </nav>
+  <a class="wf-button wf-button--primary" href="index.html">[Main action]</a>
+  <button class="wf-menu" type="button" aria-label="Menu">[Menu]</button>
+</header>
+<main>
+  <section class="wf-section">
+    <div class="wf-container">
+      <span class="wf-role">Role: [what this section does for the visitor] · Intent: [which visitor intent it serves]</span>
+      <h1>[Real headline]</h1>
+      <p>[Real supporting text]</p>
+      <a class="wf-button wf-button--primary" href="index.html">[Main action]</a>
+    </div>
+  </section>
+  <section class="wf-section">
+    <div class="wf-container wf-grid">
+      <div>
+        <span class="wf-role">Role: [what this section does for the visitor] · Intent: [which visitor intent it serves]</span>
+        <h2>[Section headline]</h2>
+        <p>[Section text]</p>
+      </div>
+      <div class="wf-media">Image: [what it shows and why]</div>
+    </div>
+  </section>
+</main>
+<footer class="wf-section wf-container">
+  <p>[Footer content]</p>
+  <nav class="wf-legal" aria-label="Legal">
+    <a href="legal.html#legal-notice">[Legal notice]</a>
+    <!-- Keep only the legal pages the brief plans: -->
+    <a href="legal.html#terms">[Terms of sale]</a>
+    <a href="legal.html#privacy">[Privacy policy]</a>
+  </nav>
+</footer>
+</body>
+</html>

@@ -1,0 +1,10 @@
+{
+  "name": "design-studio",
+  "version": "0.2.0",
+  "description": "A web design studio run by agents: brief, UX, art direction, mockups and an independent critic. Design before you code; the deliverable is a high-fidelity static mockup.",
+  "author": { "name": "Martin Morin", "url": "https://github.com/MartinMrnn" },
+  "homepage": "https://github.com/MartinMrnn/design-engineer-toolkit",
+  "repository": "https://github.com/MartinMrnn/design-engineer-toolkit",
+  "license": "MIT",
+  "keywords": ["design", "web-design", "art-direction", "ux", "mockup", "agents"]
+}

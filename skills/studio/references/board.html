@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Board</title>
+<link rel="icon" href="data:,">
+<style>
+  :root { --bg: #161616; --panel: #222; --ink: #eee; --muted: #b5b5b5; --pick: #7fd1a8; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.5 system-ui, sans-serif; }
+  header { padding: 20px 24px; border-bottom: 1px solid #333; }
+  h1 { margin: 0; font-size: 18px; }
+  .options { display: grid; grid-template-columns: repeat(auto-fit, minmax(600px, 1fr)); gap: 16px; padding: 16px; }
+  .option { background: var(--panel); border-radius: 8px; padding: 16px; }
+  .option h2 { margin: 0 0 4px; font-size: 16px; }
+  .option p { margin: 0 0 8px; color: var(--muted); }
+  .tag { display: inline-block; font-size: 12px; padding: 2px 8px; border-radius: 99px; background: #333; color: var(--muted); margin-right: 6px; }
+  .tag--pick { background: var(--pick); color: #111; }
+  .frames { display: flex; gap: 12px; align-items: flex-start; margin-top: 12px; }
+  .frame { overflow: hidden; border: 1px solid #333; background: #fff; flex: none; }
+  .frame iframe { border: 0; transform-origin: 0 0; transform: scale(0.3); }
+  .frame--desktop { width: 432px; height: 270px; }
+  .frame--desktop iframe { width: 1440px; height: 900px; }
+  .frame--mobile { width: 117px; height: 253px; }
+  .frame--mobile iframe { width: 390px; height: 844px; }
+  a { color: var(--pick); }
+</style>
+</head>
+<body>
+<header><h1 id="title"></h1></header>
+<main class="options" id="options"></main>
+
+<!-- The lead fills this block: one entry per option, paths relative to this file. -->
+<script id="data" type="application/json">
+{
+  "title": "Step C2 · Art directions",
+  "options": [
+    { "id": "A", "name": "Direction name", "pitch": "Two-line pitch.", "path": "a/index.html", "recommended": true, "critic": "accepted" },
+    { "id": "B", "name": "Direction name", "pitch": "Two-line pitch.", "path": "b/index.html", "recommended": false, "critic": "accepted" },
+    { "id": "C", "name": "Direction name", "pitch": "Two-line pitch.", "path": "c/index.html", "recommended": false, "critic": "accepted" }
+  ]
+}
+</script>
+<script>
+  const data = JSON.parse(document.getElementById('data').textContent);
+  document.title = data.title;
+  document.getElementById('title').textContent = data.title;
+  const root = document.getElementById('options');
+  for (const option of data.options) {
+    const card = document.createElement('article');
+    card.className = 'option';
+    card.innerHTML = `
+      <h2>${option.id} · ${option.name}</h2>
+      <p>${option.pitch}</p>
+      <span class="tag ${option.recommended ? 'tag--pick' : ''}">${option.recommended ? 'recommended' : 'option'}</span>
+      <span class="tag">critic: ${option.critic ?? 'n/a'}</span>
+      <a href="${option.path}" target="_blank" rel="noopener">open full size</a>
+      <div class="frames">
+        <div class="frame frame--desktop"><iframe src="${option.path}" title="${option.name}, desktop" loading="lazy"></iframe></div>
+        <div class="frame frame--mobile"><iframe src="${option.path}" title="${option.name}, mobile" loading="lazy"></iframe></div>
+      </div>`;
+    root.appendChild(card);
+  }
+</script>
+</body>
+</html>
