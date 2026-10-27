@@ -18,7 +18,7 @@ Decisions to respect: <the entries of design/decisions.md this step builds on, i
 Done when: <the step's "Done when", copied from steps.md; you check the criteria about the critic, the publication and the user>
 ```
 
-A mission starts a new agent for its step. Resume an agent only within its step: with the user's answers, for round 2, or for the chosen C2 instance to write `design/direction.md`.
+A mission starts a new agent for its step. Resume an agent only within its step: with the user's answers, for round 2, or, at C2, for the base instance to revise the merged charter.
 
 To resume with the user's answers:
 
