@@ -122,13 +122,24 @@ def branch(charter_root, out_root, ids, contract):
     return "created " + ", ".join(made)
 
 
+def _copy_tree(src, dst):
+    """shutil.copytree, with its list of failures turned into one readable line."""
+    try:
+        shutil.copytree(src, dst)
+    except shutil.Error as error:
+        failures = error.args[0] if error.args and isinstance(error.args[0], list) else []
+        first = failures[0] if failures and isinstance(failures[0], tuple) and len(failures[0]) == 3 else None
+        detail = "{}: {}".format(first[0], first[2]) if first else str(error)
+        raise ValueError("could not copy {} to {}: {}".format(src, dst, detail)) from None
+
+
 def _replace_dir(src, dst):
     """Replace dst with a copy of src, only when src exists: a branch without a folder never wipes the charter's."""
     if not src.is_dir():
         return False
     if dst.exists():
         shutil.rmtree(dst)
-    shutil.copytree(src, dst)
+    _copy_tree(src, dst)
     return True
 
 
@@ -199,7 +210,7 @@ def _merge_into(work, charter, src, tokens, parsed, index, title):
         if (components / name).exists():
             shutil.rmtree(components / name)
         if (src / "components" / name).is_dir():
-            shutil.copytree(src / "components" / name, components / name)
+            _copy_tree(src / "components" / name, components / name)
     shutil.copy2(src / "components" / "bundle.css", components / "bundle.css")
     groups = sorted(d.name for d in (src / "assets").iterdir() if d.is_dir()) if (src / "assets").is_dir() else []
     replaced = set()
@@ -224,6 +235,14 @@ def _merge_into(work, charter, src, tokens, parsed, index, title):
 
 def merge(charter_root, branches_root, base, takes):
     dst = Path(charter_root) / "project"
+    work, old = dst.with_name(dst.name + ".merging"), dst.with_name(dst.name + ".before-merge")
+    # project.before-merge is the charter as it was before a merge that stopped between its two renames:
+    # it may be the only copy of the charter, so it is never deleted here.
+    if old.exists():
+        raise ValueError(
+            "{old} holds the charter from an interrupted merge. If {dst} is missing or was only made by a fresh "
+            "init, move it back: remove {dst}, then rename {old} to {dst}. Otherwise compare the two and remove "
+            "{old} by hand. Then run the merge again.".format(old=old, dst=dst))
     if not (dst / "design-system.json").is_file():
         raise ValueError("no charter in {}: run charter.py init".format(dst))
 
@@ -253,12 +272,11 @@ def merge(charter_root, branches_root, base, takes):
     index, title = _title(dst)
 
     # The merge is built in a copy of project/, then swapped in: a failure leaves the charter as it was.
-    work, old = dst.with_name(dst.name + ".merging"), dst.with_name(dst.name + ".before-merge")
-    for leftover in (work, old):
-        if leftover.exists():
-            shutil.rmtree(leftover)
-    shutil.copytree(dst, work)
+    # A project.merging left by an earlier run is only ever a partial work copy.
+    if work.exists():
+        shutil.rmtree(work)
     try:
+        _copy_tree(dst, work)
         _merge_into(work, dst, src, tokens, parsed, index, title)
     except BaseException:
         shutil.rmtree(work, ignore_errors=True)
