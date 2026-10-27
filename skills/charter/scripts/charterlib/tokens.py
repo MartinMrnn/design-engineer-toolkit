@@ -27,8 +27,10 @@ def as_list(value):
 
 
 def theme_ids(tokens):
-    themes = [t for t in as_list(as_dict(as_dict(tokens).get("color")).get("themes")) if isinstance(t, dict) and "id" in t]
-    return [t["id"] for t in themes] or ["light"]
+    """The ids of the colour themes, first theme first. A theme whose id is not a string is skipped here
+    (validate reports it): an id is a key of a themed value, and a list or an object cannot be one."""
+    themes = as_list(as_dict(as_dict(tokens).get("color")).get("themes"))
+    return [t["id"] for t in themes if isinstance(t, dict) and isinstance(t.get("id"), str)] or ["light"]
 
 
 def theme_value(token, theme, first):
@@ -337,6 +339,10 @@ def _named(entries):
     return [e for e in as_list(entries) if isinstance(e, dict) and isinstance(e.get("name"), str)]
 
 
+def _or(value, default):
+    return default if value is None else value
+
+
 def compile_css(tokens, title, font_base="fonts/"):
     """tokens.css as the Design System type compiles it: themed colours and shadows, then the other
     families and the font stacks on :root, a class per type style, an @font-face per font file."""
@@ -345,10 +351,13 @@ def compile_css(tokens, title, font_base="fonts/"):
     ids = theme_ids(tokens)
     first = ids[0]
     themed = _named(as_dict(tokens.get("color")).get("tokens")) + _named(as_dict(tokens.get("shadow")).get("tokens"))
+    # A value that is missing (None) is never written: check reports it, and `--ground: None;` is not CSS.
     for i, theme in enumerate(ids):
         lines.append(':root, [data-theme="{}"] {{'.format(theme) if i == 0 else '[data-theme="{}"] {{'.format(theme))
         for token in themed:
-            lines.append("  --{}: {};".format(token["name"], _css_value(theme_value(token, theme, first))))
+            value = theme_value(token, theme, first)
+            if value is not None:
+                lines.append("  --{}: {};".format(token["name"], _css_value(value)))
         lines.append("}")
     root = []
     for key, block in tokens.items():
@@ -356,29 +365,34 @@ def compile_css(tokens, title, font_base="fonts/"):
             continue
         for token in _named(block.get("tokens")):
             value = token.get("value")
+            if value is None:
+                continue
             if isinstance(value, (int, float)) and not isinstance(value, bool):
                 value = "{}px".format(value)
             root.append("  --{}: {};".format(token["name"], value))
     type_block = as_dict(tokens.get("type"))
     for key, stack in as_dict(type_block.get("families")).items():
+        if stack is None:
+            continue
         root.append("  --font-{}: {};".format(key, stack))
     lines += [":root {"] + root + ["}"]
     for group in as_list(type_block.get("groups")):
         if not isinstance(group, dict):
             continue
         for style in _named(group.get("styles")):
-            props = ["font-family: var(--font-{})".format(style.get("family", group.get("family")))]
+            family = style.get("family", group.get("family"))
+            props = [] if family is None else ["font-family: var(--font-{})".format(family)]
             for key, prop in (("fontSize", "font-size"), ("lineHeight", "line-height"), ("fontWeight", "font-weight"),
                               ("letterSpacing", "letter-spacing"), ("fontStyle", "font-style")):
-                if style.get(key, "") != "":
+                if style.get(key) not in ("", None):
                     props.append("{}: {}".format(prop, style[key]))
             lines.append(".{} {{ {}; }}".format(style["name"], "; ".join(props)))
     for font in as_list(type_block.get("fonts")):
-        if not isinstance(font, dict) or not isinstance(font.get("file"), str):
+        if not isinstance(font, dict) or not isinstance(font.get("file"), str) or font.get("family") is None:
             continue
         url = _font_url(font["file"], font_base)
         fmt = FORMATS.get(url.rsplit(".", 1)[-1].lower(), "woff2")
         lines.append('@font-face {{ font-family: "{}"; src: url("{}") format("{}"); font-weight: {}; '
                      'font-style: {}; font-display: swap; }}'.format(
-                         font.get("family"), url, fmt, font.get("weight", "400"), font.get("style", "normal")))
+                         font["family"], url, fmt, _or(font.get("weight"), "400"), _or(font.get("style"), "normal")))
     return "\n".join(lines) + "\n"
