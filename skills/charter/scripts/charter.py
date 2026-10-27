@@ -10,6 +10,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
+from charterlib import check as ck  # noqa: E402
 from charterlib import contract as ct  # noqa: E402
 from charterlib import project as pj  # noqa: E402
 from charterlib import tokens as tk  # noqa: E402
@@ -79,7 +80,14 @@ def add_cards(sub):
     p.set_defaults(func=lambda a, c: print(pj.cards(Path(a.root))))
 
 
-ADDERS = [add_validate_tokens, add_init, add_stamp, add_css, add_branch, add_cards]
+def add_check(sub):
+    p = sub.add_parser("check", help="validate the charter against the contract up to a step")
+    p.add_argument("--step", required=True)
+    root_arg(p)
+    p.set_defaults(func=lambda a, c: report("check {}".format(a.step), ck.check(Path(a.root), c, ct.due_steps(c, a.step))))
+
+
+ADDERS = [add_validate_tokens, add_init, add_stamp, add_css, add_branch, add_cards, add_check]
 
 
 def main(argv=None):
