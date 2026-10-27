@@ -400,3 +400,58 @@ def export(root, dest):
             _replace_dir(src, dest / name)
             copied.append(name + "/")
     return "exported to {}: {}".format(dest, ", ".join(copied))
+
+
+import mimetypes  # noqa: E402
+
+TEXT_EXTENSIONS = {".md", ".json", ".txt", ".csv"}
+SAFE_KEY = re.compile(r"[A-Za-z0-9_./-]")
+
+
+def asset_key(name):
+    """The index key of an asset: its name, with every byte outside [A-Za-z0-9_./-] written ~ and two hex digits."""
+    return "".join(ch if SAFE_KEY.match(ch) else "".join("~{:02x}".format(b) for b in ch.encode("utf-8")) for ch in name)
+
+
+def pending_assets(root):
+    """Files under project/assets/<Group>/ that must be uploaded and have no record in the index yet."""
+    project = Path(root) / "project"
+    assets = project / "assets"
+    if not assets.exists():
+        return []
+    groups = read_json(project / "design-system.json").get("assetGroups") or {}
+    pending = []
+    for path in sorted(p for p in assets.rglob("*") if p.is_file()):
+        rel = path.relative_to(assets)
+        if len(rel.parts) < 2 or path.suffix.lower() in TEXT_EXTENSIONS or path.name.startswith("."):
+            continue
+        group, name = rel.parts[0], "/".join(rel.parts[1:])
+        if asset_key(name) not in ((groups.get(group) or {}).get("files") or {}):
+            pending.append(str(path.relative_to(project)))
+    return pending
+
+
+def record(root, file, blob):
+    """Name an upload in the index: assetGroups.<Group>.files.<key> = {name, blob, size, type}."""
+    project = Path(root) / "project"
+    path = project / file
+    if not path.is_file():
+        raise ValueError("{} does not exist".format(path))
+    try:
+        rel = path.relative_to(project / "assets")
+    except ValueError:
+        raise ValueError("{} is not under project/assets/<Group>/".format(file))
+    if len(rel.parts) < 2:
+        raise ValueError("{} is not under project/assets/<Group>/".format(file))
+    group, name = rel.parts[0], "/".join(rel.parts[1:])
+    mime = "image/svg+xml" if path.suffix.lower() == ".svg" else (mimetypes.guess_type(path.name)[0] or "application/octet-stream")
+    blob_id = blob.rstrip("/").rsplit("/", 1)[-1]
+    index = read_json(project / "design-system.json")
+    entry = index.setdefault("assetGroups", {}).setdefault(group, {"name": group, "tile": "m", "order": [], "files": {}})
+    entry.setdefault("files", {})[asset_key(name)] = {"name": name, "blob": blob_id, "size": path.stat().st_size, "type": mime}
+    if name not in entry.setdefault("order", []):
+        entry["order"].append(name)
+    if group not in index.setdefault("groups", []):
+        index["groups"].append(group)
+    write_json(project / "design-system.json", index)
+    return "recorded {} as {} in {}".format(name, blob_id, group)

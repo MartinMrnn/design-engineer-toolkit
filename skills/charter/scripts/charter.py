@@ -109,8 +109,22 @@ def add_export(sub):
     p.set_defaults(func=lambda a, c: print(pj.export(Path(a.root), Path(a.dest))))
 
 
+def add_assets(sub):
+    p = sub.add_parser("assets", help="list the files under project/assets/ that still need an upload")
+    root_arg(p)
+    p.set_defaults(func=lambda a, c: print("\n".join(pj.pending_assets(Path(a.root))) or "no assets to upload"))
+
+
+def add_record(sub):
+    p = sub.add_parser("record", help="record an upload in the index")
+    p.add_argument("--file", required=True, help="its path under project/, for example assets/Icons/cup.svg")
+    p.add_argument("--blob", required=True, help="the upload's url (/_blob/<id>) or id")
+    root_arg(p)
+    p.set_defaults(func=lambda a, c: print(pj.record(Path(a.root), a.file, a.blob)))
+
+
 ADDERS = [add_validate_tokens, add_init, add_stamp, add_css, add_branch, add_cards, add_check, add_merge,
-          add_freeze, add_export]
+          add_freeze, add_export, add_assets, add_record]
 
 
 def main(argv=None):
