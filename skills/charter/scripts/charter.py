@@ -65,7 +65,21 @@ def add_css(sub):
     p.set_defaults(func=lambda a, c: print(pj.write_css(Path(a.root))))
 
 
-ADDERS = [add_validate_tokens, add_init, add_stamp, add_css]
+def add_branch(sub):
+    p = sub.add_parser("branch", help="create C2 branches from the charter")
+    p.add_argument("ids", nargs="+", help="one lower-case letter per branch, for example: a b c")
+    root_arg(p)
+    p.add_argument("--out", default="design/branches")
+    p.set_defaults(func=lambda a, c: print(pj.branch(Path(a.root), Path(a.out), a.ids, c)))
+
+
+def add_cards(sub):
+    p = sub.add_parser("cards", help="write the 390 px copy of every page card")
+    root_arg(p)
+    p.set_defaults(func=lambda a, c: print(pj.cards(Path(a.root))))
+
+
+ADDERS = [add_validate_tokens, add_init, add_stamp, add_css, add_branch, add_cards]
 
 
 def main(argv=None):

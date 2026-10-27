@@ -103,3 +103,130 @@ def write_css(root, font_base="fonts/"):
     title = read_json(project / "design-system.json").get("title", "")
     (project / "tokens.css").write_text(compile_css(tokens, title, font_base), encoding="utf-8")
     return "wrote {}".format(project / "tokens.css")
+
+
+from .cardfile import GENERATED, is_page, marker_attrs, set_attr  # noqa: E402
+
+COMPONENT_GROUPS = {"Button": "Actions", "Link": "Actions", "Card": "Content", "Field": "Forms", "Nav": "Navigation"}
+COMPONENT_BRIEFS = {
+    "Button": "primary and secondary, each default, hover (.is-hover), focus (.is-focus), active (.is-active) and disabled",
+    "Link": "inline in a sentence and standalone, each default, hover (.is-hover) and focus (.is-focus)",
+    "Card": "one card with real copy from the charter, default and hover (.is-hover)",
+    "Field": "a text field with its label and help, focused (.is-focus), with an error message, and disabled",
+    "Nav": "the desktop navigation, then the mobile pattern of 06-structure, closed and open",
+}
+BUNDLE_START = (
+    "/* The charter's components. Every class starts with ds- (states: is-hover, is-focus, is-active);\n"
+    "   every value is a token from tokens.css. */\n"
+    "body { margin: 0; background: var(--ground); color: var(--ink); font-family: var(--font-text); }\n"
+    ".ds-preview { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-4); padding: var(--space-4); }\n"
+)
+
+
+def card_html(title, marker, body):
+    return "\n".join([
+        marker, "<!doctype html>", '<html lang="en">', "<head>", '<meta charset="utf-8">',
+        "<title>{}</title>".format(title),
+        '<link rel="stylesheet" href="../../tokens.css">',
+        '<link rel="stylesheet" href="../bundle.css">',
+        "</head>", "<body>", body, "</body>", "</html>", ""])
+
+
+def starters():
+    """The files a C2 branch starts from: base components, Cover, Showcase, bundle.css."""
+    files = {}
+    for name, group in COMPONENT_GROUPS.items():
+        files["components/{}/preview.html".format(name)] = card_html(
+            name, '<!-- @dsCard group="{}" height=160 -->'.format(group),
+            '<div class="ds-preview">\n<!-- charter: draw the {}: {}. -->\n</div>'.format(name, COMPONENT_BRIEFS[name]))
+        files["components/{}/README.md".format(name)] = (
+            "# {}\n\n<!-- charter: one sentence on what it is for; then what the page provides (content, container), "
+            "when to use it, and do / don't. -->\n".format(name))
+    files["components/Cover/preview.html"] = card_html(
+        "Cover", "<!-- @dsCard height=288 -->",
+        "<!-- charter: draw the cover last, as the Design System type's cover.md says: colour blocks, one pattern, the name. -->")
+    files["components/Showcase/preview.html"] = card_html(
+        "Showcase", '<!-- @dsCard group="Pages" page width=1440 height=900 -->',
+        "<!-- charter: the home page's opening section, with the real copy of 06-structure and its wireframe. -->")
+    files["components/bundle.css"] = BUNDLE_START
+    return files
+
+
+def skeleton_tokens(contract, title):
+    """tokens.json with every name the contract requires at C2 and empty values to fill."""
+    def entry(name):
+        return {"name": name, "value": "", "usage": ""}
+    tokens = {
+        "name": title,
+        "version": 1,
+        "color": {"themes": [{"id": "light", "name": "Light"}], "tokens": [entry(n) for n in contract["color"]["required"]]},
+        "type": {
+            "fonts": [],
+            "families": {key: "" for key in contract["type"]["families"]},
+            "groups": [{"name": group, "family": "", "styles": [
+                {"name": s, "fontSize": "", "lineHeight": "", "fontWeight": 400} for s in styles]}
+                for group, styles in contract["type"]["groups"].items()],
+        },
+    }
+    for family, spec in contract["families"].items():
+        if spec["step"] == contract["tokens_step"]:
+            tokens[family] = {"tokens": [entry(n) for n in spec["names"]]}
+    return tokens
+
+
+def branch(charter_root, out_root, ids, contract):
+    source = Path(charter_root) / "project"
+    title = read_json(source / "design-system.json")["title"]
+    made = []
+    for branch_id in ids:
+        if not re.match(r"^[a-z]$", branch_id):
+            raise ValueError("a branch id is one lower-case letter, not {!r}".format(branch_id))
+        dest = Path(out_root) / branch_id / "project"
+        if dest.exists():
+            raise ValueError("{} exists: a branch is made once".format(dest))
+        shutil.copytree(source, dest, ignore=shutil.ignore_patterns("design-system.json", "tokens.css"))
+        for rel, text in starters().items():
+            path = dest / rel
+            if not path.exists():
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text(text, encoding="utf-8")
+        branch_title = "{} · {}".format(title, branch_id.upper())
+        if not (dest / "tokens.json").exists():
+            write_json(dest / "tokens.json", skeleton_tokens(contract, branch_title))
+        fresh = new_index(branch_title)
+        write_json(dest / "design-system.json", fresh)
+        write_bundle(dest, fresh["namespace"])
+        made.append(str(dest))
+    return "created " + ", ".join(made)
+
+
+def cards(root):
+    """Write a 390 × 844 copy, <Name>Mobile, of every page card; remove generated copies whose card is gone."""
+    components = Path(root) / "project" / "components"
+    if not components.exists():
+        return "no components yet"
+    pages = {}
+    for folder in sorted(components.iterdir()):
+        preview = folder / "preview.html"
+        if folder.is_dir() and not folder.name.endswith("Mobile") and preview.exists():
+            attrs = marker_attrs(preview.read_text(encoding="utf-8"))
+            if attrs is not None and is_page(attrs):
+                pages[folder.name] = preview
+    notes = []
+    for folder in sorted(components.iterdir()):
+        preview = folder / "preview.html"
+        if folder.is_dir() and folder.name.endswith("Mobile") and folder.name[:-6] not in pages and preview.exists():
+            if preview.read_text(encoding="utf-8").split("\n")[1:2] and preview.read_text(encoding="utf-8").split("\n")[1].startswith(GENERATED):
+                shutil.rmtree(folder)
+                notes.append("removed {}".format(folder.name))
+    for name, preview in pages.items():
+        target = components / (name + "Mobile") / "preview.html"
+        if target.exists() and not target.read_text(encoding="utf-8").split("\n")[1].startswith(GENERATED):
+            notes.append("kept {}Mobile, made by hand".format(name))
+            continue
+        first, rest = preview.read_text(encoding="utf-8").split("\n", 1)
+        first = set_attr(set_attr(first, "width", "390"), "height", "844")
+        target.parent.mkdir(exist_ok=True)
+        target.write_text("{}\n{}../{}/preview.html -->\n{}".format(first, GENERATED, name, rest), encoding="utf-8")
+        notes.append("wrote {}Mobile".format(name))
+    return "\n".join(notes) or "no page cards"
