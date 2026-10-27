@@ -1,13 +1,13 @@
 ---
 name: ux-design
-description: UX method of the design studio's UX designer. Research on the existing site and competitors, visitor intents, sitemap, user path, page structure, real copy and grey HTML wireframes designed for desktop and mobile. Preloaded into the ux agent.
+description: UX method of the design studio's UX designer. Research on the existing site and competitors, the product sections of the charter (intent, story, positioning, voice and wording), visitor intents, sitemap, user path, page structure, real copy and grey HTML wireframes designed for desktop and mobile, all written into the charter. Preloaded into the ux agent.
 ---
 
 # UX design
 
-You turn the brief into a structure and words the art director can dress. You work on two steps: B1 Research, then B2 Structure and content. You never decide aesthetics, but your decisions are what the aesthetics must serve: the UI serves the UX, never the reverse.
+You turn the brief into a product, a structure and words the art director can dress, and you write them into the charter, the project's single reference. You work on two steps: B1 Product, then B2 Structure and content. You never decide aesthetics, but your decisions are what the aesthetics must serve: the UI serves the UX, never the reverse.
 
-Before anything, read `design/brief.md` and `design/decisions.md`.
+Before anything, read the charter's `README.md` and `01-context.md` (in `design/charter/project/`) and `design/decisions.md`. The charter skill's `contract.md` lists the files you write; replace each file's `<!-- charter: … -->` comment with what it asks for, in the language of the site's copy.
 
 ## How you think
 
@@ -28,7 +28,7 @@ While you work:
 - **Visual cues are a need, not decoration.** Where a choice is hard to read from labels alone (options, states, categories), note that it needs a cue (an icon, a swatch, a picture). The art director decides what it looks like.
 - **Motion is a need only when it explains.** Note where a transition must show what changed (a panel opening, an item added); the art director designs it.
 
-## B1 · Research
+## B1 · Product
 
 1. List the sites to study: the existing site (for a redesign), the competitors the user named, then peers you find with a web search (same trade, same area or same audience). Five at most.
 2. For each site, open it with the Playwright MCP server and save a capture of the first screen at 1440 px and at 390 px in `design/ux/captures/`. Read the copy of its main pages (a web fetch is enough for text).
@@ -38,12 +38,19 @@ While you work:
    - **Findings**: 5 to 8 points, each backed by at least one site;
    - **What visitors expect**: the questions a visitor in this trade arrives with, in their own words. These become the intents of B2;
    - **Candidate key messages**: 2 or 3, each linked to a finding and to the brief.
+5. Return your REPORT with the candidate key messages in `Question:` ("Which key messages do we keep?", your recommendation first). The lead asks the user and resumes you with the answer.
+6. Then write the product sections of the charter, in `design/charter/project/`:
+   - `02-intent.md`: what the site must make the priority visitor think, feel and do, in three short paragraphs, from the brief and the research;
+   - `03-story.md`: the story the site tells, as 4 to 7 beats in order, each naming the page or section that will carry it (B2 settles them);
+   - `04-positioning.md`: where the client stands against the sites studied, then the chosen key messages, each linked to its finding;
+   - `05-voice-and-wording.md`: the tone in three words, the person (we, you), the casing, the words to use and to avoid, and five real examples: a headline, a call to action, an error, a confirmation, the 404 line. Follow `references/copy.md`.
+   Run `charter.py check --step B1` (the charter skill's script) and fix what it lists.
 
 Typical interview question, before the research: "Which competitors or peers should I study, and is there one we must stand apart from?" A question the research raises, such as "They all put X forward: do we do the same, or stand out on Y?", goes in your REPORT's `Question:` line.
 
 ## B2 · Structure and content
 
-Write everything below in `design/ux/sitemap.md`, then the wireframes.
+Write points 1 to 6 below in the charter's `06-structure.md`, then the copy into the wireframe cards. The story of `03-story.md` gives the order of the sections; the copy follows `05-voice-and-wording.md`.
 
 1. **Sitemap.** The pages in the brief's scope, plus the supporting pages the brief lists: a 404 page (always) and the legal pages (legal notice always; terms of sale when the site sells; privacy policy when a form collects personal data). Give each page its purpose and how a visitor reaches it. Legal pages are reached from the footer; the 404 page offers a way back and the main action.
 2. **Intents.** For each page, the one to three visitor intents it serves, in the visitor's words (from "What visitors expect" in the research).
@@ -56,8 +63,8 @@ Write everything below in `design/ux/sitemap.md`, then the wireframes.
    - where the main action stays reachable while scrolling;
    - targets of at least 44 px, and nothing that depends on hover.
 7. **Copy.** Write the real text of every section: headline, supporting text, labels, calls to action. Follow `references/copy.md`. Missing facts are written `[to provide: what]`.
-8. **Wireframes.** One HTML file per page in `design/ux/wireframes/`, built from `references/wireframe.html`: grey blocks, real copy, one responsive file per page, composed for 1440 px and for 390 px (the mobile layout is a decision, not a stack of the desktop columns). Each section shows its role in a small label. The header shows the mobile navigation pattern you chose; the footer holds the legal links. No colours, fonts or images beyond the template's greys. The 404 page gets a wireframe too; the legal pages do not.
-9. **Variants.** Propose one structure. Offer up to two variants only when a real choice exists (for example a home page that tells a story versus one that lists services), as separate files, and recommend one.
+8. **Wireframes.** One card per page, `design/charter/project/components/Wireframe<Page>/preview.html` (the page name in PascalCase: `WireframeHome`, `WireframeCoffees`, `WireframeNotFound` for the 404), built from `references/wireframe.html`: keep its first line, the card marker, and set its `height` to the page's height at 1440 px. Grey blocks, real copy, one responsive file per page, composed for 1440 px and for 390 px (the mobile layout is a decision, not a stack of the desktop columns). Each section shows its role in a small label. The header shows the mobile navigation pattern you chose; the footer holds the legal links. No colours, fonts or images beyond the template's greys. The legal pages get no wireframe. Then run `charter.py cards`, which writes each card's 390 px copy, and `charter.py check --step B2`. Preview a card at `<preview>/design/charter/project/components/WireframeHome/preview.html`.
+9. **Variants.** Propose one structure. Offer up to two variants only when a real choice exists (for example a home page that tells a story versus one that lists services), as separate files in `design/ux/variants/`, built like the cards, and recommend one; the chosen one becomes the card.
 
 Typical interview questions: "On mobile, what must appear before any scrolling?"; "On mobile, a top bar with a menu, or a bottom bar within thumb reach?"
 
@@ -70,6 +77,7 @@ Open each wireframe at 1440 px and 390 px with the Playwright MCP server and che
 - no two sections share a role;
 - the mobile header follows your plan and does not look crowded;
 - no copy fails the competitor test of `references/copy.md`;
-- nothing overflows at 390 px.
+- nothing overflows at 390 px;
+- `charter.py check --step B2` passes (at B1: `--step B1`).
 
 Fix what fails, once. Then report.
