@@ -179,7 +179,8 @@ def _same_file(a, b):
 
 def _keep_records(index, groups, merged, charter):
     """Uploads belong to the Artifact they were made in: in each asset group the merge replaced, keep only the
-    records of files that are still the charter's own; the others are uploaded again to the charter."""
+    records of files that are still the charter's own; the others are uploaded again to the charter. A group
+    left with no record stays, empty: `stamp --remote` then clears the published group's stale records."""
     asset_groups = index.get("assetGroups")
     if not isinstance(asset_groups, dict):
         return
@@ -190,10 +191,9 @@ def _keep_records(index, groups, merged, charter):
         files = entry.get("files") if isinstance(entry.get("files"), dict) else {}
         kept = {key: rec for key, rec in files.items() if isinstance(rec, dict) and isinstance(rec.get("name"), str)
                 and _same_file(merged / "assets" / group / rec["name"], charter / "assets" / group / rec["name"])}
-        if not kept:
-            del asset_groups[group]
-            continue
         names = {rec["name"] for rec in kept.values()}
+        entry.setdefault("name", group)
+        entry.setdefault("tile", "m")
         entry["files"] = kept
         entry["order"] = [n for n in entry.get("order") or [] if n in names]
     index["groups"] = [g for g in index.get("groups") or [] if g in asset_groups]
