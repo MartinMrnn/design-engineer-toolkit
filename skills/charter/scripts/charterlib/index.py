@@ -167,14 +167,25 @@ def pending_assets(root):
     return pending
 
 
+def _on_disk(folder, part):
+    """The name in `folder` that `part` means: the same name, else the same in NFC, else the same whatever the
+    letter case. On macOS a name typed in another form or case opens the file, but the index must hold the
+    name on disk, or a second group (icons beside Icons) appears."""
+    names = sorted(c.name for c in folder.iterdir())
+    for same in (lambda n: n == part, lambda n: nfc(n) == nfc(part), lambda n: nfc(n).casefold() == nfc(part).casefold()):
+        found = next((n for n in names if same(n)), None)
+        if found is not None:
+            return found
+    return part
+
+
 def _find(project, file):
-    """project/file, each part of the path matched to the name on disk whatever its Unicode form."""
+    """project/file, each part of the path taken as the name on disk whatever its Unicode form or letter case."""
     current = project
     for part in Path(file).parts:
-        candidate = current / part
-        if not candidate.exists() and current.is_dir():
-            candidate = next((c for c in current.iterdir() if nfc(c.name) == nfc(part)), candidate)
-        current = candidate
+        if part not in (".", "..", "/") and current.is_dir():
+            part = _on_disk(current, part)
+        current = current / part
     return current
 
 
