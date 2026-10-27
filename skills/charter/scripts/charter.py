@@ -10,6 +10,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
+from charterlib import board as bd  # noqa: E402
 from charterlib import check as ck  # noqa: E402
 from charterlib import contract as ct  # noqa: E402
 from charterlib import project as pj  # noqa: E402
@@ -123,8 +124,26 @@ def add_record(sub):
     p.set_defaults(func=lambda a, c: print(pj.record(Path(a.root), a.file, a.blob)))
 
 
+def cmd_board(args, contract):
+    urls = {}
+    for item in args.url:
+        branch_id, _, url = item.partition("=")
+        urls[branch_id] = url
+    for warning in bd.build(Path(args.branches), Path(args.out), urls):
+        print("warning: " + warning)
+    print("wrote {}".format(Path(args.out) / "index.html"))
+
+
+def add_board(sub):
+    p = sub.add_parser("board", help="build the C2 comparison board from the branches")
+    p.add_argument("--branches", default="design/branches")
+    p.add_argument("--out", default="design/board")
+    p.add_argument("--url", action="append", default=[], help="id=URL of a branch's Artifact, for example a=https://claude.ai/artifact/…")
+    p.set_defaults(func=cmd_board)
+
+
 ADDERS = [add_validate_tokens, add_init, add_stamp, add_css, add_branch, add_cards, add_check, add_merge,
-          add_freeze, add_export, add_assets, add_record]
+          add_freeze, add_export, add_assets, add_record, add_board]
 
 
 def main(argv=None):
