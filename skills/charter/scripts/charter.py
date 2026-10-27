@@ -59,7 +59,13 @@ def add_stamp(sub):
     p.set_defaults(func=lambda a, c: print(pj.stamp(Path(a.root), a.step, a.by, a.title, a.remote, a.note)))
 
 
-ADDERS = [add_validate_tokens, add_init, add_stamp]
+def add_css(sub):
+    p = sub.add_parser("css", help="compile project/tokens.css from project/tokens.json")
+    root_arg(p)
+    p.set_defaults(func=lambda a, c: print(pj.write_css(Path(a.root))))
+
+
+ADDERS = [add_validate_tokens, add_init, add_stamp, add_css]
 
 
 def main(argv=None):

@@ -94,3 +94,12 @@ def stamp(root, step, by, title=None, remote=None, note=None):
         data["lastChange"]["note"] = note
     write_json(path, data)
     return "stamped {} for {} (by {})".format(path, step, by)
+
+
+def write_css(root, font_base="fonts/"):
+    from .tokens import compile_css
+    project = Path(root) / "project"
+    tokens = read_json(project / "tokens.json")
+    title = read_json(project / "design-system.json").get("title", "")
+    (project / "tokens.css").write_text(compile_css(tokens, title, font_base), encoding="utf-8")
+    return "wrote {}".format(project / "tokens.css")

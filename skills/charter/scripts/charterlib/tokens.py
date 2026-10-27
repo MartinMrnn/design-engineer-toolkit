@@ -226,3 +226,58 @@ def validate(tokens, contract, due):
             continue
         problems += _family(family, tokens[family], spec["names"], seen)
     return problems
+
+
+FORMATS = {"woff2": "woff2", "woff": "woff", "ttf": "truetype", "otf": "opentype"}
+
+
+def font_path(file):
+    """A font's path under project/: a bare file name means fonts/<file>."""
+    return file if "/" in file else "fonts/" + file
+
+
+def _css_value(value):
+    alias = ALIAS.match(value) if isinstance(value, str) else None
+    return "var(--{})".format(alias.group(1)) if alias else str(value)
+
+
+def compile_css(tokens, title, font_base="fonts/"):
+    """tokens.css as the Design System type compiles it: themed colours and shadows, then the other
+    families and the font stacks on :root, a class per type style, an @font-face per font file."""
+    lines = ["/* {} — generated from tokens.json */".format(title)]
+    ids = theme_ids(tokens)
+    first = ids[0]
+    themed = list((tokens.get("color") or {}).get("tokens") or []) + list((tokens.get("shadow") or {}).get("tokens") or [])
+    for i, theme in enumerate(ids):
+        lines.append(':root, [data-theme="{}"] {{'.format(theme) if i == 0 else '[data-theme="{}"] {{'.format(theme))
+        for token in themed:
+            lines.append("  --{}: {};".format(token["name"], _css_value(theme_value(token, theme, first))))
+        lines.append("}")
+    root = []
+    for key, block in tokens.items():
+        if key in META_KEYS or key in ("color", "type", "shadow") or not isinstance(block, dict):
+            continue
+        for token in block.get("tokens") or []:
+            value = token["value"]
+            if isinstance(value, (int, float)) and not isinstance(value, bool):
+                value = "{}px".format(value)
+            root.append("  --{}: {};".format(token["name"], value))
+    type_block = tokens.get("type") or {}
+    for key, stack in (type_block.get("families") or {}).items():
+        root.append("  --font-{}: {};".format(key, stack))
+    lines += [":root {"] + root + ["}"]
+    for group in type_block.get("groups") or []:
+        for style in group.get("styles") or []:
+            props = ["font-family: var(--font-{})".format(style.get("family", group.get("family")))]
+            for key, prop in (("fontSize", "font-size"), ("lineHeight", "line-height"), ("fontWeight", "font-weight"),
+                              ("letterSpacing", "letter-spacing"), ("fontStyle", "font-style")):
+                if style.get(key, "") != "":
+                    props.append("{}: {}".format(prop, style[key]))
+            lines.append(".{} {{ {}; }}".format(style["name"], "; ".join(props)))
+    for font in type_block.get("fonts") or []:
+        name = font_path(font["file"]).rsplit("/", 1)[-1]
+        fmt = FORMATS.get(name.rsplit(".", 1)[-1].lower(), "woff2")
+        lines.append('@font-face {{ font-family: "{}"; src: url("{}{}") format("{}"); font-weight: {}; '
+                     'font-style: {}; font-display: swap; }}'.format(
+                         font["family"], font_base, name, fmt, font.get("weight", "400"), font.get("style", "normal")))
+    return "\n".join(lines) + "\n"
