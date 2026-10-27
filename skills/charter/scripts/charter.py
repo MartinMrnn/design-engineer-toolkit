@@ -11,9 +11,13 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from charterlib import board as bd  # noqa: E402
+from charterlib import branches as br  # noqa: E402
+from charterlib import build as bl  # noqa: E402
+from charterlib import cardfile as cf  # noqa: E402
 from charterlib import check as ck  # noqa: E402
 from charterlib import contract as ct  # noqa: E402
-from charterlib import project as pj  # noqa: E402
+from charterlib import freeze as fz  # noqa: E402
+from charterlib import index as ix  # noqa: E402
 from charterlib import tokens as tk  # noqa: E402
 
 
@@ -47,7 +51,7 @@ def add_init(sub):
     p = sub.add_parser("init", help="create the charter's skeleton and index")
     p.add_argument("--title", required=True)
     root_arg(p)
-    p.set_defaults(func=lambda a, c: print(pj.init(Path(a.root), a.title)))
+    p.set_defaults(func=lambda a, c: print(ix.init(Path(a.root), a.title)))
 
 
 def add_stamp(sub):
@@ -58,13 +62,13 @@ def add_stamp(sub):
     p.add_argument("--remote", help="the published project/design-system.json, read right before")
     p.add_argument("--note")
     root_arg(p)
-    p.set_defaults(func=lambda a, c: print(pj.stamp(Path(a.root), a.step, a.by, a.title, a.remote, a.note)))
+    p.set_defaults(func=lambda a, c: print(ix.stamp(Path(a.root), a.step, a.by, a.title, a.remote, a.note)))
 
 
 def add_css(sub):
     p = sub.add_parser("css", help="compile project/tokens.css from project/tokens.json")
     root_arg(p)
-    p.set_defaults(func=lambda a, c: print(pj.write_css(Path(a.root))))
+    p.set_defaults(func=lambda a, c: print(bl.write_css(Path(a.root))))
 
 
 def add_branch(sub):
@@ -72,13 +76,13 @@ def add_branch(sub):
     p.add_argument("ids", nargs="+", help="one lower-case letter per branch, for example: a b c")
     root_arg(p)
     p.add_argument("--out", default="design/branches")
-    p.set_defaults(func=lambda a, c: print(pj.branch(Path(a.root), Path(a.out), a.ids, c)))
+    p.set_defaults(func=lambda a, c: print(br.branch(Path(a.root), Path(a.out), a.ids, c)))
 
 
 def add_cards(sub):
     p = sub.add_parser("cards", help="write the 390 px copy of every page card")
     root_arg(p)
-    p.set_defaults(func=lambda a, c: print(pj.cards(Path(a.root))))
+    p.set_defaults(func=lambda a, c: print(cf.cards(Path(a.root))))
 
 
 def add_check(sub):
@@ -94,26 +98,26 @@ def add_merge(sub):
     p.add_argument("--take", action="append", default=[], help="family:branch, for example type:b (colour, type, shape, imagery)")
     root_arg(p)
     p.add_argument("--branches", default="design/branches")
-    p.set_defaults(func=lambda a, c: print(pj.merge(Path(a.root), Path(a.branches), a.base, a.take)))
+    p.set_defaults(func=lambda a, c: print(br.merge(Path(a.root), Path(a.branches), a.base, a.take)))
 
 
 def add_freeze(sub):
     p = sub.add_parser("freeze", help="list raw values that are not tokens in bundle.css and the cards")
     root_arg(p)
-    p.set_defaults(func=lambda a, c: report("freeze", pj.freeze(Path(a.root))))
+    p.set_defaults(func=lambda a, c: report("freeze", fz.freeze(Path(a.root))))
 
 
 def add_export(sub):
     p = sub.add_parser("export", help="copy tokens.css, the components, fonts and media for the build")
     p.add_argument("dest", help="for example site/assets")
     root_arg(p)
-    p.set_defaults(func=lambda a, c: print(pj.export(Path(a.root), Path(a.dest))))
+    p.set_defaults(func=lambda a, c: print(bl.export(Path(a.root), Path(a.dest))))
 
 
 def add_assets(sub):
     p = sub.add_parser("assets", help="list the files under project/assets/ that still need an upload")
     root_arg(p)
-    p.set_defaults(func=lambda a, c: print("\n".join(pj.pending_assets(Path(a.root))) or "no assets to upload"))
+    p.set_defaults(func=lambda a, c: print("\n".join(ix.pending_assets(Path(a.root))) or "no assets to upload"))
 
 
 def add_record(sub):
@@ -121,7 +125,7 @@ def add_record(sub):
     p.add_argument("--file", required=True, help="its path under project/, for example assets/Icons/cup.svg")
     p.add_argument("--blob", required=True, help="the upload's url (/_blob/<id>) or id")
     root_arg(p)
-    p.set_defaults(func=lambda a, c: print(pj.record(Path(a.root), a.file, a.blob)))
+    p.set_defaults(func=lambda a, c: print(ix.record(Path(a.root), a.file, a.blob)))
 
 
 def cmd_board(args, contract):

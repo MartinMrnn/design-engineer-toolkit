@@ -1,0 +1,148 @@
+"""The charter's index, design-system.json: init, stamp before a publish, and the asset uploads it records."""
+import json
+import mimetypes
+import re
+import shutil
+import unicodedata
+from datetime import datetime, timezone
+from pathlib import Path
+
+from .contract import TEMPLATES
+
+TEXT_EXTENSIONS = {".md", ".json", ".txt", ".csv"}
+SAFE_KEY = re.compile(r"[A-Za-z0-9_./-]")
+
+
+def read_json(path):
+    return json.loads(Path(path).read_text(encoding="utf-8"))
+
+
+def write_json(path, data):
+    Path(path).parent.mkdir(parents=True, exist_ok=True)
+    Path(path).write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+
+
+def now():
+    return datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
+
+
+def namespace(title):
+    ascii_title = unicodedata.normalize("NFKD", title).encode("ascii", "ignore").decode()
+    name = "".join(w[:1].upper() + w[1:] for w in re.findall(r"[A-Za-z0-9]+", ascii_title)) or "Charter"
+    return name if name[0].isalpha() else "Charter" + name
+
+
+def new_index(title):
+    """A fresh index for a system this studio starts, with the type's createdOnFiles marker."""
+    return {
+        "v": 3,
+        "layout": "files",
+        "createdOnFiles": {"v": 1, "at": now()},
+        "title": title,
+        "namespace": namespace(title),
+        "libraries": [],
+        "sections": {},
+        "groups": [],
+        "assetGroups": {},
+        "blobs": {},
+        "docs": {"sections": []},
+    }
+
+
+def write_bundle(project, name):
+    """A bundle with no components. Verified at Task 0: without components/bundle.js the type shows previews
+    as static snapshots, where scripts do not run and relative files (../../media/…) do not load."""
+    (project / "components").mkdir(parents=True, exist_ok=True)
+    (project / "components" / "bundle.js").write_text(
+        '/* @ds-bundle: {{"format":4,"namespace":"{0}","components":[]}} */\n'
+        "window.{0} = window.{0} || {{}};\n".format(name), encoding="utf-8")
+
+
+def init(root, title):
+    project = Path(root) / "project"
+    index = project / "design-system.json"
+    if index.exists():
+        return "kept the existing charter in {}".format(project)
+    shutil.copytree(TEMPLATES / "project", project, dirs_exist_ok=True)
+    data = new_index(title)
+    write_json(index, data)
+    write_bundle(project, data["namespace"])
+    return "created the charter '{}' in {}".format(title, project)
+
+
+def stamp(root, step, by, title=None, remote=None, note=None):
+    """Prepare the index for a publish: start from the published index when given (so the page's own
+    keys survive), add this charter's asset records, set the title only when asked, set lastChange."""
+    path = Path(root) / "project" / "design-system.json"
+    local = read_json(path)
+    data = read_json(remote) if remote else dict(local)
+    if "createdOnFiles" not in data and "convertedFrom" not in data:
+        raise ValueError("{} has no createdOnFiles marker: it is not a charter index; refusing to write over it".format(
+            remote or path))
+    data["title"] = title or data.get("title") or local.get("title")
+    groups = data.setdefault("assetGroups", {})
+    order = data.setdefault("groups", [])
+    for name, entry in (local.get("assetGroups") or {}).items():
+        target = groups.setdefault(name, {"name": name, "tile": entry.get("tile", "m"), "order": [], "files": {}})
+        target.setdefault("order", [])
+        target.setdefault("files", {})
+        for key, record in (entry.get("files") or {}).items():
+            target["files"][key] = record
+            if record.get("name") not in target["order"]:
+                target["order"].append(record.get("name"))
+        if name not in order:
+            order.append(name)
+    data["lastChange"] = {"by": by, "at": now(), "via": "Claude Code · design-studio {}".format(step)}
+    if note:
+        data["lastChange"]["note"] = note
+    write_json(path, data)
+    return "stamped {} for {} (by {})".format(path, step, by)
+
+
+def asset_key(name):
+    """The index key of an asset: its name, with every byte outside [A-Za-z0-9_./-] written ~ and two hex digits."""
+    return "".join(ch if SAFE_KEY.match(ch) else "".join("~{:02x}".format(b) for b in ch.encode("utf-8")) for ch in name)
+
+
+def pending_assets(root):
+    """Files under project/assets/<Group>/ that must be uploaded and have no record in the index yet."""
+    project = Path(root) / "project"
+    assets = project / "assets"
+    if not assets.exists():
+        return []
+    groups = read_json(project / "design-system.json").get("assetGroups") or {}
+    pending = []
+    for path in sorted(p for p in assets.rglob("*") if p.is_file()):
+        rel = path.relative_to(assets)
+        if len(rel.parts) < 2 or path.suffix.lower() in TEXT_EXTENSIONS or path.name.startswith("."):
+            continue
+        group, name = rel.parts[0], "/".join(rel.parts[1:])
+        if asset_key(name) not in ((groups.get(group) or {}).get("files") or {}):
+            pending.append(str(path.relative_to(project)))
+    return pending
+
+
+def record(root, file, blob):
+    """Name an upload in the index: assetGroups.<Group>.files.<key> = {name, blob, size, type}."""
+    project = Path(root) / "project"
+    path = project / file
+    if not path.is_file():
+        raise ValueError("{} does not exist".format(path))
+    try:
+        rel = path.relative_to(project / "assets")
+    except ValueError:
+        raise ValueError("{} is not under project/assets/<Group>/".format(file))
+    if len(rel.parts) < 2:
+        raise ValueError("{} is not under project/assets/<Group>/".format(file))
+    group, name = rel.parts[0], "/".join(rel.parts[1:])
+    mime = "image/svg+xml" if path.suffix.lower() == ".svg" else (mimetypes.guess_type(path.name)[0] or "application/octet-stream")
+    blob_id = blob.rstrip("/").rsplit("/", 1)[-1]
+    index = read_json(project / "design-system.json")
+    entry = index.setdefault("assetGroups", {}).setdefault(group, {"name": group, "tile": "m", "order": [], "files": {}})
+    entry.setdefault("files", {})[asset_key(name)] = {"name": name, "blob": blob_id, "size": path.stat().st_size, "type": mime}
+    if name not in entry.setdefault("order", []):
+        entry["order"].append(name)
+    if group not in index.setdefault("groups", []):
+        index["groups"].append(group)
+    write_json(project / "design-system.json", index)
+    return "recorded {} as {} in {}".format(name, blob_id, group)
