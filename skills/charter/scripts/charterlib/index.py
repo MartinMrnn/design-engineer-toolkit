@@ -13,8 +13,21 @@ TEXT_EXTENSIONS = {".md", ".json", ".txt", ".csv"}
 SAFE_KEY = re.compile(r"[A-Za-z0-9_./-]")
 
 
+def read_text(path):
+    """A file's UTF-8 text; a ValueError that names the file when it is not UTF-8."""
+    try:
+        return Path(path).read_text(encoding="utf-8")
+    except UnicodeDecodeError as error:
+        raise ValueError("{}: not UTF-8 text ({})".format(path, error.reason)) from None
+
+
 def read_json(path):
-    return json.loads(Path(path).read_text(encoding="utf-8"))
+    """A JSON file's data; a ValueError that names the file when it is not JSON."""
+    text = read_text(path)
+    try:
+        return json.loads(text)
+    except ValueError as error:
+        raise ValueError("{}: {}".format(path, error)) from None
 
 
 def write_json(path, data):
@@ -63,7 +76,13 @@ def init(root, title):
     index = project / "design-system.json"
     if index.exists():
         return "kept the existing charter in {}".format(project)
-    shutil.copytree(TEMPLATES / "project", project, dirs_exist_ok=True)
+    # Only the template files that are missing: a charter that lost its index keeps every section it holds.
+    template = TEMPLATES / "project"
+    for src in sorted(template.rglob("*")):
+        dst = project / src.relative_to(template)
+        if src.is_file() and not dst.exists():
+            dst.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(src, dst)
     data = new_index(title)
     write_json(index, data)
     write_bundle(project, data["namespace"])

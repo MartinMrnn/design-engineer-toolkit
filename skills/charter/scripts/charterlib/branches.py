@@ -1,10 +1,12 @@
 """C2 directions: `branch` copies the charter into branches with starter cards; `merge` brings the chosen one back."""
+import filecmp
 import re
 import shutil
 from pathlib import Path
 
-from .build import write_css
-from .index import new_index, read_json, write_bundle, write_json
+from .build import css_text
+from .cardfile import is_generated
+from .index import new_index, read_json, read_text, write_bundle, write_json
 
 COMPONENT_GROUPS = {"Button": "Actions", "Link": "Actions", "Card": "Content", "Field": "Forms", "Nav": "Navigation"}
 COMPONENT_BRIEFS = {
@@ -28,10 +30,13 @@ FAMILIES = {
     "shape": {"tokens": ["spacing", "radius", "shadow", "layout"], "files": ["10-shape-and-space.md"], "dirs": []},
     "imagery": {"tokens": [], "files": ["11-imagery-and-icons.md"], "dirs": ["assets/Icons", "media"]},
 }
-# What the base branch brings: everything visual. Product and UX content stays the charter's.
+# What the base branch brings: the visual sections, and README.md, which is the charter's README (copied at
+# `branch`, and nobody edits the charter between branch and merge) plus the direction's rules. The product
+# and UX sections (01 to 07) stay the charter's. tokens.json is written from the base's, with the mix applied.
 VISUAL_FILES = ["README.md", "08-colour.md", "09-type.md", "10-shape-and-space.md", "11-imagery-and-icons.md",
-                "12-motion.md", "13-rules.md", "14-sources.md", "tokens.json"]
-VISUAL_DIRS = ["fonts", "media", "assets/Icons"]
+                "12-motion.md", "13-rules.md", "14-sources.md"]
+# Folders the base brings when it has them, besides each of its asset groups (assets/<Group>).
+VISUAL_DIRS = ["fonts", "media"]
 
 
 def card_html(title, marker, body):
@@ -112,20 +117,109 @@ def branch(charter_root, out_root, ids, contract):
 
 
 def _replace_dir(src, dst):
+    """Replace dst with a copy of src, only when src exists: a branch without a folder never wipes the charter's."""
+    if not src.is_dir():
+        return False
     if dst.exists():
         shutil.rmtree(dst)
-    if src.exists():
-        shutil.copytree(src, dst)
+    shutil.copytree(src, dst)
+    return True
 
 
-def _visual_components(folder):
-    if not folder.exists():
-        return []
-    return [d for d in folder.iterdir() if d.is_dir() and not d.name.startswith("Wireframe")]
+def _title(project):
+    path = project / "design-system.json"
+    index = read_json(path)
+    title = index.get("title") if isinstance(index, dict) else None
+    if not isinstance(title, str) or not title.strip():
+        raise ValueError("{} has no title".format(path))
+    return index, title
+
+
+def _tokens(path):
+    tokens = read_json(path)
+    if not isinstance(tokens, dict):
+        raise ValueError("{}: must be a JSON object".format(path))
+    return tokens
+
+
+def _base_components(src, components):
+    """The component folders the base provides, which the merge replaces: the base components, Cover, Showcase,
+    every other folder of the base but its wireframes (the charter's), and the charter's generated copies of them.
+    Every other card of the charter (mockups, motion, cards made by hand) stays."""
+    names = set(COMPONENT_GROUPS) | {"Cover", "Showcase"}
+    if (src / "components").is_dir():
+        names |= {d.name for d in (src / "components").iterdir() if d.is_dir() and not d.name.startswith("Wireframe")}
+    for name in list(names):
+        copy = components / (name + "Mobile") / "preview.html"
+        if copy.is_file() and is_generated(read_text(copy)):
+            names.add(name + "Mobile")
+    return sorted(names)
+
+
+def _same_file(a, b):
+    return a.is_file() and b.is_file() and filecmp.cmp(a, b, shallow=False)
+
+
+def _keep_records(index, groups, merged, charter):
+    """Uploads belong to the Artifact they were made in: in each asset group the merge replaced, keep only the
+    records of files that are still the charter's own; the others are uploaded again to the charter."""
+    asset_groups = index.get("assetGroups")
+    if not isinstance(asset_groups, dict):
+        return
+    for group in groups:
+        entry = asset_groups.get(group)
+        if not isinstance(entry, dict):
+            continue
+        files = entry.get("files") if isinstance(entry.get("files"), dict) else {}
+        kept = {key: rec for key, rec in files.items() if isinstance(rec, dict) and isinstance(rec.get("name"), str)
+                and _same_file(merged / "assets" / group / rec["name"], charter / "assets" / group / rec["name"])}
+        if not kept:
+            del asset_groups[group]
+            continue
+        names = {rec["name"] for rec in kept.values()}
+        entry["files"] = kept
+        entry["order"] = [n for n in entry.get("order") or [] if n in names]
+    index["groups"] = [g for g in index.get("groups") or [] if g in asset_groups]
+
+
+def _merge_into(work, charter, src, tokens, parsed, index, title):
+    """Apply the merge to `work`, a copy of the charter's project/ (`charter`, left untouched)."""
+    for name in VISUAL_FILES:
+        if (src / name).is_file():
+            shutil.copy2(src / name, work / name)
+    components = work / "components"
+    components.mkdir(exist_ok=True)
+    for name in _base_components(src, components):
+        if (components / name).exists():
+            shutil.rmtree(components / name)
+        if (src / "components" / name).is_dir():
+            shutil.copytree(src / "components" / name, components / name)
+    shutil.copy2(src / "components" / "bundle.css", components / "bundle.css")
+    groups = sorted(d.name for d in (src / "assets").iterdir() if d.is_dir()) if (src / "assets").is_dir() else []
+    replaced = set()
+    for rel in VISUAL_DIRS + ["assets/" + g for g in groups]:
+        if _replace_dir(src / rel, work / rel):
+            replaced.add(rel)
+    for family, _, path, other_tokens in parsed:
+        for key in FAMILIES[family]["tokens"]:
+            if key in other_tokens:
+                tokens[key] = other_tokens[key]
+        for name in FAMILIES[family]["files"]:
+            shutil.copy2(path / name, work / name)
+        for rel in FAMILIES[family]["dirs"]:
+            if _replace_dir(path / rel, work / rel):
+                replaced.add(rel)
+    tokens["name"] = title
+    write_json(work / "tokens.json", tokens)
+    _keep_records(index, sorted(rel.split("/", 1)[1] for rel in replaced if rel.startswith("assets/")), work, charter)
+    write_json(work / "design-system.json", index)
+    (work / "tokens.css").write_text(css_text(work), encoding="utf-8")
 
 
 def merge(charter_root, branches_root, base, takes):
     dst = Path(charter_root) / "project"
+    if not (dst / "design-system.json").is_file():
+        raise ValueError("no charter in {}: run charter.py init".format(dst))
 
     def source(branch_id):
         path = Path(branches_root) / branch_id / "project"
@@ -134,45 +228,42 @@ def merge(charter_root, branches_root, base, takes):
         return path
 
     src = source(base)
-    parsed = []
+    sources = []
     for take in takes:
         family, _, other = take.partition(":")
         if family not in FAMILIES:
             raise ValueError("unknown family {!r} in --take: use {}".format(family, ", ".join(FAMILIES)))
-        parsed.append((family, other, source(other)))
+        sources.append((family, other, source(other)))
 
-    for name in VISUAL_FILES:
-        if (src / name).exists():
-            shutil.copy2(src / name, dst / name)
-    components = dst / "components"
-    components.mkdir(exist_ok=True)
-    for folder in _visual_components(components):
-        shutil.rmtree(folder)
-    for folder in _visual_components(src / "components"):
-        shutil.copytree(folder, components / folder.name)
-    shutil.copy2(src / "components" / "bundle.css", components / "bundle.css")
-    for rel in VISUAL_DIRS:
-        _replace_dir(src / rel, dst / rel)
+    # Every source is checked and read before anything is written.
+    required = [src / "components" / "bundle.css", src / "tokens.json"]
+    for family, _, path in sources:
+        required += [path / "tokens.json"] + [path / name for name in FAMILIES[family]["files"]]
+    missing = [str(p) for p in required if not p.is_file()]
+    if missing:
+        raise ValueError("cannot merge, missing: {}".format(", ".join(missing)))
+    tokens = _tokens(src / "tokens.json")
+    parsed = [(family, other, path, _tokens(path / "tokens.json")) for family, other, path in sources]
+    index, title = _title(dst)
 
-    tokens = read_json(dst / "tokens.json")
-    notes = ["base: {}".format(base)]
-    for family, other, path in parsed:
-        other_tokens = read_json(path / "tokens.json")
-        for key in FAMILIES[family]["tokens"]:
-            if key in other_tokens:
-                tokens[key] = other_tokens[key]
-        for name in FAMILIES[family]["files"]:
-            shutil.copy2(path / name, dst / name)
-        for rel in FAMILIES[family]["dirs"]:
-            _replace_dir(path / rel, dst / rel)
-        notes.append("{} from {}".format(family, other))
-    index = read_json(dst / "design-system.json")
-    tokens["name"] = index["title"]
-    write_json(dst / "tokens.json", tokens)
-    # Uploads belong to the Artifact they were made in: the merged icons are uploaded again to the charter.
-    index.get("assetGroups", {}).pop("Icons", None)
-    index["groups"] = [g for g in index.get("groups", []) if g in index.get("assetGroups", {})]
-    write_json(dst / "design-system.json", index)
-    write_css(charter_root)
+    # The merge is built in a copy of project/, then swapped in: a failure leaves the charter as it was.
+    work, old = dst.with_name(dst.name + ".merging"), dst.with_name(dst.name + ".before-merge")
+    for leftover in (work, old):
+        if leftover.exists():
+            shutil.rmtree(leftover)
+    shutil.copytree(dst, work)
+    try:
+        _merge_into(work, dst, src, tokens, parsed, index, title)
+    except BaseException:
+        shutil.rmtree(work, ignore_errors=True)
+        raise
+    dst.rename(old)
+    try:
+        work.rename(dst)
+    except BaseException:
+        old.rename(dst)
+        raise
+    shutil.rmtree(old, ignore_errors=True)
+    notes = ["base: {}".format(base)] + ["{} from {}".format(family, other) for family, other, _, _ in parsed]
     return ("merged into {}: {}. Revise 13-rules.md and 14-sources.md for the mix, upload what charter.py assets "
             "lists, then run charter.py check --step C2.".format(dst, ", ".join(notes)))

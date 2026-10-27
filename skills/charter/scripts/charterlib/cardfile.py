@@ -12,6 +12,12 @@ def marker_attrs(text):
     return match.group(1) if match else None
 
 
+def is_generated(text):
+    """Whether a preview.html is a copy written by `cards`: its line 2 says so."""
+    lines = text.split("\n", 2)
+    return len(lines) > 1 and lines[1].startswith(GENERATED)
+
+
 def is_page(attrs):
     return re.search(r"(?:^|\s)page(?=\s|=|$)", attrs) is not None
 
