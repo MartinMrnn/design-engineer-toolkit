@@ -2,6 +2,8 @@
 import re
 from pathlib import Path
 
+from .index import read_text
+
 STYLE_ATTR = re.compile(r'style="([^"]*)"', re.I)
 STYLE_OPEN = re.compile(r"<style[^>]*>", re.I)
 VAR = re.compile(r"var\((?:[^()]|\([^()]*\))*\)")
@@ -18,7 +20,7 @@ ALLOWED_RAW = {"0px", "1px"}
 
 def _css_fragments(path):
     """(line number, CSS text) pairs: every line of a .css file; in HTML, <style> content and style attributes."""
-    text = path.read_text(encoding="utf-8")
+    text = read_text(path)
     if path.suffix == ".css":
         for number, line in enumerate(text.split("\n"), 1):
             yield number, line

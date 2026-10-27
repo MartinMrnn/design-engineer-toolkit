@@ -1,10 +1,9 @@
 """The `check` command: a charter, or a branch, against the contract up to a step."""
-import json
 import re
 
 from . import tokens as tk
 from .cardfile import attr, is_generated, is_page, marker_attrs, mobile_copies, mobile_copy
-from .index import read_text
+from .index import read_json, read_text
 
 LINKS = ('href="../../tokens.css"', 'href="../bundle.css"')
 CLASS = re.compile(r"\.(-?[_a-zA-Z][\w-]*)")
@@ -27,16 +26,18 @@ def _index(project):
     if not path.exists():
         return ["design-system.json is missing: run charter.py init"]
     try:
-        index = json.loads(path.read_text(encoding="utf-8"))
+        index = read_json(path)
     except ValueError:
         return ["design-system.json is not valid JSON"]
+    if not isinstance(index, dict):
+        return ["design-system.json must be a JSON object"]
     problems = []
     if "createdOnFiles" not in index and "convertedFrom" not in index:
         problems.append("design-system.json has no createdOnFiles marker: the page would open it read-only")
     if not str(index.get("title", "")).strip():
         problems.append("design-system.json has no title")
     bundle = project / "components" / "bundle.js"
-    if not bundle.exists() or not bundle.read_text(encoding="utf-8").startswith("/* @ds-bundle:"):
+    if not bundle.exists() or not read_text(bundle).startswith("/* @ds-bundle:"):
         problems.append("components/bundle.js is missing: the page would show static previews (charter.py init writes it)")
     return problems
 
@@ -50,7 +51,7 @@ def _sections(project, contract, due):
         if not path.exists():
             problems.append("{} is missing (due at {})".format(section["file"], section["step"]))
             continue
-        text = path.read_text(encoding="utf-8")
+        text = read_text(path)
         if contract["placeholder"] in text:
             problems.append("{} is due at {} and still holds its placeholder".format(section["file"], section["step"]))
         elif not [line for line in text.split("\n") if line.strip() and not line.lstrip().startswith("#")]:
@@ -63,9 +64,9 @@ def _tokens(project, contract, due):
     if not path.exists():
         return ["tokens.json is missing (due at {})".format(contract["tokens_step"])]
     try:
-        tokens = json.loads(path.read_text(encoding="utf-8"))
+        tokens = read_json(path)
     except ValueError as error:
-        return ["tokens.json is not valid JSON: {}".format(error)]
+        return ["tokens.json is not valid JSON: {}".format(str(error).replace(str(path) + ": ", "", 1))]
     problems = tk.validate(tokens, contract, due)
     type_block = tokens.get("type") if isinstance(tokens, dict) else None
     fonts = type_block.get("fonts") if isinstance(type_block, dict) else None
@@ -73,10 +74,12 @@ def _tokens(project, contract, due):
         file = font.get("file") if isinstance(font, dict) else None
         if isinstance(file, str) and file and not (project / tk.font_path(file)).exists():
             problems.append("tokens.json: font file {} is missing".format(tk.font_path(file)))
-    if not problems:
-        title = json.loads((project / "design-system.json").read_text(encoding="utf-8")).get("title", "")
+    index_path = project / "design-system.json"
+    if not problems and index_path.exists():
+        index = read_json(index_path)
+        title = index.get("title", "") if isinstance(index, dict) else ""
         css = project / "tokens.css"
-        if not css.exists() or css.read_text(encoding="utf-8") != tk.compile_css(tokens, title):
+        if not css.exists() or read_text(css) != tk.compile_css(tokens, title):
             problems.append("tokens.css is missing or out of date: run charter.py css")
     return problems
 
@@ -86,7 +89,7 @@ def _card(folder, group, page, links, contract):
     name = folder.name
     if not preview.exists():
         return ["components/{}/preview.html is missing".format(name)]
-    text = preview.read_text(encoding="utf-8")
+    text = read_text(preview)
     attrs = marker_attrs(text)
     if attrs is None:
         return ["components/{}/preview.html: line 1 must be the <!-- @dsCard ... --> marker".format(name)]
@@ -111,7 +114,7 @@ def _components(project, contract):
     if not bundle.exists():
         problems.append("components/bundle.css is missing")
     else:
-        css = COMMENT.sub("", bundle.read_text(encoding="utf-8"))
+        css = COMMENT.sub("", read_text(bundle))
         for cls in sorted(set(CLASS.findall(css))):
             if not cls.startswith(("ds-", "is-")):
                 problems.append("components/bundle.css: class .{} must start with ds- (states: is-)".format(cls))
@@ -121,7 +124,7 @@ def _components(project, contract):
         readme = folder / "README.md"
         if not readme.exists():
             problems.append("components/{}/README.md is missing".format(name))
-        elif contract["placeholder"] in readme.read_text(encoding="utf-8"):
+        elif contract["placeholder"] in read_text(readme):
             problems.append("components/{}/README.md still holds a placeholder".format(name))
     cover = components / "Cover"
     problems += _card(cover, None, False, True, contract)

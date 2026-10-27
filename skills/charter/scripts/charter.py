@@ -4,7 +4,6 @@
 Run from the project folder. Each command is described in the charter skill's SKILL.md.
 """
 import argparse
-import json
 import sys
 from pathlib import Path
 
@@ -43,8 +42,7 @@ def add_validate_tokens(sub):
     p = sub.add_parser("validate-tokens", help="validate one tokens.json file at a step")
     p.add_argument("file")
     p.add_argument("--step", required=True)
-    p.set_defaults(func=lambda a, c: report("tokens", tk.validate(
-        json.loads(Path(a.file).read_text(encoding="utf-8")), c, ct.due_steps(c, a.step))))
+    p.set_defaults(func=lambda a, c: report("tokens", tk.validate(ix.read_json(a.file), c, ct.due_steps(c, a.step))))
 
 
 def add_init(sub):
@@ -62,7 +60,17 @@ def add_stamp(sub):
     p.add_argument("--remote", help="the published project/design-system.json, read right before")
     p.add_argument("--note")
     root_arg(p)
-    p.set_defaults(func=lambda a, c: print(ix.stamp(Path(a.root), a.step, a.by, a.title, a.remote, a.note)))
+    p.set_defaults(func=cmd_stamp)
+
+
+def cmd_stamp(args, contract):
+    ct.due_steps(contract, args.step)
+    project = Path(args.root) / "project"
+    before = ix.read_object(project / "design-system.json").get("title")
+    print(ix.stamp(Path(args.root), args.step, args.by, args.title, args.remote, args.note))
+    # tokens.css starts with the title: a new title means a new tokens.css.
+    if (project / "tokens.json").exists() and ix.read_object(project / "design-system.json").get("title") != before:
+        print(bl.write_css(Path(args.root)))
 
 
 def add_css(sub):
@@ -131,7 +139,9 @@ def add_record(sub):
 def cmd_board(args, contract):
     urls = {}
     for item in args.url:
-        branch_id, _, url = item.partition("=")
+        branch_id, sep, url = item.partition("=")
+        if not sep or not branch_id or not url:
+            raise ValueError("--url needs id=URL, not {!r}".format(item))
         urls[branch_id] = url
     for warning in bd.build(Path(args.branches), Path(args.out), urls):
         print("warning: " + warning)
@@ -156,11 +166,14 @@ def main(argv=None):
     for add in ADDERS:
         add(sub)
     args = parser.parse_args(argv)
-    contract = ct.load()
     try:
-        args.func(args, contract)
-    except (ValueError, FileNotFoundError, FileExistsError) as error:
+        args.func(args, ct.load())
+    except UnicodeDecodeError as error:
+        fail("a file is not UTF-8 text ({})".format(error.reason))
+    except ValueError as error:
         fail(str(error))
+    except OSError as error:
+        fail("{}: {}".format(error.filename, error.strerror) if error.filename else str(error))
 
 
 if __name__ == "__main__":

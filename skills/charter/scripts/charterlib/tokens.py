@@ -18,16 +18,16 @@ TICKED = re.compile(r"`([A-Za-z0-9][A-Za-z0-9_.-]{0,63})`")
 META_KEYS = {"name", "version", "meta"}
 
 
-def _dict(value):
+def as_dict(value):
     return value if isinstance(value, dict) else {}
 
 
-def _list(value):
+def as_list(value):
     return value if isinstance(value, list) else []
 
 
 def theme_ids(tokens):
-    themes = [t for t in _list(_dict(_dict(tokens).get("color")).get("themes")) if isinstance(t, dict) and "id" in t]
+    themes = [t for t in as_list(as_dict(as_dict(tokens).get("color")).get("themes")) if isinstance(t, dict) and "id" in t]
     return [t["id"] for t in themes] or ["light"]
 
 
@@ -334,17 +334,17 @@ def _font_url(file, font_base):
 
 
 def _named(entries):
-    return [e for e in _list(entries) if isinstance(e, dict) and isinstance(e.get("name"), str)]
+    return [e for e in as_list(entries) if isinstance(e, dict) and isinstance(e.get("name"), str)]
 
 
 def compile_css(tokens, title, font_base="fonts/"):
     """tokens.css as the Design System type compiles it: themed colours and shadows, then the other
     families and the font stacks on :root, a class per type style, an @font-face per font file."""
-    tokens = _dict(tokens)
+    tokens = as_dict(tokens)
     lines = ["/* {} — generated from tokens.json */".format(title)]
     ids = theme_ids(tokens)
     first = ids[0]
-    themed = _named(_dict(tokens.get("color")).get("tokens")) + _named(_dict(tokens.get("shadow")).get("tokens"))
+    themed = _named(as_dict(tokens.get("color")).get("tokens")) + _named(as_dict(tokens.get("shadow")).get("tokens"))
     for i, theme in enumerate(ids):
         lines.append(':root, [data-theme="{}"] {{'.format(theme) if i == 0 else '[data-theme="{}"] {{'.format(theme))
         for token in themed:
@@ -359,11 +359,11 @@ def compile_css(tokens, title, font_base="fonts/"):
             if isinstance(value, (int, float)) and not isinstance(value, bool):
                 value = "{}px".format(value)
             root.append("  --{}: {};".format(token["name"], value))
-    type_block = _dict(tokens.get("type"))
-    for key, stack in _dict(type_block.get("families")).items():
+    type_block = as_dict(tokens.get("type"))
+    for key, stack in as_dict(type_block.get("families")).items():
         root.append("  --font-{}: {};".format(key, stack))
     lines += [":root {"] + root + ["}"]
-    for group in _list(type_block.get("groups")):
+    for group in as_list(type_block.get("groups")):
         if not isinstance(group, dict):
             continue
         for style in _named(group.get("styles")):
@@ -373,7 +373,7 @@ def compile_css(tokens, title, font_base="fonts/"):
                 if style.get(key, "") != "":
                     props.append("{}: {}".format(prop, style[key]))
             lines.append(".{} {{ {}; }}".format(style["name"], "; ".join(props)))
-    for font in _list(type_block.get("fonts")):
+    for font in as_list(type_block.get("fonts")):
         if not isinstance(font, dict) or not isinstance(font.get("file"), str):
             continue
         url = _font_url(font["file"], font_base)

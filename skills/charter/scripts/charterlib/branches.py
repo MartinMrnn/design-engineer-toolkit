@@ -92,14 +92,20 @@ def skeleton_tokens(contract, title):
 
 def branch(charter_root, out_root, ids, contract):
     source = Path(charter_root) / "project"
-    title = read_json(source / "design-system.json")["title"]
-    made = []
+    _, title = _title(source)
+    # Every id and destination is checked before any branch is made.
     for branch_id in ids:
         if not re.match(r"^[a-z]$", branch_id):
             raise ValueError("a branch id is one lower-case letter, not {!r}".format(branch_id))
+        if ids.count(branch_id) > 1:
+            raise ValueError("branch id {!r} is given twice".format(branch_id))
+    for branch_id in ids:
         dest = Path(out_root) / branch_id / "project"
         if dest.exists():
             raise ValueError("{} exists: a branch is made once".format(dest))
+    made = []
+    for branch_id in ids:
+        dest = Path(out_root) / branch_id / "project"
         shutil.copytree(source, dest, ignore=shutil.ignore_patterns("design-system.json", "tokens.css"))
         for rel, text in starters().items():
             path = dest / rel

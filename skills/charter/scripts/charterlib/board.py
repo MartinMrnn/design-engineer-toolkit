@@ -1,11 +1,12 @@
 """The C2 comparison board: the same rows for every branch, side by side, built from the branches' files.
 Captures come from design/branches/<id>/captures/, made by each art director."""
 import html
-import json
 import shutil
 from pathlib import Path
 
 from . import tokens as tk
+from .index import read_json, read_text
+from .tokens import as_dict, as_list
 
 CAPTURES = [("cover.png", "Cover"), ("showcase-1440.png", "Showcase · 1440 px"),
             ("showcase-390.png", "Showcase · 390 px"), ("components.png", "Components")]
@@ -61,9 +62,14 @@ def lead(path):
     """The first paragraph of a section, after its heading and placeholder comments."""
     if not path.exists():
         return ""
-    paragraph = []
-    for line in path.read_text(encoding="utf-8").split("\n"):
+    paragraph, in_comment = [], False
+    for line in read_text(path).split("\n"):
         text = line.strip()
+        if in_comment:
+            in_comment = "-->" not in text
+            continue
+        if text.startswith("<!--"):
+            in_comment = "-->" not in text
         if not text or text.startswith("#") or text.startswith("<!--"):
             if paragraph:
                 break
@@ -73,7 +79,8 @@ def lead(path):
 
 
 def _palette(tokens):
-    colours = {t["name"]: t for t in (tokens.get("color") or {}).get("tokens") or [] if isinstance(t, dict) and "name" in t}
+    colours = {t["name"]: t for t in as_list(as_dict(tokens.get("color")).get("tokens"))
+               if isinstance(t, dict) and isinstance(t.get("name"), str)}
     first = tk.theme_ids(tokens)[0]
     items = []
     for name in colours:
@@ -85,20 +92,25 @@ def _palette(tokens):
 
 
 def _type(tokens):
-    block = tokens.get("type") or {}
-    families = block.get("families") or {}
+    block = as_dict(tokens.get("type"))
+    families = as_dict(block.get("families"))
     items = []
-    for group in block.get("groups") or []:
-        for style in group.get("styles") or []:
+    for group in as_list(block.get("groups")):
+        if not isinstance(group, dict):
+            continue
+        for style in as_list(group.get("styles")):
+            if not isinstance(style, dict):
+                continue
             family = style.get("family", group.get("family"))
             items.append("<li><code>{}</code> {} · {}/{} · {}</li>".format(
-                _e(style.get("name")), _e(families.get(family, family)), _e(style.get("fontSize")),
+                _e(style.get("name")), _e(families.get(family, family) if isinstance(family, str) else family),
+                _e(style.get("fontSize")),
                 _e(style.get("lineHeight", "")), _e(style.get("fontWeight", ""))))
     return '<ul class="list">{}</ul>'.format("".join(items))
 
 
 def _scale(tokens, family):
-    entries = (tokens.get(family) or {}).get("tokens") or []
+    entries = [t for t in as_list(as_dict(tokens.get(family)).get("tokens")) if isinstance(t, dict)]
     return '<ul class="list">{}</ul>'.format("".join(
         "<li><code>{}</code> {}</li>".format(_e(t.get("name")), _e(t.get("value"))) for t in entries))
 
@@ -131,9 +143,9 @@ def build(branches_root, out_root, urls):
     warnings, columns = [], []
     for branch_id in ids:
         project = branches_root / branch_id / "project"
-        index = json.loads((project / "design-system.json").read_text(encoding="utf-8"))
+        index = as_dict(read_json(project / "design-system.json"))
         tokens_path = project / "tokens.json"
-        tokens = json.loads(tokens_path.read_text(encoding="utf-8")) if tokens_path.exists() else {}
+        tokens = as_dict(read_json(tokens_path)) if tokens_path.exists() else {}
         images = {}
         for name, _ in CAPTURES:
             src = branches_root / branch_id / "captures" / name
@@ -143,7 +155,9 @@ def build(branches_root, out_root, urls):
                 images[name] = "{}/{}".format(branch_id, name)
             else:
                 warnings.append("branch {}: captures/{} is missing".format(branch_id, name))
-        columns.append({"id": branch_id, "title": index.get("title", branch_id), "url": urls.get(branch_id),
+        title = index.get("title")
+        columns.append({"id": branch_id, "title": title if isinstance(title, str) and title else branch_id,
+                        "url": urls.get(branch_id),
                         "tokens": tokens, "images": images, "leads": [lead(project / f) for f, _ in LEADS]})
     client = columns[0]["title"].split(" · ")[0]
     (out_root / "index.html").write_text(render(client, columns), encoding="utf-8")
