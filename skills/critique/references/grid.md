@@ -13,9 +13,9 @@ Score each assessed criterion from 1 to 5. Use the anchors below; between two an
 - **5**: most choices trace back to the project. It has a point of view a visitor would remember, and it stays readable.
 
 ## Consistency
-- **1**: contradicts the approved intent or direction (wrong palette, wrong mood, an "avoid" item used), or uses values outside the kit.
+- **1**: contradicts the approved intent or direction (wrong palette, wrong mood, an "avoid" item used), or uses values outside the charter's tokens.
 - **3**: follows the direction with small drifts: a stray colour, an off-scale size, a restyled component.
-- **5**: every value comes from the tokens; the work feels made by one hand; nothing contradicts `design/intent.md`.
+- **5**: every value comes from the tokens; the work feels made by one hand; nothing contradicts the charter's `07-visual-intent.md` or `13-rules.md`.
 
 ## Craft
 - **1**: visible errors. Misalignment, uneven spacing, body text under 4.5:1 contrast, orphan words in headlines, broken states, overflow.
