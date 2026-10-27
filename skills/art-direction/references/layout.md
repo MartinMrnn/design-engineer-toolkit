@@ -31,4 +31,4 @@ The UI makes the UX visible: it helps the brain understand what the page says an
 - Touch targets of at least 44 px, with at least 8 px between them.
 
 ## The design system is a shared language
-Tokens and components make the pages feel made by one hand; they do not make every screen identical. A page may depart from a rule when that helps the visitor understand or act, and `design/direction.md` says where and why.
+Tokens and components make the pages feel made by one hand; they do not make every screen identical. A page may depart from a rule when that helps the visitor understand or act, and the charter's `13-rules.md` says where and why.

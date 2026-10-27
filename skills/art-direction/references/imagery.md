@@ -4,7 +4,7 @@
 - **Unsplash** (unsplash.com) and **Pexels** (pexels.com): free to use, including commercially, under their own licences. Credit the photographer anyway.
 - Skip images marked "Unsplash+": they come under a separate subscription licence that only the subscriber may use, not under the free Unsplash License. Their files are usually served from plus.unsplash.com.
 - Size images through the URL rather than downloading huge files: Unsplash accepts `?w=1600&q=80`, Pexels `?auto=compress&w=1600`.
-- Note every asset in your proposal's Sources list: what it shows, URL, author, licence. At D1, the assets of the approved files go into `design/kit/media.md`; those of rejected proposals stay out.
+- Note every asset in the charter's `14-sources.md` (your branch's at C2): what it shows, URL, author, licence. Assets of options that were not kept stay out.
 
 ## Choosing
 - Pick images that carry the intent: light, place, material, people, scale. One strong image beats many weak ones.
@@ -26,4 +26,4 @@ Icons help the brain understand when words alone make a choice slow: options to 
 - **In `site/`**: inline the SVG of each icon used (copied from its page on hugeicons.com), with `stroke="currentColor"`, so the mockup does not depend on the icon font.
 - An icon sits next to a visible label, unless its meaning is universal (close, menu, search); then it gets an `aria-label` on its button. Decorative icons next to a label get `aria-hidden="true"`.
 - Size icons with tokens (`--icon-s`, `--icon-m`), aligned optically with the text they accompany.
-- List Hugeicons once in the Sources list and in `design/kit/media.md` (source, licence).
+- List Hugeicons once in `14-sources.md` (source, licence).

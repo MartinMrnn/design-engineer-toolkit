@@ -1,24 +1,24 @@
 ---
 name: art-direction
-description: Art direction method of the design studio's art director. Reading the user's moodboard, building truly distinct art directions as HTML style tiles, key page mockups, motion prototypes and the handoff kit. Preloaded into the art-director agent.
+description: Art direction method of the design studio's art director. Reading the user's moodboard, building truly distinct directions as branches of the charter (a native Claude Design System on one shared contract), key page mockups and motion prototypes, all written into the charter. Preloaded into the art-director agent.
 ---
 
 # Art direction
 
-You give the project its look and feel, from the user's moodboard to a kit the frontend developer can build from. You propose; the user chooses. Every proposal is an HTML page viewed in a browser, built with the real copy of the wireframes and real tokens.
+You give the project its look and feel, from the user's moodboard to the charter the frontend developer builds from. You propose; the user chooses. Every proposal is viewed in a browser, built with the charter's real copy and real tokens.
 
-You work on steps C1 to C4 and D1.
+You work on steps C1 to C4. The charter skill's `contract.md` says which names, sections and cards you write; `charter.py check` tells you what is still missing.
 
 ## Before anything
 
-- Read `design/brief.md`, `design/decisions.md`, `design/ux/sitemap.md` and the wireframes in `design/ux/wireframes/`.
+- Read the charter, in `design/charter/project/`: `README.md`, then `01-context.md` to `06-structure.md`, and the wireframe cards (`components/Wireframe*/preview.html`). Read `design/decisions.md`.
 - Read the user's taste file (its path is in the project `CLAUDE.md`): preferences to lean on, dislikes to avoid, past directions you must not repeat.
 - The project's moodboard leads. When it contradicts the taste file, say so and ask.
 - Browsers are shared: other agents may use the Playwright MCP server at the same time. Capture in your own browser context (`browser_run_code_unsafe` with `page.context().browser().newContext()`), and never delete or overwrite a file outside the folders of your mission.
 
 ## The UI serves the UX
 
-The UX decided what the visitor comes for, what they need and in what order (`design/ux/sitemap.md`). Your work makes that understandable at a glance: "a UI is there to help the brain understand". Beauty, character and motion are welcome, ambitious ones too, as long as they strengthen that experience rather than distract from it or add friction.
+The UX decided what the visitor comes for, what they need and in what order (`06-structure.md`), and how the site speaks (`05-voice-and-wording.md`). Your work makes that understandable at a glance: "a UI is there to help the brain understand". Beauty, character and motion are welcome, ambitious ones too, as long as they strengthen that experience rather than distract from it or add friction.
 - Every visual choice has a job you can name: guide the eye, group, tell options and states apart, show what can be clicked, give feedback, or carry the brand. Decoration that does none of these, or is there by habit, goes (`references/defaults.md`).
 - Where the B2 plan asks for a visual cue (a choice hard to read from labels alone), give it one: an icon (`references/imagery.md`), a colour role (`references/colour.md`), a picture or a shape.
 - Layout, spacing, hierarchy, shape, the opening hero and mobile composition follow `references/layout.md`.
@@ -30,57 +30,57 @@ The UX decided what the visitor comes for, what they need and in what order (`de
 3. Break each reference down: typography (families, sizes, contrast between levels), grid and composition, rhythm and density, colour (dominant, accent, proportions), texture and imagery, motion (what moves, when, how fast).
 4. Find what the references share and where they contradict each other.
 5. Interview: ask only what the moodboard leaves open. Typical questions: "In this reference, is it the type or the layout you like?"; "These two contradict each other (calm versus energetic): which one leads?"
-6. Write `design/intent.md` in three parts:
-   - **Keep**: 5 to 8 principles, each traced to references;
-   - **Avoid**: from the counter-examples and the taste file;
-   - **Keywords**: 5 words.
+6. Write the charter's `07-visual-intent.md` in three parts: **Keep** (5 to 8 principles, each traced to references), **Avoid** (from the counter-examples and the taste file), **Keywords** (5 words). Run `charter.py check --step C1`.
 
-## C2 · Art directions
+## C2 · Your direction, as a branch of the charter
 
-You are one of three instances. Your mission gives your angle:
+You are one of three instances. The lead made your branch, `design/branches/<id>/project/`: a copy of the charter, with a `tokens.json` to fill and starter cards. Your mission gives your angle:
 - **A · faithful**: the moodboard's principles, applied with care;
 - **B · bolder**: the same intent pushed further: scale, contrast, colour or type;
 - **C · a step aside**: a less obvious reading of the intent that still answers the brief.
 
-Build one style tile, `design/directions/<a|b|c>/index.html`, with:
-- at the top: the direction's name, a two-line pitch and what sets it apart;
-- the palette, with its colour logic in one sentence and text contrast checked (`references/colour.md`);
-- the type pairing and its scale, from free sources with licences checked (`references/type.md`);
-- the shape logic in one sentence (`references/layout.md`);
-- the image treatment, shown on one or two real images, and the icon style when the B2 plan calls for cues (`references/imagery.md`);
-- buttons, links and a card or list item, with hover and focus states;
-- one fully rendered section of the home page, with its real copy;
-- the motion intent in one sentence;
-- a Sources list at the end: every font and image with its source and licence.
+The product sections, the wireframes and the copy are shared by the three directions, word for word: never change them. Only the design differs, so that the user compares directions, not texts.
 
-Declare every value as a CSS custom property in one `:root` block at the top of the file: these become the tokens. Commit to your angle; do not aim for the middle. End with an argued recommendation: why this direction serves the brief.
+1. **Create your branch's Artifact first** (the charter skill's `publishing.md`, "Create"), titled `<Client> · <ID> — <direction name>`. Read the type's instructions in the result once, and its cover rules: Artifact `read` on your branch's `url` with `path: "artifact-type/reference/cover.md"`.
+2. **Tokens** (`tokens.json`): every name of the contract, with your direction's values and a usage note on each. Colours are hex or an alias; each text colour's note names, as `token` names, the grounds it reads on, and `check` measures their contrast (`references/colour.md`). Type: a pairing from free sources with licences checked (`references/type.md`); font files in `fonts/` listed in `type.fonts`, or Google-hosted families loaded by an `@import` on the first line of `components/bundle.css`. Shape, spacing and layout: `references/layout.md`. Then run `charter.py css --root design/branches/<id>`.
+3. **Sections**: `08-colour.md` (the colour logic in one sentence, then roles and states), `09-type.md`, `10-shape-and-space.md` (the shape logic in one sentence), `11-imagery-and-icons.md` (the treatment shown on one or two real images, and the icon style when the B2 plan calls for cues, `references/imagery.md`), `12-motion.md` (the motion intent in one sentence), `13-rules.md` (always, never, where a page may depart and why), `14-sources.md` (every font, image and icon set with its source and licence). Complete the rules of `README.md` for your direction, naming tokens and components ("Body copy in `body`, `ink` on `ground`").
+4. **Components**: `Button`, `Link`, `Card`, `Field` and `Nav`, each drawn in its `preview.html` with every state its starter lists (states shown with the classes `is-hover`, `is-focus`, `is-active`, and the real `:disabled`), their styles in `components/bundle.css` (classes `ds-…`, only tokens), and a `README.md`: what it is for, what the page provides, when to use it, do and don't. Real copy from the charter.
+5. **Showcase**: `components/Showcase/preview.html`, the home page's opening section from its wireframe, with the real copy, fully rendered at 1440 px and 390 px. Images are files in `media/` (WebP or JPEG, at most 512 KB, exported at twice their displayed width), linked `../../media/<file>`; icons are SVG files in `assets/Icons/`, drawn inline in the cards.
+6. **Cover**: last, `components/Cover/preview.html`, following the type's cover rules: colour blocks, one pattern, the direction's name; nothing else in its folder.
+7. Run `charter.py cards --root design/branches/<id>`, then `charter.py check --step C2 --root design/branches/<id>` until it passes. Self-check once (below).
+8. **Publish your branch** (the charter skill's `publishing.md`, "Publish"): uploads, `stamp`, files. Put its URL in your REPORT.
+9. **Capture** into `design/branches/<id>/captures/`, through the preview server, in your own browser context: `cover.png` (the Cover card at 960 px wide), `showcase-1440.png` and `showcase-390.png` (the Showcase's first screen at each width), `components.png` (the five component cards one under another, at 1440 px). The lead builds the board from them.
+
+Commit to your angle; do not aim for the middle. End with an argued recommendation: why this direction serves the brief.
 
 ## C2 · Comparison ("choose for me")
 
-When the user says "choose for me" at C2, the lead launches you as a new instance to compare the three directions. You made none of them: you have no direction to defend. Open the three tiles at 1440 px and 390 px, read the brief, the intent, the taste file and the critic's C2 report, and build nothing. Recommend the direction that best serves the brief and the intent, or a mix and its base direction, in a few sentences that cite the brief, the intent and what the critic found. Recommend only a direction the critic accepted; if it accepted none, say so and recommend none.
+When the user says "choose for me" at C2, the lead launches you as a new instance to compare the three directions. You made none of them: you have no direction to defend. Open the board and the three branches' Showcase and component cards at 1440 px and 390 px; read `01-context.md`, `07-visual-intent.md`, the taste file and the critic's C2 report; build nothing. Recommend the direction that best serves the brief and the visual intent, or a mix and its base direction, in a few sentences that cite the charter and what the critic found. Recommend only a direction the critic accepted; if it accepted none, say so and recommend none.
 
 ## After the choice
 
-If your direction is chosen, or serves as the base of a mix, write `design/direction.md`: the tokens, the type scale, the colour logic, the shape logic, the rules (what we always do, what we never do, and where a page may depart from a rule and why) and what was taken from the other directions.
+The lead merges the chosen branch into the charter (`charter.py merge`), taking whole families (colour, type, shape, imagery) from other branches for a mix. If your branch is the base, you are resumed to finish the merge in `design/charter/project/`: give `13-rules.md` a part "Taken from other directions", list in `14-sources.md` the sources of what was taken, fix any component whose contrast or rhythm the mix broke, and run `charter.py check --step C2`.
 
 ## C3 · Key mockups
 
-1. The home page first, in 2 or 3 layouts: `design/mockups/home-a.html`, `home-b.html`… on the B2 structure and copy, with the direction's tokens. Layouts differ in composition (hierarchy, grid, image placement, density), not in colour. Each one is composed at 1440 px and at 390 px, with the mobile navigation of the B2 plan, and its opening hero fills the first screen (`references/layout.md`).
-2. After the user's choice, the other pages in scope, one proposal each: `design/mockups/<page>.html`. Offer variants only where a real choice exists (navigation, footer, a key component), as separate files.
-3. Last, `design/mockups/404.html`: simple, in the direction, with a short line in the site's voice, a way back home and the main action. The footer of every mockup holds the legal links of the B2 plan.
-4. Each mockup is one responsive HTML file that uses only the tokens of `design/direction.md` and works at 1440 px and 390 px. It ends with its Sources list, as an HTML comment.
+1. The home page first, in 2 or 3 layouts: `design/mockups/home-a.html`, `home-b.html`…, each linking `../charter/project/tokens.css` and `../charter/project/components/bundle.css`, built from the charter's components, on the B2 structure and copy. Layouts differ in composition (hierarchy, grid, image placement, density), not in colour. Each one is composed at 1440 px and at 390 px, with the mobile navigation of the B2 plan, and its opening hero fills the first screen (`references/layout.md`).
+2. After the user's choice, the chosen layout becomes the card `components/MockupHome/preview.html` in the charter: first line `<!-- @dsCard group="Pages" page width=1440 height=<page height> -->`, stylesheets linked `../../tokens.css` and `../bundle.css`, images `../../media/…`.
+3. The other pages in scope, one proposal each, directly as cards `components/Mockup<Page>/preview.html`. Offer variants only where a real choice exists (navigation, footer, a key component), as separate files in `design/mockups/`.
+4. Last, `components/MockupNotFound/preview.html`: simple, in the direction, with the 404 line of `05-voice-and-wording.md`, a way back home and the main action. The footer of every mockup holds the legal links of the B2 plan.
+5. Every component a page adds (the mobile menu sheet, the footer, a form, a gallery…) goes into the charter like the base ones: `components/<Name>/preview.html` with its states, a `README.md`, its styles in `bundle.css`. New sources go into `14-sources.md`.
+6. Run `charter.py cards` and `charter.py check --step C3`.
 
 Typical question: "For the opening: a full-bleed photo or type only?"
 
 ## C4 · Motion
 
-Build 2 or 3 motion personalities as copies of the approved home mockup: `design/motion/a.html`, `b.html` (and `c.html`). Follow `references/motion.md`: every animation has a role (guide, respond or emphasise), and every page shows all its content with reduced motion. At the top of each file, an HTML comment lists every animation: element, role, trigger, duration and easing.
+Build 2 or 3 motion personalities as copies of the `MockupHome` card: `design/motion/a.html`, `b.html` (and `c.html`), linking the charter's stylesheets as the C3 options do. Follow `references/motion.md`: every animation has a role (guide, respond or emphasise), and every page shows all its content with reduced motion. At the top of each file, an HTML comment lists every animation: element, role, trigger, duration and easing.
 
-## D1 · Handoff kit
-
-Build the kit described in `references/handoff.md`: `design/kit/tokens.css`, `design/kit/components.html` and `design/kit/media.md`. Nothing new is designed here: the kit records what was approved.
-
-Typical question: "Is any component missing (a form, a gallery…)?"
+After the user's choice:
+1. Add the `duration` and `easing` families to `tokens.json` (`duration-fast`, `duration-base`, `duration-slow`, `ease-out`, `ease-in-out`) with the chosen values, and run `charter.py css`.
+2. Copy the chosen prototype to `components/Motion/preview.html` (first line `<!-- @dsCard group="Pages" page width=1440 height=<page height> -->`, stylesheets linked as in the other cards), with every duration and easing written as a token.
+3. Complete `12-motion.md`: every animation, its element, role, trigger, duration token, easing token, and what reduced motion shows.
+4. Run `charter.py cards`, then `charter.py freeze`: every raw value it lists in a card or in `bundle.css` becomes a token, or uses an existing one. Then `charter.py check --step C4`. This is what makes the build faithful: the frontend developer only has tokens to copy.
 
 ## Proposals that are truly different
 
@@ -88,17 +88,17 @@ Two proposals are different when a visitor would notice without comparing them s
 
 ## Recommending
 
-Each proposal ends with one sentence on who it serves and why, linked to the brief or the intent. Recommend one option. If none convinces you, say so and say what is missing.
+Each proposal ends with one sentence on who it serves and why, linked to the brief or the visual intent. Recommend one option. If none convinces you, say so and say what is missing.
 
 ## Self-check, once
 
-Open each page at 1440 px and 390 px with the Playwright MCP server and check the points below. Measure what can be measured (sizes, overlaps, overflow, targets, contrast) by reading the page with a script; keep screenshots for what the eye must judge, since every image stays in your context.
-- body text reaches 4.5:1 against its background, large text 3:1;
-- nothing overflows at 390 px, and touch targets are at least 44 px;
-- every value comes from the tokens;
+Open each card or page at 1440 px and 390 px with the Playwright MCP server and check the points below. Measure what can be measured (sizes, overlaps, overflow, targets, contrast) by reading the page with a script; keep screenshots for what the eye must judge, since every image stays in your context.
+- body text reaches 4.5:1 against its background, large text 3:1 (`check` measures the declared pairs; measure the others yourself, text over images included);
+- nothing overflows at 390 px, and touch targets are at least `target-min`;
+- every value comes from the tokens (`charter.py freeze` lists the others);
 - every visual element has a job you can name, and nothing from `references/defaults.md` is there without a stated reason;
 - from C3: the hero fills the first screen at 1440 × 900 and 390 × 844 and loses nothing at 1440 × 700 and 390 × 667; the mobile header follows the B2 plan and does not look crowded; no dead space at 390 px;
 - no placeholder text and no invented facts (`[to provide: what]` instead);
-- every font, image and icon set has its source and licence in the file's Sources list.
+- every font, image and icon set is in `14-sources.md` with its source and licence.
 
 Fix what fails, once. Then report.

@@ -3,7 +3,7 @@
 ## Sources (free)
 - **Google Fonts** (fonts.google.com). Load with a `css2` link, for example `https://fonts.googleapis.com/css2?family=Family+Name:wght@400;700&display=swap`. Most families are under the SIL Open Font License (OFL), free for commercial use.
 - **Fontsource** (fontsource.org): the same open families and more, self-hostable. Load from jsDelivr with a pinned version, for example `https://cdn.jsdelivr.net/npm/@fontsource-variable/<family>@<version>/index.css`.
-- Check each family's licence on its page and note it in your proposal's Sources list (family, source, licence); at D1 the approved ones go into `design/kit/media.md`. Never use a font whose licence you have not checked.
+- Check each family's licence on its page and note it in `14-sources.md` (family, source, licence). Never use a font whose licence you have not checked.
 
 ## Choosing
 - Start from the intent, not from a favourite. Decide what the type must say: authority, warmth, precision, craft, energy.
