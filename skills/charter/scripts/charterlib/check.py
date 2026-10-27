@@ -67,9 +67,11 @@ def _tokens(project, contract, due):
     except ValueError as error:
         return ["tokens.json is not valid JSON: {}".format(error)]
     problems = tk.validate(tokens, contract, due)
-    for font in (tokens.get("type") or {}).get("fonts") or []:
+    type_block = tokens.get("type") if isinstance(tokens, dict) else None
+    fonts = type_block.get("fonts") if isinstance(type_block, dict) else None
+    for font in fonts if isinstance(fonts, list) else []:
         file = font.get("file") if isinstance(font, dict) else None
-        if file and not (project / tk.font_path(file)).exists():
+        if isinstance(file, str) and file and not (project / tk.font_path(file)).exists():
             problems.append("tokens.json: font file {} is missing".format(tk.font_path(file)))
     if not problems:
         title = json.loads((project / "design-system.json").read_text(encoding="utf-8")).get("title", "")

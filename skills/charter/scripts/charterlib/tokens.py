@@ -6,6 +6,11 @@ NAME = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.-]{0,63}$")
 HEX = re.compile(r"^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$")
 ALIAS = re.compile(r"^\{([A-Za-z0-9][A-Za-z0-9_.-]{0,63})\}$")
 LENGTH = re.compile(r"^(?:0|-?\d*\.?\d+(?:px|rem|em|%))$")
+FONT_SIZE = re.compile(r"^(?:0|\d*\.?\d+(?:px|rem|em|%))$")
+WEIGHT = re.compile(r"^\d{1,4}$")
+FONT_STYLES = ("normal", "italic")
+FONT_NAME = re.compile(r"^[^\"'{}();<>\\\n]{1,100}$")
+FONT_FILE = re.compile(r"^[^\"'{}();<>\\\n]+\.(?:woff2|woff|ttf|otf)$", re.I)
 LINE_HEIGHT = re.compile(r"^(?:\d*\.?\d+(?:px|rem|em|%)?)$")
 PLAIN = re.compile(r"^[A-Za-z0-9 #%(),./+_-]{1,200}$")
 STACK = re.compile(r"^[^;{}<>\\()]{1,200}$")
@@ -13,9 +18,17 @@ TICKED = re.compile(r"`([A-Za-z0-9][A-Za-z0-9_.-]{0,63})`")
 META_KEYS = {"name", "version", "meta"}
 
 
+def _dict(value):
+    return value if isinstance(value, dict) else {}
+
+
+def _list(value):
+    return value if isinstance(value, list) else []
+
+
 def theme_ids(tokens):
-    themes = tokens.get("color", {}).get("themes") or [{"id": "light"}]
-    return [t["id"] for t in themes]
+    themes = [t for t in _list(_dict(_dict(tokens).get("color")).get("themes")) if isinstance(t, dict) and "id" in t]
+    return [t["id"] for t in themes] or ["light"]
 
 
 def theme_value(token, theme, first):
@@ -124,8 +137,10 @@ def _colours(tokens, spec, seen):
     for name, entry in colours.items():
         value = entry.get("value")
         if isinstance(value, dict):
-            for theme in set(value) - set(ids):
+            for theme in sorted(set(value) - set(ids)):
                 problems.append("tokens.json: colour '{}' has a value for an unknown theme '{}'".format(name, theme))
+            if first not in value:
+                problems.append("tokens.json: colour '{}' needs a value for the first theme '{}'".format(name, first))
             values = list(value.values())
         else:
             values = [value]
@@ -135,6 +150,14 @@ def _colours(tokens, spec, seen):
                 problems.append("tokens.json: colour '{}' must be #rgb, #rrggbb or an alias {{name}}, not {!r}".format(name, v))
             elif alias and alias.group(1) not in colours:
                 problems.append("tokens.json: colour '{}' aliases a missing token {}".format(name, v))
+    if problems:
+        return problems
+    # An alias that loops (a colour aliasing itself, two aliasing each other) resolves to nothing.
+    for name in colours:
+        for theme in ids:
+            if resolve(name, theme, colours, first) is None:
+                problems.append("tokens.json: colour '{}' does not resolve to a hex colour in theme '{}' (an alias loop?)".format(
+                    name, theme))
     if problems:
         return problems
     for name in spec["text"]:
@@ -161,12 +184,70 @@ def _pair(fg_name, bg_name, theme, colours, first, floor):
     return []
 
 
+def _weight(value, allow_range=False):
+    """A font weight from 1 to 1000; for a font file, also a variable range "a b"."""
+    if isinstance(value, bool):
+        return False
+    if isinstance(value, (int, float)):
+        return 1 <= value <= 1000
+    if not isinstance(value, str):
+        return False
+    parts = value.split(" ")
+    if len(parts) > (2 if allow_range else 1):
+        return False
+    return all(WEIGHT.match(part) and 1 <= int(part) <= 1000 for part in parts)
+
+
+def _font(font):
+    if not isinstance(font, dict) or not font.get("family") or not font.get("file"):
+        return ["tokens.json: every type.fonts entry needs a family and a file"]
+    family, file = font["family"], font["file"]
+    if not isinstance(family, str) or not FONT_NAME.match(family):
+        return ["tokens.json: type.fonts: invalid family {!r} (no quotes, braces, brackets or semicolons)".format(family)]
+    problems = []
+    if (not isinstance(file, str) or not FONT_FILE.match(file) or not font_path(file).startswith("fonts/")
+            or ".." in file.split("/")):
+        problems.append("tokens.json: type.fonts: {}'s file must be in fonts/ (woff2, woff, ttf or otf), not {!r}".format(
+            family, file))
+    if "weight" in font and not _weight(font["weight"], allow_range=True):
+        problems.append("tokens.json: type.fonts: {} has an invalid weight {!r} (1 to 1000, or a range \"100 900\")".format(
+            family, font["weight"]))
+    if "style" in font and font["style"] not in FONT_STYLES:
+        problems.append("tokens.json: type.fonts: {} has an invalid style {!r} (normal or italic)".format(family, font["style"]))
+    return problems
+
+
+def _style(name, style, group, families):
+    problems = []
+
+    def given(key):
+        return key in style and style[key] != ""
+
+    if not FONT_SIZE.match(str(style.get("fontSize", ""))):
+        problems.append("tokens.json: type style '{}' has an invalid fontSize {!r}".format(name, style.get("fontSize")))
+    if "lineHeight" in style and not LINE_HEIGHT.match(str(style["lineHeight"])):
+        problems.append("tokens.json: type style '{}' has an invalid lineHeight {!r}".format(name, style["lineHeight"]))
+    if given("fontWeight") and not _weight(style["fontWeight"]):
+        problems.append("tokens.json: type style '{}' has an invalid fontWeight {!r} (1 to 1000)".format(name, style["fontWeight"]))
+    if given("letterSpacing") and not (isinstance(style["letterSpacing"], str) and LENGTH.match(style["letterSpacing"])):
+        problems.append("tokens.json: type style '{}' has an invalid letterSpacing {!r}".format(name, style["letterSpacing"]))
+    if given("fontStyle") and style["fontStyle"] not in FONT_STYLES:
+        problems.append("tokens.json: type style '{}' has an invalid fontStyle {!r} (normal or italic)".format(name, style["fontStyle"]))
+    family = style.get("family", group.get("family"))
+    if not isinstance(family, str) or family not in families:
+        problems.append("tokens.json: type style '{}' uses an unknown family {!r}".format(name, family))
+    return problems
+
+
 def _type(tokens, spec):
     block = tokens.get("type")
     if not isinstance(block, dict):
         return ["tokens.json: 'type' is missing"]
     problems = []
-    families = block.get("families") or {}
+    families = block.get("families", {})
+    if not isinstance(families, dict):
+        problems.append('tokens.json: type.families must be an object {"display": "<font stack>", ...}')
+        families = {}
     for key in spec["families"]:
         if key not in families:
             problems.append("tokens.json: type family '{}' is missing".format(key))
@@ -175,10 +256,17 @@ def _type(tokens, spec):
             problems.append("tokens.json: type family '{}' is not in the contract".format(key))
         elif not isinstance(stack, str) or not STACK.match(stack) or stack.count('"') % 2:
             problems.append("tokens.json: type family '{}' is not a valid font stack: {!r}".format(key, stack))
-    for font in block.get("fonts") or []:
-        if not isinstance(font, dict) or not font.get("family") or not font.get("file"):
-            problems.append("tokens.json: every type.fonts entry needs a family and a file")
-    groups = {g.get("name"): g for g in block.get("groups") or [] if isinstance(g, dict)}
+    fonts = block.get("fonts", [])
+    if not isinstance(fonts, list):
+        problems.append("tokens.json: type.fonts must be a list")
+        fonts = []
+    for font in fonts:
+        problems += _font(font)
+    group_list = block.get("groups", [])
+    if not isinstance(group_list, list):
+        problems.append("tokens.json: type.groups must be a list")
+        group_list = []
+    groups = {g.get("name"): g for g in group_list if isinstance(g, dict) and isinstance(g.get("name"), str)}
     for group_name in groups:
         if group_name not in spec["groups"]:
             problems.append("tokens.json: type group '{}' is not in the contract".format(group_name))
@@ -187,7 +275,11 @@ def _type(tokens, spec):
         if group is None:
             problems.append("tokens.json: type group '{}' is missing".format(group_name))
             continue
-        styles = {s.get("name"): s for s in group.get("styles") or [] if isinstance(s, dict)}
+        style_list = group.get("styles", [])
+        if not isinstance(style_list, list):
+            problems.append("tokens.json: type group '{}': styles must be a list".format(group_name))
+            style_list = []
+        styles = {st.get("name"): st for st in style_list if isinstance(st, dict) and isinstance(st.get("name"), str)}
         for name in expected:
             if name not in styles:
                 problems.append("tokens.json: type style '{}' is missing from {}".format(name, group_name))
@@ -195,13 +287,7 @@ def _type(tokens, spec):
             if name not in expected:
                 problems.append("tokens.json: type style '{}' is not in the contract for {}".format(name, group_name))
                 continue
-            if not LENGTH.match(str(style.get("fontSize", ""))):
-                problems.append("tokens.json: type style '{}' has an invalid fontSize {!r}".format(name, style.get("fontSize")))
-            if "lineHeight" in style and not LINE_HEIGHT.match(str(style["lineHeight"])):
-                problems.append("tokens.json: type style '{}' has an invalid lineHeight {!r}".format(name, style["lineHeight"]))
-            if style.get("family", group.get("family")) not in families:
-                problems.append("tokens.json: type style '{}' uses an unknown family {!r}".format(
-                    name, style.get("family", group.get("family"))))
+            problems += _style(name, style, group, families)
     return problems
 
 
@@ -241,13 +327,24 @@ def _css_value(value):
     return "var(--{})".format(alias.group(1)) if alias else str(value)
 
 
+def _font_url(file, font_base):
+    """The font's URL from tokens.css: its path under fonts/, folders kept, after font_base."""
+    path = font_path(file)
+    return font_base + (path[len("fonts/"):] if path.startswith("fonts/") else path.rsplit("/", 1)[-1])
+
+
+def _named(entries):
+    return [e for e in _list(entries) if isinstance(e, dict) and isinstance(e.get("name"), str)]
+
+
 def compile_css(tokens, title, font_base="fonts/"):
     """tokens.css as the Design System type compiles it: themed colours and shadows, then the other
     families and the font stacks on :root, a class per type style, an @font-face per font file."""
+    tokens = _dict(tokens)
     lines = ["/* {} — generated from tokens.json */".format(title)]
     ids = theme_ids(tokens)
     first = ids[0]
-    themed = list((tokens.get("color") or {}).get("tokens") or []) + list((tokens.get("shadow") or {}).get("tokens") or [])
+    themed = _named(_dict(tokens.get("color")).get("tokens")) + _named(_dict(tokens.get("shadow")).get("tokens"))
     for i, theme in enumerate(ids):
         lines.append(':root, [data-theme="{}"] {{'.format(theme) if i == 0 else '[data-theme="{}"] {{'.format(theme))
         for token in themed:
@@ -257,27 +354,31 @@ def compile_css(tokens, title, font_base="fonts/"):
     for key, block in tokens.items():
         if key in META_KEYS or key in ("color", "type", "shadow") or not isinstance(block, dict):
             continue
-        for token in block.get("tokens") or []:
-            value = token["value"]
+        for token in _named(block.get("tokens")):
+            value = token.get("value")
             if isinstance(value, (int, float)) and not isinstance(value, bool):
                 value = "{}px".format(value)
             root.append("  --{}: {};".format(token["name"], value))
-    type_block = tokens.get("type") or {}
-    for key, stack in (type_block.get("families") or {}).items():
+    type_block = _dict(tokens.get("type"))
+    for key, stack in _dict(type_block.get("families")).items():
         root.append("  --font-{}: {};".format(key, stack))
     lines += [":root {"] + root + ["}"]
-    for group in type_block.get("groups") or []:
-        for style in group.get("styles") or []:
+    for group in _list(type_block.get("groups")):
+        if not isinstance(group, dict):
+            continue
+        for style in _named(group.get("styles")):
             props = ["font-family: var(--font-{})".format(style.get("family", group.get("family")))]
             for key, prop in (("fontSize", "font-size"), ("lineHeight", "line-height"), ("fontWeight", "font-weight"),
                               ("letterSpacing", "letter-spacing"), ("fontStyle", "font-style")):
                 if style.get(key, "") != "":
                     props.append("{}: {}".format(prop, style[key]))
             lines.append(".{} {{ {}; }}".format(style["name"], "; ".join(props)))
-    for font in type_block.get("fonts") or []:
-        name = font_path(font["file"]).rsplit("/", 1)[-1]
-        fmt = FORMATS.get(name.rsplit(".", 1)[-1].lower(), "woff2")
-        lines.append('@font-face {{ font-family: "{}"; src: url("{}{}") format("{}"); font-weight: {}; '
+    for font in _list(type_block.get("fonts")):
+        if not isinstance(font, dict) or not isinstance(font.get("file"), str):
+            continue
+        url = _font_url(font["file"], font_base)
+        fmt = FORMATS.get(url.rsplit(".", 1)[-1].lower(), "woff2")
+        lines.append('@font-face {{ font-family: "{}"; src: url("{}") format("{}"); font-weight: {}; '
                      'font-style: {}; font-display: swap; }}'.format(
-                         font["family"], font_base, name, fmt, font.get("weight", "400"), font.get("style", "normal")))
+                         font.get("family"), url, fmt, font.get("weight", "400"), font.get("style", "normal")))
     return "\n".join(lines) + "\n"
