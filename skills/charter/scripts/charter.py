@@ -96,7 +96,21 @@ def add_merge(sub):
     p.set_defaults(func=lambda a, c: print(pj.merge(Path(a.root), Path(a.branches), a.base, a.take)))
 
 
-ADDERS = [add_validate_tokens, add_init, add_stamp, add_css, add_branch, add_cards, add_check, add_merge]
+def add_freeze(sub):
+    p = sub.add_parser("freeze", help="list raw values that are not tokens in bundle.css and the cards")
+    root_arg(p)
+    p.set_defaults(func=lambda a, c: report("freeze", pj.freeze(Path(a.root))))
+
+
+def add_export(sub):
+    p = sub.add_parser("export", help="copy tokens.css, the components, fonts and media for the build")
+    p.add_argument("dest", help="for example site/assets")
+    root_arg(p)
+    p.set_defaults(func=lambda a, c: print(pj.export(Path(a.root), Path(a.dest))))
+
+
+ADDERS = [add_validate_tokens, add_init, add_stamp, add_css, add_branch, add_cards, add_check, add_merge,
+          add_freeze, add_export]
 
 
 def main(argv=None):
