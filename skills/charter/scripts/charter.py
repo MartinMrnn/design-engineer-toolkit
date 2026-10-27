@@ -87,7 +87,16 @@ def add_check(sub):
     p.set_defaults(func=lambda a, c: report("check {}".format(a.step), ck.check(Path(a.root), c, ct.due_steps(c, a.step))))
 
 
-ADDERS = [add_validate_tokens, add_init, add_stamp, add_css, add_branch, add_cards, add_check]
+def add_merge(sub):
+    p = sub.add_parser("merge", help="merge the chosen C2 branch into the charter")
+    p.add_argument("--base", required=True, help="the branch the user keeps most of")
+    p.add_argument("--take", action="append", default=[], help="family:branch, for example type:b (colour, type, shape, imagery)")
+    root_arg(p)
+    p.add_argument("--branches", default="design/branches")
+    p.set_defaults(func=lambda a, c: print(pj.merge(Path(a.root), Path(a.branches), a.base, a.take)))
+
+
+ADDERS = [add_validate_tokens, add_init, add_stamp, add_css, add_branch, add_cards, add_check, add_merge]
 
 
 def main(argv=None):

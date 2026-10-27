@@ -230,3 +230,83 @@ def cards(root):
         target.write_text("{}\n{}../{}/preview.html -->\n{}".format(first, GENERATED, name, rest), encoding="utf-8")
         notes.append("wrote {}Mobile".format(name))
     return "\n".join(notes) or "no page cards"
+
+
+# What a mix can take from another branch, and where it lives.
+FAMILIES = {
+    "colour": {"tokens": ["color"], "files": ["08-colour.md"], "dirs": []},
+    "type": {"tokens": ["type"], "files": ["09-type.md"], "dirs": ["fonts"]},
+    "shape": {"tokens": ["spacing", "radius", "shadow", "layout"], "files": ["10-shape-and-space.md"], "dirs": []},
+    "imagery": {"tokens": [], "files": ["11-imagery-and-icons.md"], "dirs": ["assets/Icons", "media"]},
+}
+# What the base branch brings: everything visual. Product and UX content stays the charter's.
+VISUAL_FILES = ["README.md", "08-colour.md", "09-type.md", "10-shape-and-space.md", "11-imagery-and-icons.md",
+                "12-motion.md", "13-rules.md", "14-sources.md", "tokens.json"]
+VISUAL_DIRS = ["fonts", "media", "assets/Icons"]
+
+
+def _replace_dir(src, dst):
+    if dst.exists():
+        shutil.rmtree(dst)
+    if src.exists():
+        shutil.copytree(src, dst)
+
+
+def _visual_components(folder):
+    if not folder.exists():
+        return []
+    return [d for d in folder.iterdir() if d.is_dir() and not d.name.startswith("Wireframe")]
+
+
+def merge(charter_root, branches_root, base, takes):
+    dst = Path(charter_root) / "project"
+
+    def source(branch_id):
+        path = Path(branches_root) / branch_id / "project"
+        if not (path / "design-system.json").exists():
+            raise ValueError("no branch {!r} in {}".format(branch_id, branches_root))
+        return path
+
+    src = source(base)
+    parsed = []
+    for take in takes:
+        family, _, other = take.partition(":")
+        if family not in FAMILIES:
+            raise ValueError("unknown family {!r} in --take: use {}".format(family, ", ".join(FAMILIES)))
+        parsed.append((family, other, source(other)))
+
+    for name in VISUAL_FILES:
+        if (src / name).exists():
+            shutil.copy2(src / name, dst / name)
+    components = dst / "components"
+    components.mkdir(exist_ok=True)
+    for folder in _visual_components(components):
+        shutil.rmtree(folder)
+    for folder in _visual_components(src / "components"):
+        shutil.copytree(folder, components / folder.name)
+    shutil.copy2(src / "components" / "bundle.css", components / "bundle.css")
+    for rel in VISUAL_DIRS:
+        _replace_dir(src / rel, dst / rel)
+
+    tokens = read_json(dst / "tokens.json")
+    notes = ["base: {}".format(base)]
+    for family, other, path in parsed:
+        other_tokens = read_json(path / "tokens.json")
+        for key in FAMILIES[family]["tokens"]:
+            if key in other_tokens:
+                tokens[key] = other_tokens[key]
+        for name in FAMILIES[family]["files"]:
+            shutil.copy2(path / name, dst / name)
+        for rel in FAMILIES[family]["dirs"]:
+            _replace_dir(path / rel, dst / rel)
+        notes.append("{} from {}".format(family, other))
+    index = read_json(dst / "design-system.json")
+    tokens["name"] = index["title"]
+    write_json(dst / "tokens.json", tokens)
+    # Uploads belong to the Artifact they were made in: the merged icons are uploaded again to the charter.
+    index.get("assetGroups", {}).pop("Icons", None)
+    index["groups"] = [g for g in index.get("groups", []) if g in index.get("assetGroups", {})]
+    write_json(dst / "design-system.json", index)
+    write_css(charter_root)
+    return ("merged into {}: {}. Revise 13-rules.md and 14-sources.md for the mix, upload what charter.py assets "
+            "lists, then run charter.py check --step C2.".format(dst, ", ".join(notes)))
