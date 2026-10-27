@@ -1,0 +1,55 @@
+{
+  "steps": ["A1", "B1", "B2", "C1", "C2", "C3", "C4", "D1", "E1"],
+  "placeholder": "<!-- charter:",
+  "sections": [
+    {"file": "README.md", "step": "A1"},
+    {"file": "01-context.md", "step": "A1"},
+    {"file": "02-intent.md", "step": "B1"},
+    {"file": "03-story.md", "step": "B1"},
+    {"file": "04-positioning.md", "step": "B1"},
+    {"file": "05-voice-and-wording.md", "step": "B1"},
+    {"file": "06-structure.md", "step": "B2"},
+    {"file": "07-visual-intent.md", "step": "C1"},
+    {"file": "08-colour.md", "step": "C2"},
+    {"file": "09-type.md", "step": "C2"},
+    {"file": "10-shape-and-space.md", "step": "C2"},
+    {"file": "11-imagery-and-icons.md", "step": "C2"},
+    {"file": "12-motion.md", "step": "C2"},
+    {"file": "13-rules.md", "step": "C2"},
+    {"file": "14-sources.md", "step": "C2"}
+  ],
+  "tokens_step": "C2",
+  "color": {
+    "required": ["ground", "ground-raised", "ink", "ink-muted", "line", "accent", "on-accent", "focus-ring",
+                 "state-selected", "state-unavailable", "state-error", "state-success"],
+    "optional": ["accent-2", "on-accent-2", "ground-inverse", "ink-inverse"],
+    "text": ["ink", "ink-muted", "on-accent", "on-accent-2", "ink-inverse"],
+    "focus": "focus-ring",
+    "grounds": ["ground", "ground-raised"]
+  },
+  "type": {
+    "families": ["display", "text"],
+    "optional_families": ["mono"],
+    "groups": {
+      "Display": ["display-xl", "display-l"],
+      "Headings": ["h1", "h2", "h3"],
+      "Text": ["body-l", "body", "body-s", "caption"],
+      "UI": ["label", "button"]
+    }
+  },
+  "families": {
+    "spacing": {"step": "C2", "names": ["space-1", "space-2", "space-3", "space-4", "space-5", "space-6", "space-7", "space-8"]},
+    "radius": {"step": "C2", "names": ["radius-s", "radius-m", "radius-l", "radius-full"]},
+    "shadow": {"step": "C2", "names": ["shadow-1", "shadow-2"]},
+    "layout": {"step": "C2", "names": ["container-max", "measure", "hero-min-height", "icon-s", "icon-m", "target-min"]},
+    "duration": {"step": "C4", "names": ["duration-fast", "duration-base", "duration-slow"]},
+    "easing": {"step": "C4", "names": ["ease-out", "ease-in-out"]}
+  },
+  "components": {"step": "C2", "names": ["Button", "Link", "Card", "Field", "Nav"]},
+  "cards": [
+    {"prefix": "Wireframe", "step": "B2", "group": "Wireframes", "links": false},
+    {"name": "Showcase", "step": "C2", "group": "Pages", "links": true},
+    {"prefix": "Mockup", "step": "C3", "group": "Pages", "links": true},
+    {"name": "Motion", "step": "C4", "group": "Pages", "links": true}
+  ]
+}
