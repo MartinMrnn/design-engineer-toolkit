@@ -7,13 +7,15 @@ Keep missions short: the agent's skill holds the method.
 Step: <id · name>
 Mode: interview | produce | resume
 Skill directory: <plugin root>/skills/<skill>
+Charter skill: <plugin root>/skills/charter
 Project: <absolute path of the project folder>
 Preview: http://127.0.0.1:<port>/
+Charter: design/charter/project/ (at C2, your branch: design/branches/<id>/project/)
 Inputs: <paths>
 Expected outputs: <paths>
 Constraints: <angle, scope>
 Decisions to respect: <the entries of design/decisions.md this step builds on, in the user's words; for an option step, the options already discarded>
-Done when: <the step's "Done when", copied from steps.md; you check the criteria about the critic and the user>
+Done when: <the step's "Done when", copied from steps.md; you check the criteria about the critic, the publication and the user>
 ```
 
 A mission starts a new agent for its step. Resume an agent only within its step: with the user's answers, for round 2, or for the chosen C2 instance to write `design/direction.md`.
@@ -52,9 +54,10 @@ Launch a new art director, never one of the three that made the directions.
 Step: C2 · Art directions · comparison
 Mode: produce
 Skill directory: <plugin root>/skills/art-direction
+Charter skill: <plugin root>/skills/charter
 Project: <absolute path of the project folder>
 Preview: http://127.0.0.1:<port>/
-Inputs: design/directions/a/index.html, b/index.html, c/index.html (with their preview URLs), design/brief.md, design/intent.md, the critic's last C2 report (design/reviews/C2-directions-<round>.md), the taste file
+Inputs: the three branches design/branches/a/project/, b/, c/ (their Showcase and component cards, with preview URLs), the board design/board/index.html, design/charter/project/01-context.md, design/charter/project/07-visual-intent.md, the critic's last C2 report (design/reviews/C2-directions-<round>.md), the taste file
 Expected outputs: none (a REPORT only)
 Constraints: you made none of these directions; build nothing and change no file; recommend only a direction the critic accepted
 Done when: the REPORT recommends one direction, or a mix and its base, with a justification linked to the brief, the intent and the critic's report
@@ -66,17 +69,19 @@ Done when: the REPORT recommends one direction, or a mix and its base, with a ju
 Step: <id · name> · <item> · round 1
 Mode: produce
 Skill directory: <plugin root>/skills/critique
+Charter skill: <plugin root>/skills/charter
 Project: <absolute path of the project folder>
 Review: <each file with its preview URL>
 Report: design/reviews/<step>-<item>-1.md
-References: design/brief.md, design/ux/sitemap.md, design/intent.md, design/direction.md, design/kit/ (those that exist)
-Compare with (D2, E1): <the approved mockup and motion files, as design/decisions.md records them>
-Deviations (D2, E1): design/deviations.md
+References: design/charter/project/ (README.md first, then the sections the step needs), design/ux/research.md (B2)
+Check: design/reviews/<step>-<item>-check.txt (the output of charter.py check)
+Compare with (D1, E1): <the approved Mockup and Motion cards, as design/decisions.md records them>
+Deviations (D1, E1): design/deviations.md
 Accepted check issues (E1): <the checks.js issues the user accepted, or "none">
 Taste file: ~/.claude/design-studio/taste.md
 ```
 
-`<item>` names what is reviewed, so that no report overwrites another: `wireframes` (B2), `directions` (C2), `home` then each other page or `pages` (C3), `motion` (C4), each page type (D2), `site` (E1).
+`<item>` names what is reviewed, so that no report overwrites another: `wireframes` (B2), `directions` (C2), `home` then each other page or `pages` (C3), `motion` (C4), each page type (D1), `site` (E1).
 
 Never include the maker's report.
 
