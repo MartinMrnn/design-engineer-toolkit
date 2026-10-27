@@ -1,6 +1,6 @@
 # Layout, spacing, hierarchy and shape
 
-The UI makes the UX visible: it helps the brain understand what the page says and what can be done. Start every layout from `design/ux/sitemap.md`: the intents, the role of each section, what shows at once and what is revealed on demand, and the mobile plan.
+The UI makes the UX visible: it helps the brain understand what the page says and what can be done. Start every layout from `design/charter/project/06-structure.md`: the intents, the role of each section, what shows at once and what is revealed on demand, and the mobile plan.
 
 ## Hierarchy
 - Each screen has one focal point and one main action. Decide the reading order of every section before styling it: what is seen first, second, third.
