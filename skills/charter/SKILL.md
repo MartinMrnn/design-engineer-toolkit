@@ -12,7 +12,7 @@ The charter is the project's single reference: the product (context, intent, sto
 - Write only the files your mission names, under `design/charter/project/`, or under your branch, `design/branches/<id>/project/`, at C2.
 - Keep every name of the contract (`references/contract.md`): file names, token names, component and card names. Never invent a token name, a section or a base component.
 - A file still holding a `<!-- charter: … -->` comment is not done: replace the comment with what it asks for.
-- Every value in a card or in `components/bundle.css` is a token (`var(--name)` or a type class), except inside `@media` queries and 1px hairlines.
+- Every value in a card or in `components/bundle.css` is a token (`var(--name)` or a type class), except `0`, 1px hairlines and the conditions of `@media` and `@container` rules (`var()` cannot go there). Inside the rule, values are tokens too.
 - Copy follows `05-voice-and-wording.md`. Missing facts are `[to provide: what]`.
 - Only the lead publishes the charter. At C2, each art director publishes its own branch (`references/publishing.md`).
 

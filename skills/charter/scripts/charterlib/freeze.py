@@ -2,25 +2,33 @@
 import re
 from pathlib import Path
 
+from .cardfile import is_generated
+from .css import strip_comments
 from .index import read_text
 
-STYLE_ATTR = re.compile(r'style="([^"]*)"', re.I)
+STYLE_ATTR = re.compile(r"(?<![\w-])style\s*=\s*([\"'])(.*?)\1", re.I)
 STYLE_OPEN = re.compile(r"<style[^>]*>", re.I)
 VAR = re.compile(r"var\((?:[^()]|\([^()]*\))*\)")
-CSS_COMMENT = re.compile(r"/\*.*?\*/")
+# The condition of an @media or @container rule: var() cannot go there, so its values stay raw.
+CONDITION = re.compile(r"@(?:media|container)\b[^{};]*", re.I)
 RAW = [
     re.compile(r"#[0-9a-fA-F]{3,8}\b"),
     re.compile(r"\b(?:rgba?|hsla?|oklch|oklab|lab|lch)\("),
-    re.compile(r"(?<![\w.#-])\d*\.?\d+(?:px|rem|em)\b"),
+    re.compile(r"(?<![\w.#-])-?\d*\.?\d+(?:px|rem|em|ch|vh|vw|svh|dvh|pt)\b"),
     re.compile(r"(?<![\w.#-])\d*\.?\d+m?s\b"),
     re.compile(r"cubic-bezier\("),
 ]
 ALLOWED_RAW = {"0px", "1px"}
 
 
+def _blank(match):
+    return "\n" * match.group(0).count("\n")
+
+
 def _css_fragments(path):
-    """(line number, CSS text) pairs: every line of a .css file; in HTML, <style> content and style attributes."""
-    text = read_text(path)
+    """(line number, CSS text) pairs: every line of a .css file; in HTML, <style> content and style attributes.
+    Comments and @media / @container conditions are gone, line numbers kept."""
+    text = CONDITION.sub(_blank, strip_comments(read_text(path)))
     if path.suffix == ".css":
         for number, line in enumerate(text.split("\n"), 1):
             yield number, line
@@ -41,21 +49,23 @@ def _css_fragments(path):
             else:
                 opening = STYLE_OPEN.search(rest)
                 head = rest if opening is None else rest[:opening.start()]
-                for value in STYLE_ATTR.findall(head):
-                    yield number, value
+                for match in STYLE_ATTR.finditer(head):
+                    yield number, match.group(2)
                 rest = "" if opening is None else rest[opening.end():]
                 in_style = opening is not None
 
 
 def _freeze_files(project):
+    """bundle.css and every card but the Cover, the wireframes and the copies `cards` generated."""
     components = project / "components"
     if not components.exists():
         return []
     files = [components / "bundle.css"] if (components / "bundle.css").exists() else []
     for folder in sorted(components.iterdir()):
+        preview = folder / "preview.html"
         if (folder.is_dir() and folder.name != "Cover" and not folder.name.startswith("Wireframe")
-                and not folder.name.endswith("Mobile") and (folder / "preview.html").exists()):
-            files.append(folder / "preview.html")
+                and preview.is_file() and not is_generated(read_text(preview))):
+            files.append(preview)
     return files
 
 
@@ -65,9 +75,7 @@ def freeze(root):
     problems = []
     for path in _freeze_files(project):
         for number, fragment in _css_fragments(path):
-            if "@media" in fragment or "@container" in fragment:
-                continue
-            cleaned = VAR.sub("", CSS_COMMENT.sub("", fragment))
+            cleaned = VAR.sub("", fragment)
             for pattern in RAW:
                 for match in pattern.finditer(cleaned):
                     if match.group(0) not in ALLOWED_RAW:

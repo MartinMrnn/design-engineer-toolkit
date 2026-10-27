@@ -104,7 +104,7 @@ Every `preview.html` starts with the type's marker on line 1, then a small compl
 | `Mockup<Page>` | `group="Pages" page width=1440 height=<page height>` | C3 |
 | `Motion` | `group="Pages" page width=1440 height=<page height>` | C4 |
 
-Page cards get a 390 px copy, `<Name>Mobile`, written by `charter.py cards`. Never edit a copy: edit its card and run `cards` again. Page names are PascalCase: `Home`, `Coffees`, `NotFound` for the 404.
+Page cards get a 390 px copy, `<Name>Mobile`, written by `charter.py cards` (its line 2 says it is generated). Never edit a copy: edit its card and run `cards` again; `check` reports a copy that is out of date. A copy drawn by hand instead (no generated line) is kept. Page names are PascalCase: `Home`, `Coffees`, `NotFound` for the 404.
 
 Local preview URL of a card: `<preview>/design/charter/project/components/<Name>/preview.html` (a branch: `<preview>/design/branches/<id>/project/components/<Name>/preview.html`).
 
@@ -117,4 +117,4 @@ Local preview URL of a card: `<preview>/design/charter/project/components/<Name>
 
 ## Values
 
-Every value in a card or in `components/bundle.css` is a token: `var(--name)` or a type class (`.h1`, `.body`…). `charter.py freeze` lists the exceptions. Allowed: `0`, `1px` hairlines, percentages, unitless numbers, and values inside `@media` queries. Wireframes and the Cover are exempt.
+Every value in a card or in `components/bundle.css` is a token: `var(--name)` or a type class (`.h1`, `.body`…). `charter.py freeze` lists the exceptions. Allowed: `0`, `1px` hairlines, percentages, unitless numbers, and the conditions of `@media` and `@container` rules (`var()` cannot go there); the values inside those rules are tokens like any other. Wireframes, the Cover and the generated `…Mobile` copies are exempt; a mobile card drawn by hand is not.

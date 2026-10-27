@@ -1,13 +1,10 @@
 """The `check` command: a charter, or a branch, against the contract up to a step."""
-import re
-
 from . import tokens as tk
 from .cardfile import attr, is_generated, is_page, marker_attrs, mobile_copies, mobile_copy
+from .css import selector_classes
 from .index import read_json, read_text
 
 LINKS = ('href="../../tokens.css"', 'href="../bundle.css"')
-CLASS = re.compile(r"\.(-?[_a-zA-Z][\w-]*)")
-COMMENT = re.compile(r"/\*.*?\*/", re.S)
 
 
 def check(root, contract, due):
@@ -114,8 +111,7 @@ def _components(project, contract):
     if not bundle.exists():
         problems.append("components/bundle.css is missing")
     else:
-        css = COMMENT.sub("", read_text(bundle))
-        for cls in sorted(set(CLASS.findall(css))):
+        for cls in sorted(selector_classes(read_text(bundle))):
             if not cls.startswith(("ds-", "is-")):
                 problems.append("components/bundle.css: class .{} must start with ds- (states: is-)".format(cls))
     for name in contract["components"]["names"]:
