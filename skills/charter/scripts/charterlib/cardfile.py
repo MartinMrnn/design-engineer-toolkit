@@ -1,14 +1,17 @@
 """The first line of a card, the type's `<!-- @dsCard … -->` marker, and the 390 px copies `cards` generates."""
 import re
-import shutil
 from pathlib import Path
 
+from .index import read_text
+
+BOM = "\ufeff"
 MARKER = re.compile(r"^<!-- @dsCard\b(.*?)-->\s*$")
 GENERATED = "<!-- charter.py cards: generated from "
+GENERATED_FROM = re.compile(r"^<!-- charter\.py cards: generated from \.\./(.+)/preview\.html -->")
 
 
 def marker_attrs(text):
-    match = MARKER.match(text.split("\n", 1)[0])
+    match = MARKER.match(text.lstrip(BOM).split("\n", 1)[0])
     return match.group(1) if match else None
 
 
@@ -30,44 +33,71 @@ def attr(attrs, name):
 
 
 def set_attr(line, name, value):
-    pattern = r"(\s){}=\S+".format(re.escape(name))
+    """The marker line with name=value: replaced in place, or added before the closing -->."""
+    pattern = r"(\s){}=\S+?(?=\s|-->|$)".format(re.escape(name))
     if re.search(pattern, line):
-        return re.sub(pattern, r"\g<1>{}={}".format(name, value), line, count=1)
-    return line.replace("-->", "{}={} -->".format(name, value), 1)
+        return re.sub(pattern, lambda m: "{}{}={}".format(m.group(1), name, value), line, count=1)
+    head, sep, tail = line.partition("-->")
+    return "{} {}={} {}{}".format(head.rstrip(), name, value, sep, tail)
 
 
 def mobile_copy(text, name):
     """The 390 × 844 copy of page card `name` whose preview.html is `text`, as `cards` writes it."""
-    first, rest = text.split("\n", 1)
+    first, _, rest = text.lstrip(BOM).partition("\n")
     first = set_attr(set_attr(first, "width", "390"), "height", "844")
     return "{}\n{}../{}/preview.html -->\n{}".format(first, GENERATED, name, rest)
+
+
+def _previews(components):
+    """(folder, preview.html text) for every component folder that has a preview."""
+    if not components.is_dir():
+        return []
+    return [(folder, read_text(folder / "preview.html")) for folder in sorted(components.iterdir())
+            if folder.is_dir() and (folder / "preview.html").is_file()]
+
+
+def page_cards(components):
+    """{name: text} of the page cards, without their 390 px copies: the copies `cards` generated (known by
+    their line 2), and copies made by hand (<Name>Mobile next to a page card <Name>). A page whose own name
+    ends in Mobile is a page."""
+    found = {}
+    for folder, text in _previews(components):
+        attrs = marker_attrs(text)
+        if attrs is not None and is_page(attrs) and not is_generated(text):
+            found[folder.name] = text
+    return {name: text for name, text in found.items() if not (name.endswith("Mobile") and name[:-6] in found)}
+
+
+def mobile_copies(components):
+    """The names of the folders that hold a 390 px copy, generated or made by hand."""
+    pages = page_cards(components)
+    names = {folder.name for folder, text in _previews(components) if is_generated(text)}
+    return names | {name + "Mobile" for name in pages if (components / (name + "Mobile")).is_dir()}
 
 
 def cards(root):
     """Write a 390 × 844 copy, <Name>Mobile, of every page card; remove generated copies whose card is gone."""
     components = Path(root) / "project" / "components"
-    if not components.exists():
+    if not components.is_dir():
         return "no components yet"
-    pages = {}
-    for folder in sorted(components.iterdir()):
-        preview = folder / "preview.html"
-        if folder.is_dir() and not folder.name.endswith("Mobile") and preview.exists():
-            attrs = marker_attrs(preview.read_text(encoding="utf-8"))
-            if attrs is not None and is_page(attrs):
-                pages[folder.name] = preview
+    pages = page_cards(components)
     notes = []
-    for folder in sorted(components.iterdir()):
-        preview = folder / "preview.html"
-        if folder.is_dir() and folder.name.endswith("Mobile") and folder.name[:-6] not in pages and preview.exists():
-            if preview.read_text(encoding="utf-8").split("\n")[1:2] and preview.read_text(encoding="utf-8").split("\n")[1].startswith(GENERATED):
-                shutil.rmtree(folder)
-                notes.append("removed {}".format(folder.name))
-    for name, preview in pages.items():
+    for folder, text in _previews(components):
+        if not is_generated(text):
+            continue
+        match = GENERATED_FROM.match(text.split("\n", 2)[1])
+        source = match.group(1) if match else folder.name[:-len("Mobile")]
+        if source not in pages:
+            (folder / "preview.html").unlink()
+            if not any(folder.iterdir()):
+                folder.rmdir()
+            notes.append("removed {}".format(folder.name))
+    for name, text in pages.items():
         target = components / (name + "Mobile") / "preview.html"
-        if target.exists() and not target.read_text(encoding="utf-8").split("\n")[1].startswith(GENERATED):
+        if target.is_file() and not is_generated(read_text(target)):
             notes.append("kept {}Mobile, made by hand".format(name))
             continue
         target.parent.mkdir(exist_ok=True)
-        target.write_text(mobile_copy(preview.read_text(encoding="utf-8"), name), encoding="utf-8")
+        target.write_text(mobile_copy(text, name), encoding="utf-8")
         notes.append("wrote {}Mobile".format(name))
     return "\n".join(notes) or "no page cards"

@@ -3,7 +3,8 @@ import json
 import re
 
 from . import tokens as tk
-from .cardfile import attr, is_page, marker_attrs
+from .cardfile import attr, is_generated, is_page, marker_attrs, mobile_copies, mobile_copy
+from .index import read_text
 
 LINKS = ('href="../../tokens.css"', 'href="../bundle.css"')
 CLASS = re.compile(r"\.(-?[_a-zA-Z][\w-]*)")
@@ -129,6 +130,7 @@ def _components(project, contract):
 
 def _cards(project, contract, due):
     components = project / "components"
+    copies = mobile_copies(components)
     problems = []
     for spec in contract["cards"]:
         if spec["step"] not in due:
@@ -137,12 +139,23 @@ def _cards(project, contract, due):
             folders = [components / spec["name"]]
         else:
             folders = sorted(d for d in components.iterdir() if d.is_dir() and d.name.startswith(spec["prefix"])
-                             and not d.name.endswith("Mobile")) if components.exists() else []
+                             and d.name not in copies) if components.exists() else []
             if not folders:
                 problems.append("no {}<Page> card yet (due at {})".format(spec["prefix"], spec["step"]))
                 continue
         for folder in folders:
             problems += _card(folder, spec["group"], True, spec["links"], contract)
-            if not (components / (folder.name + "Mobile") / "preview.html").exists():
-                problems.append("components/{}Mobile is missing: run charter.py cards".format(folder.name))
+            problems += _copy(folder)
     return problems
+
+
+def _copy(folder):
+    """The 390 px copy of a page card: present and, when generated, what `cards` would write now."""
+    copy = folder.parent / (folder.name + "Mobile") / "preview.html"
+    if not copy.is_file():
+        return ["components/{}Mobile is missing: run charter.py cards".format(folder.name)]
+    text = read_text(copy)
+    source = folder / "preview.html"
+    if is_generated(text) and source.is_file() and text != mobile_copy(read_text(source), folder.name):
+        return ["components/{}Mobile is out of date: run charter.py cards".format(folder.name)]
+    return []
