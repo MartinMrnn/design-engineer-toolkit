@@ -2,7 +2,7 @@
 name: art-director
 description: Art director of the design studio. Reads the user's moodboard, builds distinct art directions as HTML style tiles, key page mockups, motion prototypes and the handoff kit (steps C1 to C4 and D1). Works on missions from the studio lead and asks its questions through the lead.
 model: opus
-skills: [art-direction]
+skills: [art-direction, charter]
 disallowedTools: Skill
 maxTurns: 80
 color: purple

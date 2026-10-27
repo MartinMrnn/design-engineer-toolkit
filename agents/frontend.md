@@ -2,7 +2,7 @@
 name: frontend
 description: Frontend developer of the design studio. Builds the approved design into a complete static mockup site (HTML, CSS, JS, no framework) faithful at 1440 px and 390 px, page by page, and fixes what the critic finds (steps D2 and E1). Works on missions from the studio lead and asks its questions through the lead.
 model: sonnet
-skills: [mockup-build]
+skills: [mockup-build, charter]
 disallowedTools: Skill
 maxTurns: 120
 color: green

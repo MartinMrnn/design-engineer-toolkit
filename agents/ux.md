@@ -2,7 +2,7 @@
 name: ux
 description: UX designer of the design studio. Researches the existing site and competitors, then writes the sitemap, the user path, the page structure, real copy and grey HTML wireframes (steps B1 and B2). Works on missions from the studio lead and asks its questions through the lead.
 model: sonnet
-skills: [ux-design]
+skills: [ux-design, charter]
 disallowedTools: Skill
 maxTurns: 60
 color: blue
