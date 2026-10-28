@@ -50,7 +50,7 @@ The output, in order:
 1. **The limits that apply**: photos dominate unless excluded; gradients and anti-aliasing create in-between colours; resizing blends neighbours; the result depends on k; profiles are ignored.
 2. **What was analysed**: the analysed pixels are the 100 % of every share. Pixels outside `--crop`, inside `--exclude` or fully transparent are counted apart. Partly transparent pixels are composited over `--over` (white by default).
 3. **By area**: k colours (k-means in OKLab, k = 5 by default, deterministic), with share, pixel count and OKLCH.
-4. **Accents**: a second pass on the most chromatic tenth of the pixels (chroma at least 0.04), so that a small vivid colour is not averaged away. Its shares are of all analysed pixels, and an accent is often already part of an area colour.
+4. **Accents**: a second pass on the most chromatic colours (chroma at least 0.04), taken in descending chroma until about a tenth of the analysed pixels, so that a small vivid colour is not averaged away. A colour that alone covers more than a tenth of the analysed pixels (a bin of the image, or a colour of the grouped selection) is a surface, already in the area list, and is left out. The output states the share the accents actually cover. Their shares are of all analysed pixels, and an accent is often already part of an area colour.
 5. **With `--match tokens.json`**: each pixel goes to its nearest colour token if their OKLab distance is at most d (`--max-distance`, default 0.05; **Design heuristic**, above the 0.02 just-noticeable difference to absorb anti-aliasing). Otherwise it is **unassigned**.
 
 How to read the match:

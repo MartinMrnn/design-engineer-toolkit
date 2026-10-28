@@ -351,7 +351,9 @@ def add_dominant(sub):
     p = sub.add_parser("dominant", help="the colours seen in a PNG capture, by share of pixels (not a design system's tokens)",
                        description=dominant.NOTICE + " Reads 8-bit, non-interlaced PNG (RGB, RGBA, greyscale, indexed); "
                                    "colours are taken as sRGB and colour profiles are ignored. On macOS, "
-                                   "`sips -s format png in.jpg --out out.png` converts a JPEG.")
+                                   "`sips -s format png in.jpg --out out.png` converts a JPEG. The accents are the most "
+                                   "chromatic colours, up to about 10 % of the pixels; a colour that alone covers more "
+                                   "than 10 % is a surface (see the area list), not an accent.")
     p.add_argument("image", help="a PNG file")
     p.add_argument("--k", type=k_arg, default=dominant.DEFAULT_K, metavar="n",
                    help="colours in the by-area list (k-means), 1 to {} (default: %(default)s)".format(dominant.MAX_K))

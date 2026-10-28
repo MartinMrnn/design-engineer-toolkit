@@ -41,6 +41,8 @@ LIMITS = [
     "Scaling blends neighbouring colours (a capture that was resized). This tool's own sampling does not blend, "
     "but it can miss a line thinner than its step.",
     "The result depends on k (here {k}): a different k groups the same pixels differently.",
+    "Accents are the most chromatic colours, up to about a tenth of the pixels; a colour that alone covers more than a "
+    "tenth is a surface, listed by area, not an accent.",
     "Embedded colour profiles and the PNG colour-space chunks (iCCP, sRGB, gAMA, cHRM) are ignored: pixel values are read "
     "as sRGB.",
 ]
@@ -374,24 +376,35 @@ def _ref(token):
 # ---- The command --------------------------------------------------------------------------------------------------------------------
 
 def accents(hist, grid, k, labs, total):
+    """The most chromatic colours, in descending chroma, until about a tenth of the analysed pixels are taken. A colour
+    that alone covers more than that tenth (a bin of the histogram, or a colour of the clustered selection) is a
+    surface, already in the area list: it is left out, and the share the accents really cover is reported."""
     chroma = {c: math.hypot(labs(c)[1], labs(c)[2]) for c in hist}
-    target = math.ceil(ACCENT_FRACTION * total)
+    limit = ACCENT_FRACTION * total
+    target = math.ceil(limit)
     chosen, running, threshold = set(), 0, None
     for c in sorted(hist, key=lambda c: (-chroma[c], c)):
         if running >= target or chroma[c] < ACCENT_CHROMA_FLOOR:
             break
+        if hist[c] > limit:
+            continue
         chosen.add(c)
         running += hist[c]
         threshold = chroma[c]
     clusters, _ = group(lambda c: c in chosen, hist, grid, min(k, ACCENT_K), labs, total)
+    clusters = [c for c in clusters if c["pixels"] <= limit]
+    covered = sum(c["pixels"] for c in clusters)
     return {
         "fraction": ACCENT_FRACTION,
         "chroma_floor": ACCENT_CHROMA_FLOOR,
-        "definition": "the most chromatic 10 % of the analysed pixels (the top decile of OKLCH chroma), "
-                      "only those with chroma of at least {} (a heuristic floor: under it a colour reads as "
-                      "near-neutral), grouped into at most {} colours".format(ACCENT_CHROMA_FLOOR, ACCENT_K),
+        "definition": "the most chromatic colours (OKLCH chroma of at least {}, a heuristic floor: under it a colour "
+                      "reads as near-neutral), taken from the most chromatic down until about 10 % of the analysed "
+                      "pixels, grouped into at most {} colours; a colour that alone covers more than 10 % is a surface, "
+                      "already in the area list, and is left out".format(ACCENT_CHROMA_FLOOR, ACCENT_K),
         "threshold": threshold,
-        "pixels": running,
+        "chromatic": any(v >= ACCENT_CHROMA_FLOOR for v in chroma.values()),
+        "pixels": covered,
+        "share": covered / total,
         "colours": public(clusters),
     }
 
@@ -480,6 +493,10 @@ def text(r):
         for c in a["colours"]:
             out.append("  {}  {}  {:>6} pixels  {}".format(c["hex"], _pct(c["share"]), c["pixels"], c["css"]))
         out.append("  (shares of all analysed pixels; an accent is often already part of an area colour)")
+        out.append("  The accents cover {} of the analysed pixels.".format(_pct(a["share"]).strip()))
+    elif a["chromatic"]:
+        out.append("  none: every colour of chroma {} or more covers more than 10 % of the pixels alone, so it is a "
+                   "surface (see the area list), not an accent.".format(a["chroma_floor"]))
     else:
         out.append("  none: no pixel reaches chroma {}.".format(a["chroma_floor"]))
     if "match" in r:
