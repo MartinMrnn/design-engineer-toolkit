@@ -26,7 +26,7 @@ BUNDLE_START = (
 # What a mix can take from another branch, and where it lives.
 FAMILIES = {
     "colour": {"tokens": ["color"], "files": ["08-colour.md"], "dirs": []},
-    "type": {"tokens": ["type"], "files": ["09-type.md"], "dirs": ["fonts"]},
+    "type": {"tokens": ["type", "fluid"], "files": ["09-type.md"], "dirs": ["fonts"]},
     "shape": {"tokens": ["spacing", "radius", "shadow", "layout"], "files": ["10-shape-and-space.md"], "dirs": []},
     "imagery": {"tokens": [], "files": ["11-imagery-and-icons.md"], "dirs": ["assets/Icons", "media"]},
 }
