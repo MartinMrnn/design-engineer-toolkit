@@ -61,3 +61,28 @@ def oklab(srgb):
 def distance(srgb_a, srgb_b):
     """Euclidean distance in OKLab (deltaEOK, CSS Color 4) between two sRGB colours, unrounded."""
     return gamut.delta_eok(oklab(srgb_a), oklab(srgb_b))
+
+
+CAUTION = ("Distances help spot colours that may be hard to tell apart; there is no universal threshold, "
+           "and states must not rely on colour alone (WCAG 2.2, SC 1.4.1).")
+METHOD = ("{} at severity 1.0 (dichromacy); the matrices work on linear-light sRGB (derived from the primaries' spectral "
+          "power, see cvd.py), and each result is clamped into [0, 1]").format(MODEL)
+DISTANCE_NOTE = "OKLab Euclidean distance (deltaEOK, CSS Color 4), unrounded"
+
+
+def describe(srgb):
+    """A colour (gamma-encoded sRGB, each 0 to 1) and its simulation under each condition: hex, srgb, simulated."""
+    simulated = {}
+    for name in CONDITIONS:
+        out, clamped = simulate(srgb, name)
+        simulated[name] = {"hex": convert.to_hex(out), "srgb": out, "clamped": clamped}
+    return {"hex": convert.to_hex(srgb), "srgb": srgb, "simulated": simulated}
+
+
+def pair(one, two):
+    """The OKLab distance of two described colours in normal vision and under each condition, and the smallest."""
+    rgb = {"normal": (one["srgb"], two["srgb"])}
+    rgb.update({n: (one["simulated"][n]["srgb"], two["simulated"][n]["srgb"]) for n in CONDITIONS})
+    dist = {k: distance(*v) for k, v in rgb.items()}
+    closest = min(dist, key=dist.get)  # the first of equals, in the order normal, protanopia, ...
+    return {"a": one["hex"], "b": two["hex"], "distance": dist, "closest": {"condition": closest, "distance": dist[closest]}}

@@ -113,6 +113,29 @@ def _family(family, block, expected, seen):
     return problems
 
 
+# The two floors the contract checks, from the one WCAG module: text 4.5:1 (SC 1.4.3), the focus ring 3:1 (SC 1.4.11).
+TEXT_FLOOR = wcag.THRESHOLDS["text-aa"].minimum
+NON_TEXT_FLOOR = wcag.THRESHOLDS["non-text-aa"].minimum
+
+
+def usage_grounds(colours, name):
+    """The grounds a text token reads on: the other colour tokens its usage note names between backticks."""
+    return [g for g in TICKED.findall(str(colours[name].get("usage", ""))) if g in colours and g != name]
+
+
+def required_pairs(colours, spec):
+    """The contrast pairs the contract requires, in checking order: (foreground, ground, threshold key of wcag.THRESHOLDS).
+    Each contract text token present, over the grounds its usage note names (text, 4.5:1); then the focus ring over each
+    contract ground (non-text, 3:1). `colours` maps names to token entries. validate (via _colours) and colour.py palette
+    both read the pairs here, so they always list the same ones."""
+    pairs = []
+    for name in spec["text"]:
+        if name in colours:
+            pairs += [(name, ground, "text-aa") for ground in usage_grounds(colours, name)]
+    pairs += [(spec["focus"], ground, "non-text-aa") for ground in spec["grounds"]]
+    return pairs
+
+
 def _colours(tokens, spec, seen):
     if "color" not in tokens:
         return ["tokens.json: 'color' is missing"]
@@ -157,16 +180,16 @@ def _colours(tokens, spec, seen):
     for name in spec["text"]:
         if name not in colours:
             continue
-        grounds = [g for g in TICKED.findall(str(colours[name].get("usage", ""))) if g in colours and g != name]
+        grounds = usage_grounds(colours, name)
         if not grounds:
             problems.append("tokens.json: the usage note of '{}' must name the grounds it reads on, as `token` names".format(name))
             continue
         for theme in ids:
             for ground in grounds:
-                problems += _pair(name, ground, theme, colours, first, 4.5)
+                problems += _pair(name, ground, theme, colours, first, TEXT_FLOOR)
     for theme in ids:
         for ground in spec["grounds"]:
-            problems += _pair(spec["focus"], ground, theme, colours, first, 3.0)
+            problems += _pair(spec["focus"], ground, theme, colours, first, NON_TEXT_FLOOR)
     return problems
 
 

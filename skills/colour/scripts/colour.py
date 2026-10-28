@@ -12,7 +12,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from colourlib import convert, cvd, dominant, gamut, wcag  # noqa: E402
+from colourlib import convert, cvd, dominant, gamut, palette, tokenfile, wcag  # noqa: E402
 
 
 def fail(message):
@@ -245,34 +245,20 @@ def add_ramp(sub):
 
 # ---- cvd ----------------------------------------------------------------------------------------------------------
 
-CVD_CAUTION = ("Distances help spot colours that may be hard to tell apart; there is no universal threshold, "
-               "and states must not rely on colour alone (WCAG 2.2, SC 1.4.1).")
+CVD_CAUTION = cvd.CAUTION
 CVD_ONE = "Give two or more colours to compare pairs by distance."
-CVD_METHOD = ("{} at severity 1.0 (dichromacy); the matrices work on linear-light sRGB (derived from the primaries' spectral "
-              "power, see cvd.py), and each result is clamped into [0, 1]").format(cvd.MODEL)
+CVD_METHOD = cvd.METHOD
 
 
 def cvd_colour(text):
     kind, values = parse_colour(text)
     if kind != "hex":
         fail("cvd takes hex colours (#rgb or #rrggbb), got {!r}".format(text))
-    simulated = {}
-    for name in cvd.CONDITIONS:
-        srgb, clamped = cvd.simulate(values, name)
-        simulated[name] = {"hex": to_hex(srgb), "srgb": srgb, "clamped": clamped}
-    return {"input": text, "hex": to_hex(values), "srgb": values, "simulated": simulated}
+    return dict({"input": text}, **cvd.describe(values))
 
 
 def cvd_pairs(colours):
-    pairs = []
-    for i, one in enumerate(colours):
-        for two in colours[i + 1:]:
-            rgb = {"normal": (one["srgb"], two["srgb"])}
-            rgb.update({n: (one["simulated"][n]["srgb"], two["simulated"][n]["srgb"]) for n in cvd.CONDITIONS})
-            distance = {k: cvd.distance(*v) for k, v in rgb.items()}
-            nearest = min(distance, key=distance.get)  # the first of equals, in the order normal, protanopia, ...
-            pairs.append({"a": one["hex"], "b": two["hex"], "distance": distance,
-                          "closest": {"condition": nearest, "distance": distance[nearest]}})
+    pairs = [cvd.pair(one, two) for i, one in enumerate(colours) for two in colours[i + 1:]]
     # Closest first, on the unrounded figures; equal figures keep the order the colours were given in.
     return sorted(pairs, key=lambda p: p["closest"]["distance"])
 
@@ -282,7 +268,7 @@ def cmd_cvd(args):
     pairs = cvd_pairs(colours)
     if args.json:
         print(json.dumps({"model": cvd.MODEL, "severity": cvd.SEVERITY, "method": CVD_METHOD,
-                          "distance": "OKLab Euclidean distance (deltaEOK, CSS Color 4), unrounded",
+                          "distance": cvd.DISTANCE_NOTE,
                           "colours": colours, "pairs": pairs, "note": CVD_CAUTION}, indent=2))
         return
     print("Colour-vision-deficiency simulation: " + CVD_METHOD + ".")
@@ -383,6 +369,32 @@ def add_dominant(sub):
     p.set_defaults(func=cmd_dominant)
 
 
+# ---- palette ------------------------------------------------------------------------------------------------------
+
+def cmd_palette(args):
+    try:
+        data = tokenfile.read(args.tokens)
+        result = palette.build(data, args.tokens, args.theme)
+    except tokenfile.TokenError as e:
+        fail(str(e))
+    if args.json:
+        print(json.dumps(result, indent=2))
+    else:
+        print(palette.text(result))
+
+
+def add_palette(sub):
+    p = sub.add_parser("palette", help="the charter's palette in one report: OKLCH, required contrast pairs, CVD distances of the state colours",
+                       description="Reads a charter's tokens.json (the charter's own code resolves aliases and themes) and reports, "
+                                   "per theme: the OKLCH of every colour token; the WCAG 2.2 ratio and pass or fail of every pair "
+                                   "the contract requires (as `charter.py check`); the CVD distances of the state-* colours, "
+                                   "closest first, without a verdict. Emotion indicators are not available in this version.")
+    p.add_argument("tokens", metavar="tokens.json", help="a charter's tokens.json")
+    p.add_argument("--theme", metavar="name", help="report this theme only (default: every theme)")
+    p.add_argument("--json", action="store_true", help="print JSON, with the unrounded values")
+    p.set_defaults(func=cmd_palette)
+
+
 def main():
     parser = Parser(prog="colour.py", description=__doc__)
     sub = parser.add_subparsers(dest="command", required=True, parser_class=Parser)
@@ -391,6 +403,7 @@ def main():
     add_ramp(sub)
     add_cvd(sub)
     add_dominant(sub)
+    add_palette(sub)
     args = parser.parse_args()
     args.func(args)
 

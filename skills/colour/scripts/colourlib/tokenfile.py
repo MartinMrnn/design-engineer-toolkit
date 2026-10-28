@@ -43,6 +43,13 @@ def read(path):
     return data
 
 
+def table(data):
+    """{token name: token entry} of the colour tokens (the last of two with one name wins, as the charter's resolve)."""
+    tk, _ = charterlib()
+    return {e["name"]: e for e in tk.as_list(tk.as_dict(data.get("color")).get("tokens"))
+            if isinstance(e, dict) and isinstance(e.get("name"), str)}
+
+
 def colours(data, path):
     """({theme id: [(token name, '#rrggbb'), ...]}, [theme ids]): every colour token resolved in every theme, in the
     order of the file. Raises TokenError when there is no colour token or one does not resolve."""
@@ -50,14 +57,14 @@ def colours(data, path):
     ids = tk.theme_ids(data)
     entries = [e for e in tk.as_list(tk.as_dict(data.get("color")).get("tokens"))
                if isinstance(e, dict) and isinstance(e.get("name"), str)]
+    table_ = table(data)
     if not entries:
         raise TokenError('{}: no colour tokens: expected "color": {{"tokens": [{{"name", "value"}}, ...]}}'.format(path))
-    table = {e["name"]: e for e in entries}
     out = {}
     for theme in ids:
         resolved = []
         for entry in entries:
-            value = tk.resolve(entry["name"], theme, table, ids[0])
+            value = tk.resolve(entry["name"], theme, table_, ids[0])
             if value is None:
                 raise TokenError("{}: colour '{}' does not resolve to a hex colour in theme '{}' "
                                  "(charter.py validate-tokens says why)".format(path, entry["name"], theme))
