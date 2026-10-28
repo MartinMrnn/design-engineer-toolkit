@@ -1,4 +1,4 @@
-<!-- charter: fill at A1. Two or three sentences: the client, what the site must do, and for whom. -->
+<!-- charter: fill at A1. Two or three sentences: the client, what the site must do, and for whom. Translate the headings into the language of the site's copy. -->
 
 ## How to use this charter
 
