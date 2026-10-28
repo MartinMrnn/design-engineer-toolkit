@@ -45,7 +45,7 @@ The Design System type's grammar, narrowed:
 - Every token has a `usage` note saying where it is used.
 - Colours are `#rgb`, `#rrggbb`, or an alias `{other-colour}`. No named colours, `var()`, `rgb()` or `color-mix()`. One theme, `light`, unless `01-context.md` asks for a dark one; then each colour gives a value per theme, the light one first.
 - A text colour (`ink`, `ink-muted`, `on-accent`, `on-accent-2`, `ink-inverse`) names the grounds it reads on, as `token` names, in its usage note: "Body copy on `ground` and `ground-raised`." `check` measures each pair in every theme against 4.5:1, and `focus-ring` against `ground` and `ground-raised` at 3:1.
-- `spacing` and `radius` are lengths: `px`, `rem`, `em`, `%` or `0`. Other families hold plain CSS values (`100svh`, `68ch`, `500ms`, `cubic-bezier(0.22, 1, 0.36, 1)`), without `var()` or `url()`.
+- `spacing` and `radius` are lengths: `px`, `rem`, `em`, `%` or `0`. Other families hold plain CSS values (`100svh`, `68ch`, `clamp(2.5rem, 1.6rem + 3vw, 4rem)`, `500ms`, `cubic-bezier(0.22, 1, 0.36, 1)`), without `var()` or `url()`.
 
 | Family | Names | Due |
 |---|---|---|
@@ -55,9 +55,12 @@ The Design System type's grammar, narrowed:
 | `spacing` | `space-1`, `space-2`, `space-3`, `space-4`, `space-5`, `space-6`, `space-7`, `space-8` | C2 |
 | `radius` | `radius-s`, `radius-m`, `radius-l`, `radius-full` | C2 |
 | `shadow` | `shadow-1`, `shadow-2` (`none` allowed) | C2 |
-| `layout` | `container-max`, `measure`, `hero-min-height`, `icon-s`, `icon-m`, `target-min` | C2 |
+| `layout` | `container-max`, `measure`, `hero-min-height`, `icon-s`, `icon-m`, `target-min`, `focus-width`, `focus-offset` | C2 |
+| `fluid` | `fluid-display-xl`, `fluid-display-l`, `fluid-h1`, `fluid-h2` | C2 |
 | `duration` | `duration-fast`, `duration-base`, `duration-slow` | C4 |
 | `easing` | `ease-out`, `ease-in-out` | C4 |
+
+Type styles keep a fixed `fontSize`: it is what the Design System page shows. Where a size must follow the viewport (the opening headline, section titles), a card or `bundle.css` keeps the style's class and sets `font-size: var(--fluid-h1)`; each `fluid-*` value is a `clamp()` whose bounds are the sizes at 390 px and at 1440 px, the upper one the matching style's `fontSize`.
 
 Fonts: a file in `fonts/`, listed in `type.fonts` as `{"family", "file", "weight", "style"}`; or a Google-hosted family, named in `type.families` and loaded by an `@import` on the first line of `components/bundle.css`.
 
@@ -65,7 +68,7 @@ Fonts: a file in `fonts/`, listed in `type.fonts` as `{"family", "file", "weight
 
 ## Components
 
-- HTML and CSS only. `components/bundle.js` holds no component: `charter.py init` and `branch` write it so that the type runs previews live (their scripts and their relative files load); never edit it. Styles live in `components/bundle.css`. Classes start with `ds-`. Previews show states with `is-hover`, `is-focus` and `is-active` (styled like `:hover`, `:focus-visible` and `:active`) and the real `:disabled`.
+- HTML and CSS only. `components/bundle.js` holds no component: `charter.py init` and `branch` write it so that the type runs previews live (their scripts and their relative files load); never edit it. Styles live in `components/bundle.css`. Classes start with `ds-`. Previews show states with `is-hover`, `is-focus` and `is-active` (styled like `:hover`, `:focus-visible` and `:active`) and the real `:disabled`. Focus is `outline: var(--focus-width) solid var(--focus-ring); outline-offset: var(--focus-offset)`.
 - Each component has `components/<Name>/preview.html` (one component, every state, real copy) and `components/<Name>/README.md` (first sentence: what it is for; then what the page provides, when to use it, do and don't).
 - The base set, at C2, with these states:
   - `Button`: primary and secondary; default, hover, focus, active, disabled.
@@ -99,12 +102,12 @@ Every `preview.html` starts with the type's marker on line 1, then a small compl
 |---|---|---|
 | Base components | `group="Actions"` (Button, Link), `group="Content"` (Card), `group="Forms"` (Field), `group="Navigation"` (Nav); `height=` to fit | C2 |
 | `Cover` | `height=288`, no group; its folder holds only `preview.html` | C2, last |
-| `Wireframe<Page>` | `group="Wireframes" page width=1440 height=<page height>` | B2 |
+| `Wireframe<Page>` | `group="Wireframes" page width=1440 height=<page height>`; `mobile-height=<n>` when the 390 px page is longer than 844 | B2 |
 | `Showcase` | `group="Pages" page width=1440 height=900` | C2 |
-| `Mockup<Page>` | `group="Pages" page width=1440 height=<page height>` | C3 |
-| `Motion` | `group="Pages" page width=1440 height=<page height>` | C4 |
+| `Mockup<Page>` | `group="Pages" page width=1440 height=<page height>`; `mobile-height=<n>` as above | C3 |
+| `Motion` | `group="Pages" page width=1440 height=<page height>`; `mobile-height=<n>` as above | C4 |
 
-Page cards get a 390 px copy, `<Name>Mobile`, written by `charter.py cards` (its line 2 says it is generated). Never edit a copy: edit its card and run `cards` again; `check` reports a copy that is out of date. A copy drawn by hand instead (no generated line) is kept. Page names are PascalCase: `Home`, `Coffees`, `NotFound` for the 404.
+Page cards get a 390 px copy, `<Name>Mobile`, written by `charter.py cards` (its line 2 says it is generated); the copy is 844 px high, or the card's `mobile-height`. Never edit a copy: edit its card and run `cards` again; `check` reports a copy that is out of date. A copy drawn by hand instead (no generated line) is kept. Page names are PascalCase: `Home`, `Coffees`, `NotFound` for the 404.
 
 Local preview URL of a card: `<preview>/design/charter/project/components/<Name>/preview.html` (a branch: `<preview>/design/branches/<id>/project/components/<Name>/preview.html`).
 
@@ -117,4 +120,4 @@ Local preview URL of a card: `<preview>/design/charter/project/components/<Name>
 
 ## Values
 
-Every value in a card or in `components/bundle.css` is a token: `var(--name)` or a type class (`.h1`, `.body`…). `charter.py freeze` lists the exceptions. Allowed: `0`, `1px` hairlines, percentages, unitless numbers, and the conditions of `@media` and `@container` rules (`var()` cannot go there); the values inside those rules are tokens like any other. Wireframes, the Cover and the generated `…Mobile` copies are exempt; a mobile card drawn by hand is not.
+Every value in a card or in `components/bundle.css` is a token: `var(--name)` or a type class (`.h1`, `.body`…). `charter.py freeze` lists the exceptions, and every `var(--name)` that `tokens.css` does not declare ("unknown token"). Allowed: `0`, `1px` hairlines, percentages, unitless numbers, and the conditions of `@media` and `@container` rules (`var()` cannot go there); the values inside those rules are tokens like any other. Wireframes, the Cover and the generated `…Mobile` copies are exempt; a mobile card drawn by hand is not. In a script, read a token with `getComputedStyle(document.documentElement).getPropertyValue('--duration-base')`; never write a number of seconds or milliseconds.

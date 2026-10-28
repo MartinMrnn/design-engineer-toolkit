@@ -41,7 +41,9 @@
     "spacing": {"step": "C2", "names": ["space-1", "space-2", "space-3", "space-4", "space-5", "space-6", "space-7", "space-8"]},
     "radius": {"step": "C2", "names": ["radius-s", "radius-m", "radius-l", "radius-full"]},
     "shadow": {"step": "C2", "names": ["shadow-1", "shadow-2"]},
-    "layout": {"step": "C2", "names": ["container-max", "measure", "hero-min-height", "icon-s", "icon-m", "target-min"]},
+    "layout": {"step": "C2", "names": ["container-max", "measure", "hero-min-height", "icon-s", "icon-m", "target-min",
+                                        "focus-width", "focus-offset"]},
+    "fluid": {"step": "C2", "names": ["fluid-display-xl", "fluid-display-l", "fluid-h1", "fluid-h2"]},
     "duration": {"step": "C4", "names": ["duration-fast", "duration-base", "duration-slow"]},
     "easing": {"step": "C4", "names": ["ease-out", "ease-in-out"]}
   },

@@ -1,4 +1,4 @@
-"""The `freeze` command: raw values that are not tokens in bundle.css and the cards."""
+"""The `freeze` command: raw values that are not tokens, and var() names that are no token, in bundle.css and the cards."""
 import re
 from pathlib import Path
 
@@ -9,6 +9,8 @@ from .index import read_text
 STYLE_ATTR = re.compile(r"(?<![\w-])style\s*=\s*([\"'])(.*?)\1", re.I)
 STYLE_OPEN = re.compile(r"<style[^>]*>", re.I)
 VAR = re.compile(r"var\((?:[^()]|\([^()]*\))*\)")
+VAR_NAME = re.compile(r"var\(\s*--([A-Za-z0-9_-]+)")
+DECLARED = re.compile(r"(?:^|[{;\s])--([A-Za-z0-9_-]+)\s*:")
 # The condition of an @media or @container rule: var() cannot go there, so its values stay raw.
 CONDITION = re.compile(r"@(?:media|container)\b[^{};]*", re.I)
 RAW = [
@@ -69,12 +71,23 @@ def _freeze_files(project):
     return files
 
 
+def _declared(project):
+    """The custom properties tokens.css declares: every token and the --font-* stacks. None without tokens.css."""
+    css = project / "tokens.css"
+    return set(DECLARED.findall(strip_comments(read_text(css)))) if css.is_file() else None
+
+
 def freeze(root):
-    """Raw colours, lengths, durations and easings outside tokens, in bundle.css and the cards that use tokens."""
+    """Raw colours, lengths, durations and easings outside tokens, and var() names tokens.css does not declare,
+    in bundle.css and the cards that use tokens."""
     project = Path(root) / "project"
-    problems = []
+    declared = _declared(project)
+    problems = [] if declared is not None else ["tokens.css is missing: run charter.py css"]
     for path in _freeze_files(project):
         for number, fragment in _css_fragments(path):
+            for name in VAR_NAME.findall(fragment) if declared is not None else []:
+                if name not in declared:
+                    problems.append("{}:{}: unknown token --{}".format(path.relative_to(project), number, name))
             cleaned = VAR.sub("", fragment)
             for pattern in RAW:
                 for match in pattern.finditer(cleaned):

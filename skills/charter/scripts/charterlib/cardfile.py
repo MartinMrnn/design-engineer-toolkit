@@ -42,9 +42,14 @@ def set_attr(line, name, value):
 
 
 def mobile_copy(text, name):
-    """The 390 × 844 copy of page card `name` whose preview.html is `text`, as `cards` writes it."""
+    """The 390 px copy of page card `name` whose preview.html is `text`, as `cards` writes it: 844 px high, or
+    the card's mobile-height (which the copy does not repeat)."""
     first, _, rest = text.lstrip(BOM).partition("\n")
-    first = set_attr(set_attr(first, "width", "390"), "height", "844")
+    attrs = marker_attrs(first)
+    height = attr(attrs, "mobile-height") if attrs is not None else None
+    height = height if height and height.isdigit() else "844"
+    first = re.sub(r"\s+mobile-height=\S+?(?=\s|-->|$)", "", first)
+    first = set_attr(set_attr(first, "width", "390"), "height", height)
     return "{}\n{}../{}/preview.html -->\n{}".format(first, GENERATED, name, rest)
 
 
@@ -76,7 +81,7 @@ def mobile_copies(components):
 
 
 def cards(root):
-    """Write a 390 × 844 copy, <Name>Mobile, of every page card; remove generated copies whose card is gone."""
+    """Write a 390 px copy, <Name>Mobile, of every page card; remove generated copies whose card is gone."""
     components = Path(root) / "project" / "components"
     if not components.is_dir():
         return "no components yet"
