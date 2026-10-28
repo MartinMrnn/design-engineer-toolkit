@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """colour.py · colour measures for the design studio: WCAG 2.2 contrast, conversions (OKLab, OKLCH, CIELAB), lightness ramps,
-colour-vision-deficiency simulation.
+colour-vision-deficiency simulation, the colours seen in a PNG capture.
 
 Standard library only. Errors print as `colour: <message>` on stderr and exit 1, like charter.py.
 """
@@ -12,7 +12,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from colourlib import convert, cvd, gamut, wcag  # noqa: E402
+from colourlib import convert, cvd, dominant, gamut, wcag  # noqa: E402
 
 
 def fail(message):
@@ -99,9 +99,7 @@ def add_contrast(sub):
 
 # ---- convert ------------------------------------------------------------------------------------------------------
 
-def to_hex(rgb):
-    # Rounded half up, as 8-bit colour is (JavaScript's Math.round).
-    return "#" + "".join("{:02x}".format(int(math.floor(min(1.0, max(0.0, c)) * 255 + 0.5))) for c in rgb)
+to_hex = convert.to_hex
 
 
 def parse_colour(text):
@@ -316,6 +314,75 @@ def add_cvd(sub):
     p.set_defaults(func=cmd_cvd)
 
 
+# ---- dominant -----------------------------------------------------------------------------------------------------
+
+def k_arg(value):
+    try:
+        n = int(value)
+    except ValueError:
+        raise argparse.ArgumentTypeError("--k must be a whole number from 1 to {}, got {!r}".format(dominant.MAX_K, value))
+    if not 1 <= n <= dominant.MAX_K:
+        raise argparse.ArgumentTypeError("--k must be from 1 to {}, got {}".format(dominant.MAX_K, n))
+    return n
+
+
+def rect_arg(option):
+    def parse(value):
+        try:
+            return dominant.parse_rect(value, option)
+        except ValueError as e:
+            raise argparse.ArgumentTypeError(str(e))
+    return parse
+
+
+def distance_arg(value):
+    try:
+        d = float(value)
+    except ValueError:
+        raise argparse.ArgumentTypeError("--max-distance must be a number above 0, got {!r}".format(value))
+    if not math.isfinite(d) or d <= 0:
+        raise argparse.ArgumentTypeError("--max-distance must be a number above 0, got {!r}".format(value))
+    return d
+
+
+def cmd_dominant(args):
+    if args.match is None and (args.theme is not None or args.max_distance is not None):
+        fail("{} only applies with --match".format("--theme" if args.theme is not None else "--max-distance"))
+    check_colour(args.over)
+    try:
+        result = dominant.analyse(args.image, k=args.k, over=args.over, crop=args.crop, excludes=args.exclude,
+                                  tokens=args.match, theme=args.theme,
+                                  distance=dominant.DEFAULT_DISTANCE if args.max_distance is None else args.max_distance)
+    except dominant.DominantError as e:
+        fail(str(e))
+    if args.json:
+        print(json.dumps(result, indent=2))
+    else:
+        print(dominant.text(result))
+
+
+def add_dominant(sub):
+    p = sub.add_parser("dominant", help="the colours seen in a PNG capture, by share of pixels (not a design system's tokens)",
+                       description=dominant.NOTICE + " Reads 8-bit, non-interlaced PNG (RGB, RGBA, greyscale, indexed); "
+                                   "colours are taken as sRGB and colour profiles are ignored. On macOS, "
+                                   "`sips -s format png in.jpg --out out.png` converts a JPEG.")
+    p.add_argument("image", help="a PNG file")
+    p.add_argument("--k", type=k_arg, default=dominant.DEFAULT_K, metavar="n",
+                   help="colours in the by-area list (k-means), 1 to {} (default: %(default)s)".format(dominant.MAX_K))
+    p.add_argument("--over", default="#ffffff", metavar="hex", help="colour that partly transparent pixels are composited over "
+                                                                "(default: %(default)s); fully transparent pixels are ignored")
+    p.add_argument("--crop", type=rect_arg("--crop"), metavar="x,y,w,h", help="analyse only this region")
+    p.add_argument("--exclude", type=rect_arg("--exclude"), action="append", default=[], metavar="x,y,w,h",
+                   help="leave this region out (repeatable); counted apart from the analysed pixels")
+    p.add_argument("--match", metavar="tokens.json", help="assign every pixel to the nearest colour token within --max-distance, "
+                                                          "else to an unassigned category")
+    p.add_argument("--max-distance", type=distance_arg, metavar="d", help="with --match: the largest OKLab distance at which a "
+                   "pixel is assigned to a token (default: {:g}, a design heuristic)".format(dominant.DEFAULT_DISTANCE))
+    p.add_argument("--theme", metavar="name", help="with --match: the theme whose colours are matched (default: the first)")
+    p.add_argument("--json", action="store_true", help="print JSON, with the unrounded values")
+    p.set_defaults(func=cmd_dominant)
+
+
 def main():
     parser = Parser(prog="colour.py", description=__doc__)
     sub = parser.add_subparsers(dest="command", required=True, parser_class=Parser)
@@ -323,6 +390,7 @@ def main():
     add_convert(sub)
     add_ramp(sub)
     add_cvd(sub)
+    add_dominant(sub)
     args = parser.parse_args()
     args.func(args)
 

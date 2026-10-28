@@ -274,6 +274,12 @@ def to_xyz(kind, values):
     return lab_to_xyz(lch_to_lab(values))
 
 
+def to_hex(rgb):
+    """#rrggbb for gamma-encoded sRGB [r, g, b] (each clamped into 0 to 1). Rounded half up, as 8-bit colour is
+    (JavaScript's Math.round)."""
+    return "#" + "".join("{:02x}".format(int(math.floor(min(1.0, max(0.0, c)) * 255 + 0.5))) for c in rgb)
+
+
 def _trim(value, places):
     text = "{:.{}f}".format(value, places).rstrip("0").rstrip(".")
     return "0" if text in ("", "-0") else text
