@@ -1,6 +1,8 @@
 """tokens.json as the Design System type reads it, narrowed by the studio's contract:
 fixed names, hex colours or aliases, list-shaped families, usage notes, contrast."""
 import re
+import sys
+from pathlib import Path
 
 NAME = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.-]{0,63}$")
 HEX = re.compile(r"^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$")
@@ -54,23 +56,13 @@ def resolve(name, theme, colours, first, depth=0):
     return value if HEX.match(value) else None
 
 
-def _channels(hex_value):
-    digits = hex_value[1:]
-    if len(digits) == 3:
-        digits = "".join(c * 2 for c in digits)
-    return [int(digits[i:i + 2], 16) / 255 for i in (0, 2, 4)]
+# The WCAG 2.2 contrast code lives in one module, the colour skill's colourlib/wcag.py, so that charter.py and
+# colour.py never disagree. From this file (skills/charter/scripts/charterlib/tokens.py), parents[3] is skills/.
+sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "colour" / "scripts"))
+from colourlib import wcag  # noqa: E402
 
-
-def luminance(hex_value):
-    def linear(c):
-        return c / 12.92 if c <= 0.04045 else ((c + 0.055) / 1.055) ** 2.4
-    r, g, b = (linear(c) for c in _channels(hex_value))
-    return 0.2126 * r + 0.7152 * g + 0.0722 * b
-
-
-def contrast(a, b):
-    high, low = sorted((luminance(a), luminance(b)), reverse=True)
-    return (high + 0.05) / (low + 0.05)
+luminance = wcag.relative_luminance
+contrast = wcag.ratio
 
 
 def _entries(family, block):
@@ -180,9 +172,12 @@ def _colours(tokens, spec, seen):
 
 def _pair(fg_name, bg_name, theme, colours, first, floor):
     fg, bg = resolve(fg_name, theme, colours, first), resolve(bg_name, theme, colours, first)
-    if fg and bg and contrast(fg, bg) < floor:
-        return ["contrast: '{}' on '{}' is {:.2f}:1 in theme '{}', under {:g}:1".format(
-            fg_name, bg_name, contrast(fg, bg), theme, floor)]
+    if fg and bg:
+        value = wcag.ratio(fg, bg)
+        # Compared unrounded; the figure printed keeps the failing side visible (4.499:1, not 4.50:1).
+        if not wcag.meets(value, floor):
+            return ["contrast: '{}' on '{}' is {}:1 in theme '{}', under {:g}:1".format(
+                fg_name, bg_name, wcag.fmt(value, floor), theme, floor)]
     return []
 
 
