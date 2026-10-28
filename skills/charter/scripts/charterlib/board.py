@@ -1,10 +1,12 @@
 """The C2 comparison board: the same rows for every branch, side by side, built from the branches' files.
 Captures come from design/branches/<id>/captures/, made by each art director."""
 import html
+import re
 import shutil
 from pathlib import Path
 
 from . import tokens as tk
+from colourlib import convert, dominant, tokenfile, wcag  # on sys.path since .tokens, which imports colourlib.wcag
 from .index import read_json, read_text
 from .tokens import as_dict, as_list
 
@@ -12,6 +14,16 @@ CAPTURES = [("cover.png", "Cover"), ("showcase-1440.png", "Showcase · 1440 px")
             ("showcase-390.png", "Showcase · 390 px"), ("components.png", "Components")]
 LEADS = [("08-colour.md", "Colour logic"), ("09-type.md", "Type"), ("10-shape-and-space.md", "Shape and space"),
          ("11-imagery-and-icons.md", "Imagery and icons"), ("12-motion.md", "Motion intent"), ("13-rules.md", "Rules")]
+
+MEASURED = "Colour, measured"
+SHOWCASE = "showcase-1440.png"
+NO_INTENT = "colour intent not recorded"
+INTENT_LINE = re.compile(r"^\s*[-*]\s*\*\*Colour intent\*\*\s*:\s*(.*)$", re.MULTILINE)
+
+
+class Html(str):
+    """A row label that is already HTML."""
+
 
 PAGE = """<!doctype html>
 <html lang="en">
@@ -78,6 +90,63 @@ def lead(path):
     return " ".join(paragraph)
 
 
+def intent_words(path):
+    """The colour intent's words, from the `- **Colour intent**: …` line of a 01-context.md: the text up to the first
+    ';' or sentence end (the rest of the line is the existing identity and the colours to avoid). None when the file or
+    the line is missing, or the line still holds a placeholder."""
+    if not path.exists():
+        return None
+    found = INTENT_LINE.search(read_text(path))
+    if not found:
+        return None
+    value = found.group(1).strip()
+    if not value or "<!-- charter:" in value or "[to provide" in value:
+        return None
+    return re.split(r";|\.(?:\s|$)", value, maxsplit=1)[0].strip() or None
+
+
+def _share(share):
+    return "{:.2f} %".format(share * 100)
+
+
+def _measured(tokens_path, tokens, capture):
+    """The cell of the "Colour, measured" row for one branch: OKLCH, text contrast and the capture's shares, as the
+    colour skill computes them (colourlib), with no verdict on the design."""
+    try:
+        by_theme, ids = tokenfile.colours(tokens, str(tokens_path))
+    except ValueError:  # includes tokenfile.TokenError
+        return '<p class="muted">no colours yet</p>'
+    hexes = dict(by_theme[ids[0]])
+    items = []
+    for name in ("ground", "ink", "accent"):
+        if name not in hexes:
+            items.append("<li><code>{}</code> not set</li>".format(name))
+            continue
+        lch = convert.oklab_to_oklch(convert.xyz_to_oklab(convert.srgb_to_xyz(wcag.parse_hex(hexes[name]))))
+        items.append('<li><span class="swatch" style="background:{}"></span><code>{}</code> {}</li>'.format(
+            _e(hexes[name]), name, _e(convert.css("oklch", lch))))
+    floor = wcag.THRESHOLDS["text-aa"]
+    for fg, bg in (("ink", "ground"), ("on-accent", "accent")):
+        if fg in hexes and bg in hexes:
+            value = wcag.ratio(hexes[fg], hexes[bg])
+            items.append("<li>{} on {} {}:1 {}</li>".format(
+                fg, bg, wcag.fmt(value, floor), "pass" if wcag.meets(value, floor) else "fail"))
+    if not capture.exists():
+        items.append('<li class="muted">no capture</li>')
+    else:
+        try:
+            match = dominant.analyse(str(capture), tokens=str(tokens_path))["match"]
+        except (ValueError, OSError) as e:  # DominantError, PngError, an unreadable tokens.json
+            items.append('<li class="muted">capture not measured: {}</li>'.format(_e(str(e).split(": ", 1)[-1])))
+        else:
+            accent = sum(t["share"] for t in match["tokens"] if "accent" in t["names"])
+            items.append("<li>accent {} of the capture</li>".format(_share(accent)))
+            items.append("<li>unassigned {} of the capture</li>".format(_share(match["unassigned"]["share"])))
+            items.append('<li class="muted">first screen, {}; a pixel counts for a token within {:g} (OKLab)</li>'.format(
+                _e(SHOWCASE), match["max_distance"]))
+    return '<ul class="list">{}</ul>'.format("".join(items))
+
+
 def _palette(tokens):
     colours = {t["name"]: t for t in as_list(as_dict(tokens.get("color")).get("tokens"))
                if isinstance(t, dict) and isinstance(t.get("name"), str)}
@@ -122,6 +191,9 @@ def render(client, columns):
         rows.append((label, ['<img src="{}" alt="{} of {}" loading="lazy">'.format(_e(c["images"][name]), _e(label), _e(c["title"]))
                              if name in c["images"] else '<p class="muted">no capture</p>' for c in columns]))
     rows.append(("Palette", [_palette(c["tokens"]) for c in columns]))
+    intents = [c.get("intent") for c in columns if c.get("intent")]
+    rows.append((Html("{}<br><small>{}</small>".format(MEASURED, _e(intents[0] if intents else NO_INTENT))),
+                 [c.get("colour") or '<p class="muted">no colours yet</p>' for c in columns]))
     rows.append(("Type scale", [_type(c["tokens"]) for c in columns]))
     rows.append(("Radius", [_scale(c["tokens"], "radius") for c in columns]))
     rows.append(("Spacing", [_scale(c["tokens"], "spacing") for c in columns]))
@@ -129,7 +201,8 @@ def render(client, columns):
         rows.append((label, ["<p>{}</p>".format(_e(c["leads"][i])) if c["leads"][i] else '<p class="muted">empty</p>'
                              for c in columns]))
     body = "".join('<div class="row"><h3 class="label">{}</h3>{}</div>'.format(
-        _e(label), "".join('<div class="cell">{}</div>'.format(cell) for cell in cells)) for label, cells in rows)
+        label if isinstance(label, Html) else _e(label),
+        "".join('<div class="cell">{}</div>'.format(cell) for cell in cells)) for label, cells in rows)
     return PAGE.format(title=_e(client + " · Directions"), client=_e(client), n=len(columns), body=body)
 
 
@@ -155,10 +228,13 @@ def build(branches_root, out_root, urls):
                 images[name] = "{}/{}".format(branch_id, name)
             else:
                 warnings.append("branch {}: captures/{} is missing".format(branch_id, name))
+        capture = branches_root / branch_id / "captures" / SHOWCASE
         title = index.get("title")
         columns.append({"id": branch_id, "title": title if isinstance(title, str) and title else branch_id,
                         "url": urls.get(branch_id),
-                        "tokens": tokens, "images": images, "leads": [lead(project / f) for f, _ in LEADS]})
+                        "tokens": tokens, "images": images,
+                        "intent": intent_words(project / "01-context.md"),
+                        "colour": _measured(tokens_path, tokens, capture), "leads": [lead(project / f) for f, _ in LEADS]})
     client = columns[0]["title"].split(" · ")[0]
     (out_root / "index.html").write_text(render(client, columns), encoding="utf-8")
     return warnings
