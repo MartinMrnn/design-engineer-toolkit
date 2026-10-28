@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""colour.py · colour measures for the design studio: WCAG 2.2 contrast, conversions (OKLab, OKLCH, CIELAB), lightness ramps.
+"""colour.py · colour measures for the design studio: WCAG 2.2 contrast, conversions (OKLab, OKLCH, CIELAB), lightness ramps,
+colour-vision-deficiency simulation.
 
 Standard library only. Errors print as `colour: <message>` on stderr and exit 1, like charter.py.
 """
@@ -11,7 +12,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from colourlib import convert, gamut, wcag  # noqa: E402
+from colourlib import convert, cvd, gamut, wcag  # noqa: E402
 
 
 def fail(message):
@@ -244,12 +245,84 @@ def add_ramp(sub):
     p.set_defaults(func=cmd_ramp)
 
 
+# ---- cvd ----------------------------------------------------------------------------------------------------------
+
+CVD_CAUTION = ("Distances help spot colours that may be hard to tell apart; there is no universal threshold, "
+               "and states must not rely on colour alone (WCAG 2.2, SC 1.4.1).")
+CVD_ONE = "Give two or more colours to compare pairs by distance."
+CVD_METHOD = ("{} at severity 1.0 (dichromacy); the matrices work on linear-light sRGB (derived from the primaries' spectral "
+              "power, see cvd.py), and each result is clamped into [0, 1]").format(cvd.MODEL)
+
+
+def cvd_colour(text):
+    kind, values = parse_colour(text)
+    if kind != "hex":
+        fail("cvd takes hex colours (#rgb or #rrggbb), got {!r}".format(text))
+    simulated = {}
+    for name in cvd.CONDITIONS:
+        srgb, clamped = cvd.simulate(values, name)
+        simulated[name] = {"hex": to_hex(srgb), "srgb": srgb, "clamped": clamped}
+    return {"input": text, "hex": to_hex(values), "srgb": values, "simulated": simulated}
+
+
+def cvd_pairs(colours):
+    pairs = []
+    for i, one in enumerate(colours):
+        for two in colours[i + 1:]:
+            rgb = {"normal": (one["srgb"], two["srgb"])}
+            rgb.update({n: (one["simulated"][n]["srgb"], two["simulated"][n]["srgb"]) for n in cvd.CONDITIONS})
+            distance = {k: cvd.distance(*v) for k, v in rgb.items()}
+            nearest = min(distance, key=distance.get)  # the first of equals, in the order normal, protanopia, ...
+            pairs.append({"a": one["hex"], "b": two["hex"], "distance": distance,
+                          "closest": {"condition": nearest, "distance": distance[nearest]}})
+    # Closest first, on the unrounded figures; equal figures keep the order the colours were given in.
+    return sorted(pairs, key=lambda p: p["closest"]["distance"])
+
+
+def cmd_cvd(args):
+    colours = [cvd_colour(c) for c in args.colours]
+    pairs = cvd_pairs(colours)
+    if args.json:
+        print(json.dumps({"model": cvd.MODEL, "severity": cvd.SEVERITY, "method": CVD_METHOD,
+                          "distance": "OKLab Euclidean distance (deltaEOK, CSS Color 4), unrounded",
+                          "colours": colours, "pairs": pairs, "note": CVD_CAUTION}, indent=2))
+        return
+    print("Colour-vision-deficiency simulation: " + CVD_METHOD + ".")
+    print("A * marks a colour that clamping changed.")
+    print()
+    print("  {:<9} {:<13} {:<13} {}".format("colour", "protanopia", "deuteranopia", "tritanopia"))
+    for c in colours:
+        cells = [s["hex"] + ("*" if s["clamped"] else " ") for s in (c["simulated"][n] for n in cvd.CONDITIONS)]
+        print("  {:<9} {:<13} {:<13} {}".format(c["hex"], *cells).rstrip())
+    if pairs:
+        print()
+        print("Pairs by OKLab distance (Euclidean), the closest first; a pair is placed by its smallest distance:")
+        print("  {:<17} {:<8} {:<11} {:<13} {:<11} {}".format("pair", "normal", "protanopia", "deuteranopia", "tritanopia", "closest in"))
+        for p in pairs:
+            d = p["distance"]
+            print("  {:<17} {:<8.3f} {:<11.3f} {:<13.3f} {:<11.3f} {}".format(
+                p["a"] + " " + p["b"], d["normal"], d["protanopia"], d["deuteranopia"], d["tritanopia"], p["closest"]["condition"]))
+    print()
+    print(CVD_CAUTION if pairs else CVD_ONE)
+
+
+def add_cvd(sub):
+    p = sub.add_parser("cvd", help="simulate protanopia, deuteranopia and tritanopia; OKLab distance of every pair",
+                       description="Simulates each colour for protanopia, deuteranopia and tritanopia ("
+                                   + CVD_METHOD + "), then gives the OKLab distance of every pair in normal vision and "
+                                   "under each deficiency, the closest first. " + CVD_CAUTION)
+    p.add_argument("colours", nargs="+", metavar="colour", help="#rgb or #rrggbb; two or more to compare pairs")
+    p.add_argument("--json", action="store_true", help="print JSON, with the unrounded values")
+    p.set_defaults(func=cmd_cvd)
+
+
 def main():
     parser = Parser(prog="colour.py", description=__doc__)
     sub = parser.add_subparsers(dest="command", required=True, parser_class=Parser)
     add_contrast(sub)
     add_convert(sub)
     add_ramp(sub)
+    add_cvd(sub)
     args = parser.parse_args()
     args.func(args)
 
