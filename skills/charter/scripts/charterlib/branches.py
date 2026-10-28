@@ -289,5 +289,13 @@ def merge(charter_root, branches_root, base, takes):
         raise
     shutil.rmtree(old, ignore_errors=True)
     notes = ["base: {}".format(base)] + ["{} from {}".format(family, other) for family, other, _, _ in parsed]
-    return ("merged into {}: {}. Revise 13-rules.md and 14-sources.md for the mix, upload what charter.py assets "
-            "lists, then run charter.py check --step C2.".format(dst, ", ".join(notes)))
+    fixes = []
+    for family, other, _, _ in parsed:
+        if family == "type":
+            fixes.append("replace the @import on the first line of components/bundle.css with {}'s".format(other))
+        elif family == "imagery":
+            fixes.append("re-point the ../../media/ paths and inline icons of the Showcase and the components to "
+                         "{}'s files".format(other))
+    return ("merged into {}: {}. Revise 13-rules.md and 14-sources.md for the mix{}, upload what charter.py assets "
+            "lists, then run charter.py check --step C2.".format(
+                dst, ", ".join(notes), "".join("; " + fix for fix in fixes)))
