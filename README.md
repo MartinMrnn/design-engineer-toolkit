@@ -73,7 +73,7 @@ To resume a project, run the same command in the same folder: the lead reads `de
 | B1 Product | UX designer | Competitors you know (optional) | Research notes, then intent, story, positioning and wording in the charter | The key messages, then the product sections |
 | B2 Structure and content | UX designer, critic | Real content to replace `[to provide]` (optional) | Sitemap, page structure, real copy and grey wireframes in the charter | Structure and copy |
 | C1 Moodboard reading | Art director | Moodboard, reference sites with what you like in each, counter-examples | The visual intent: what we keep, avoid, and 5 keywords | The reading |
-| C2 Directions | 3 art directors, critic | Your choice or mix | Three design systems on one contract, side by side on a shared board; the chosen one merged into the charter | A direction |
+| C2 Directions | 3 art directors, critic | Your choice or mix | Three comparable sketches on one contract, side by side on a shared board; only the kept direction is completed and merged into the charter | A direction |
 | C3 Key mockups | Art director, critic | Your choices | 2–3 home layouts, then every page and the 404 page, in the charter | One layout per page |
 | C4 Motion | Art director, critic | Your choice | 2–3 animated prototypes; the chosen motion in the charter | A motion personality |
 | D1 Mockup build | Frontend developer, critic | What must be interactive | `site/`, built from the charter page by page, and any deviation that could not be avoided | Each page type and its deviations |

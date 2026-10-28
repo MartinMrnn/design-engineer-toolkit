@@ -6,7 +6,9 @@ import shutil
 from pathlib import Path
 
 from . import tokens as tk
-from colourlib import convert, dominant, tokenfile, wcag  # on sys.path since .tokens, which imports colourlib.wcag
+from . import use_colour_skill
+use_colour_skill()
+from colourlib import convert, dominant, wcag  # noqa: E402
 from .index import read_json, read_text
 from .tokens import as_dict, as_list
 
@@ -17,8 +19,10 @@ LEADS = [("08-colour.md", "Colour logic"), ("09-type.md", "Type"), ("10-shape-an
 
 MEASURED = "Colour, measured"
 SHOWCASE = "showcase-1440.png"
+MEASURED_COLOURS = ("ground", "ink", "accent", "on-accent")
 NO_INTENT = "colour intent not recorded"
-INTENT_LINE = re.compile(r"^\s*[-*]\s*\*\*Colour intent\*\*\s*:\s*(.*)$", re.MULTILINE)
+# [ \t] and not \s: the line must not run on into the next one (the untouched template line is `- **Colour intent**:`).
+INTENT_LINE = re.compile(r"^[ \t]*[-*][ \t]*\*\*Colour intent:?\*\*[ \t]*:?[ \t]*(.*)$", re.MULTILINE)
 
 
 class Html(str):
@@ -91,7 +95,7 @@ def lead(path):
 
 
 def intent_words(path):
-    """The colour intent's words, from the `- **Colour intent**: …` line of a 01-context.md: the text up to the first
+    """The colour intent's words, from the `- **Colour intent**: …` line (or `- **Colour intent:** …`) of a 01-context.md: the text up to the first
     ';' or sentence end (the rest of the line is the existing identity and the colours to avoid). None when the file or
     the line is missing, or the line still holds a placeholder."""
     if not path.exists():
@@ -111,13 +115,19 @@ def _share(share):
 
 def _measured(tokens_path, tokens, capture):
     """The cell of the "Colour, measured" row for one branch: OKLCH, text contrast and the capture's shares, as the
-    colour skill computes them (colourlib), with no verdict on the design."""
-    try:
-        by_theme, ids = tokenfile.colours(tokens, str(tokens_path))
-    except ValueError:  # includes tokenfile.TokenError
+    colour skill computes them (colourlib), with no verdict on the design. Only ground, ink, accent and on-accent are
+    resolved, in the first theme, which the cell names; one that is missing or does not resolve reads "not set"."""
+    colours = {t["name"]: t for t in as_list(as_dict(tokens.get("color")).get("tokens"))
+               if isinstance(t, dict) and isinstance(t.get("name"), str)}
+    if not colours:
         return '<p class="muted">no colours yet</p>'
-    hexes = dict(by_theme[ids[0]])
-    items = []
+    first = tk.theme_ids(tokens)[0]
+    hexes = {}
+    for name in MEASURED_COLOURS:
+        value = tk.resolve(name, first, colours, first)
+        if value:
+            hexes[name] = convert.to_hex(wcag.parse_hex(value))
+    items = ['<li class="muted">theme {}</li>'.format(_e(first))]
     for name in ("ground", "ink", "accent"):
         if name not in hexes:
             items.append("<li><code>{}</code> not set</li>".format(name))

@@ -1,8 +1,6 @@
 """tokens.json as the Design System type reads it, narrowed by the studio's contract:
 fixed names, hex colours or aliases, list-shaped families, usage notes, contrast."""
 import re
-import sys
-from pathlib import Path
 
 NAME = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.-]{0,63}$")
 HEX = re.compile(r"^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$")
@@ -57,8 +55,9 @@ def resolve(name, theme, colours, first, depth=0):
 
 
 # The WCAG 2.2 contrast code lives in one module, the colour skill's colourlib/wcag.py, so that charter.py and
-# colour.py never disagree. From this file (skills/charter/scripts/charterlib/tokens.py), parents[3] is skills/.
-sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "colour" / "scripts"))
+# colour.py never disagree; use_colour_skill() makes it importable.
+from . import use_colour_skill  # noqa: E402
+use_colour_skill()
 from colourlib import wcag  # noqa: E402
 
 luminance = wcag.relative_luminance
@@ -113,9 +112,8 @@ def _family(family, block, expected, seen):
     return problems
 
 
-# The two floors the contract checks, from the one WCAG module: text 4.5:1 (SC 1.4.3), the focus ring 3:1 (SC 1.4.11).
-TEXT_FLOOR = wcag.THRESHOLDS["text-aa"].minimum
-NON_TEXT_FLOOR = wcag.THRESHOLDS["non-text-aa"].minimum
+# The floors the contract checks come from the one WCAG module: wcag.THRESHOLDS["text-aa"], 4.5:1 (SC 1.4.3), for text and
+# ["non-text-aa"], 3:1 (SC 1.4.11), for the focus ring; required_pairs names the threshold of each pair.
 
 
 def usage_grounds(colours, name):
@@ -178,18 +176,11 @@ def _colours(tokens, spec, seen):
     if problems:
         return problems
     for name in spec["text"]:
-        if name not in colours:
-            continue
-        grounds = usage_grounds(colours, name)
-        if not grounds:
+        if name in colours and not usage_grounds(colours, name):
             problems.append("tokens.json: the usage note of '{}' must name the grounds it reads on, as `token` names".format(name))
-            continue
+    for fg, bg, key in required_pairs(colours, spec):
         for theme in ids:
-            for ground in grounds:
-                problems += _pair(name, ground, theme, colours, first, TEXT_FLOOR)
-    for theme in ids:
-        for ground in spec["grounds"]:
-            problems += _pair(spec["focus"], ground, theme, colours, first, NON_TEXT_FLOOR)
+            problems += _pair(fg, bg, theme, colours, first, wcag.THRESHOLDS[key].minimum)
     return problems
 
 

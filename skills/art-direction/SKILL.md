@@ -81,6 +81,8 @@ The lead then publishes the charter.
 5. Every component a page adds (the mobile menu sheet, the footer, a form, a gallery…) goes into the charter like the base ones: `components/<Name>/preview.html` with its states, a `README.md`, its styles in `bundle.css`. New sources go into `14-sources.md`.
 6. Run `charter.py cards` and `charter.py check --step C3`.
 
+The C3 art director fixes the problems the C3 critic finds in the components completed at C2 (in the charter).
+
 Typical question: "For the opening: a full-bleed photo or type only?"
 
 ## C4 · Motion
