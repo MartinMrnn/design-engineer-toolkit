@@ -129,7 +129,7 @@ Other skills or plugins that react to "build a website", or to any creative work
 
 ## Limits of v0.3
 
-- Needs Claude Code signed in to claude.ai. Projects started with v0.2 continue with v0.2.
+- Needs Claude Code signed in to claude.ai. v0.3 does not resume a project started with v0.2; finish it with v0.2.
 - Wireframes, mockups and motion are shown in the charter at 1440 px and 390 px; other widths are checked locally.
 - Desktop (1440 px) and mobile (390 px) only, one mockup per project folder.
 - The local preview server does not serve `site/404.html` for missing pages; static hosts such as GitHub Pages or Netlify do.

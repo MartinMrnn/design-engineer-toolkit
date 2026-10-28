@@ -7,7 +7,7 @@
 - **Comparable directions.** At C2, three art directors each build a complete design system as a branch of the charter, on one contract: the same token names, sections, components and copy. Only the design differs, and a published board compares them row by row. The chosen direction, or a mix, is merged back into the charter.
 - **No more handoff kit.** The charter is the kit. At the end of C4, `charter.py freeze` checks that every value of the mockups is a token, and the build starts from `charter.py export`. Nine steps instead of ten.
 - **A contract, checked by a script.** `charter.py check` validates the charter at every step: sections due, token names and grammar, text contrast in every theme, components and cards.
-- **Requires Claude Code signed in to claude.ai.** Projects started with v0.2 continue with v0.2.
+- **Requires Claude Code signed in to claude.ai.** v0.3 does not resume a project started with v0.2; finish it with v0.2.
 
 ## 0.2.0 · 2026-10-24 · first public release
 

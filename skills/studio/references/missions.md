@@ -63,6 +63,22 @@ Constraints: you made none of these directions; build nothing and change no file
 Done when: the REPORT recommends one direction, or a mix and its base, with a justification linked to the brief, the intent and the critic's report
 ```
 
+## Fix mission (E1, frontend)
+After the E1 review, launch a new frontend developer for the fixes the user wants.
+
+```text
+Step: E1 · Final review · fixes
+Mode: produce
+Skill directory: <plugin root>/skills/mockup-build
+Charter skill: <plugin root>/skills/charter
+Project: <absolute path of the project folder>
+Preview: http://127.0.0.1:<port>/
+Critic report: design/reviews/E1-site-<round>.md
+Fix: problems <numbers, or "all"> of that report
+Decisions to respect: <the user's words on each problem kept or dropped>
+Done when: each listed problem is fixed, or recorded in design/deviations.md with its justification; the pages touched pass the self-check
+```
+
 ## Critic mission
 
 ```text
@@ -73,7 +89,7 @@ Charter skill: <plugin root>/skills/charter
 Project: <absolute path of the project folder>
 Review: <each file with its preview URL>
 Report: design/reviews/<step>-<item>-1.md
-References: design/charter/project/ (README.md first, then the sections the step needs), design/ux/research.md (B2)
+References: design/charter/project/ (README.md first, then the sections the step needs), design/branches/<id>/project/ (C2, the three branches), design/ux/research.md (B2)
 Check: design/reviews/<step>-<item>-check.txt (the output of charter.py check)
 Compare with (D1, E1): <the approved Mockup and Motion cards, as design/decisions.md records them>
 Deviations (D1, E1): design/deviations.md
