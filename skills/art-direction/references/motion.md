@@ -26,8 +26,8 @@ With `prefers-reduced-motion: reduce`, every page shows its final state: no reve
 - CSS transitions and keyframes first.
 - For motion tied to scrolling or long sequences: GSAP 3.15.0 with ScrollTrigger, from jsDelivr:
   `https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js` and `https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/ScrollTrigger.min.js`.
-- Smooth scroll only when the personality needs it: Lenis 1.3.26,
-  `https://cdn.jsdelivr.net/npm/lenis@1.3.26/dist/lenis.min.js` and `https://cdn.jsdelivr.net/npm/lenis@1.3.26/dist/lenis.css`.
+- Smooth scroll only when the personality needs it: Lenis 1.3.26, `https://cdn.jsdelivr.net/npm/lenis@1.3.26/dist/lenis.min.js`. No CDN stylesheet in cards: inline Lenis's few rules (those of its stylesheet, same version) in the card's `<style>`, keeping only those the card needs; a value in them is a token like any other (`charter.py freeze`).
+- Scripts in cards come from jsDelivr, unpkg or cdnjs, always with an exact pinned version. A script reads durations and easings from the tokens (`getComputedStyle(document.documentElement).getPropertyValue('--duration-base')`), never as a written number.
 - Animate `transform` and `opacity` only.
 
 ## Where an entrance plays

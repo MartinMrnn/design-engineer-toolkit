@@ -38,7 +38,7 @@ site/
 
 ## Building
 1. Set up `site/` and run `charter.py export site/assets` (the charter skill's script).
-2. Build the home page from its `MockupHome` card: reuse its markup and the charter's `ds-` classes, move page-specific styles to `main.css`, and keep every value a token.
+2. Build the home page from its `MockupHome` card: reuse its markup and the charter's `ds-` classes; rewrite its `../../media/` to `assets/img/`; link `assets/css/tokens.css`, then `components.css`, then `main.css`; move page-specific styles to `main.css`, and keep every value a token.
 3. Add the approved motion (`references/motion.md`) and the agreed interactions.
 4. Self-check once (`references/self-check.md`).
 5. Report. The lead sends the page to the critic, then to the user.
@@ -49,7 +49,7 @@ site/
 - Semantic HTML: `header`, `nav`, `main`, `footer`; one `h1` per page; `button` for actions, `a` for navigation; `alt` on images; `label` on form fields; `lang` on `html` in the language of the site's copy.
 - A visible focus style on every interactive element, as the charter's components draw it.
 - Responsive from 390 to 1440 px; check 768 px too. Nothing overflows horizontally.
-- The opening hero fills the first screen: `min-height: var(--hero-min-height)` (with the header's height taken off when the header is not over the hero), sizes inside it scaled with the viewport as the mockup does, and never a fixed `height` that would cut content on a short screen. The next section does not show at 1440 × 900 or 390 × 844.
+- The opening hero fills the first screen: `min-height: var(--hero-min-height)` (with the header's height taken off when the header is not over the hero), its headline sized with the `fluid` tokens as the mockup does (`font-size: var(--fluid-display-xl)`), and never a fixed `height` that would cut content on a short screen. The next section does not show at 1440 × 900 or 390 × 844.
 - The mobile navigation is built as the mockup shows it; its keyboard order follows its visual order.
 - Images: `width` and `height` set, `loading="lazy"` below the first screen, exported at twice their displayed width.
 - Icons: the inline SVG of each Hugeicons icon the mockups use (`stroke="currentColor"`), sized with the icon tokens, `aria-hidden="true"` next to a visible label, or an `aria-label` on an icon-only button. No icon font in `site/`.

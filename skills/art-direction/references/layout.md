@@ -8,7 +8,7 @@ The UI makes the UX visible: it helps the brain understand what the page says an
 - What can be clicked looks clickable, and alike everywhere. What cannot be clicked never looks like a button.
 
 ## Grid
-- Pick a grid for the direction (columns, gutter, margins) and write it in the tokens. Sections follow it; a section may break it on purpose (an image that bleeds, a staggered list), once or twice per page, for a stated reason.
+- Pick a grid for the direction (columns, gutter, margins). Write the grid in `10-shape-and-space.md`; its widths use `container-max` and the `space-*` tokens. Sections follow it; a section may break it on purpose (an image that bleeds, a staggered list), once or twice per page, for a stated reason.
 - Align to the grid optically, not only numerically: a big headline's first letter, a rounded image, an icon.
 
 ## Spacing
@@ -22,7 +22,7 @@ The UI makes the UX visible: it helps the brain understand what the page says an
 
 ## The opening hero
 - The hero fills the first screen: `min-height` of the viewport height (`100svh`, minus the header if the header is not over it), so the next section does not show above the fold, at 1440 × 900 as at 390 × 844.
-- On shorter or taller screens it adapts instead of breaking: sizes inside the hero scale with the viewport (`clamp()` with `vh` or `svh` units), and on a short screen it grows taller rather than cutting its content. Check it at 1440 × 700 and 390 × 667 too.
+- On shorter or taller screens it adapts instead of breaking: its headline takes a fluid size (`font-size: var(--fluid-display-xl)`, a `clamp()` from the `fluid` tokens), its height is `min-height: var(--hero-min-height)`, and on a short screen it grows taller rather than cutting its content. Check it at 1440 × 700 and 390 × 667 too.
 - The headline, the supporting line and the main action are all on the first screen. Inner pages that open with an intro rather than a hero do not need to fill the screen: the B2 plan says which pages open with a hero.
 
 ## Mobile

@@ -7,7 +7,7 @@ Start from the intent: what should a visitor feel in the first second? Decide th
 - **accent**: one or two colours, and where they are allowed (only on actions? only in one section? only in photos?);
 - **neutrals**: lines, muted text and surfaces, all with the same temperature.
 
-Write the logic in one sentence on the tile, for example "the accent only appears on what you can click".
+Write the logic in one sentence in `08-colour.md`, for example "the accent only appears on what you can click".
 
 ## Contrast (WCAG 2.x)
 - Body text: at least 4.5:1 against its background.
@@ -32,9 +32,9 @@ async (page) => page.evaluate(() => {
 A pair under its threshold changes before it reaches a mockup.
 
 ## Colour that means something
-- Where the B2 plan has choices or states (available, full, selected, sold out, error, success), give each its colour role, drawn from the palette, and keep it the same everywhere. Name them by meaning: `--color-selected`, `--color-unavailable`, `--color-error`.
+- Where the B2 plan has choices or states (available, full, selected, sold out, error, success), give each its colour role, drawn from the palette, and keep it the same everywhere. The contract names them by meaning: `var(--state-selected)`, `var(--state-unavailable)`, `var(--state-error)`, `var(--state-success)`.
 - Never let colour carry a meaning alone: pair it with a word, an icon or a shape, for people who do not see the difference.
 - A palette of two colours can be striking, but check that the interface still tells options, states and actions apart. If it cannot, add a cue (an icon, a pattern, a weight) rather than a stray colour.
 
 ## Tokens
-Name colours by role, not by hue: `--color-ground`, `--color-ink`, `--color-ink-muted`, `--color-accent`, `--color-line`. Hues may change; roles stay.
+Colours are named by role, not by hue, with the names of the charter skill's `contract.md`: `var(--ground)`, `var(--ground-raised)`, `var(--ink)`, `var(--ink-muted)`, `var(--line)`, `var(--accent)`, `var(--on-accent)`, `var(--focus-ring)` and the states above. Hues may change; roles stay. Never invent another name.
