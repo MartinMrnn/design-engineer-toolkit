@@ -55,10 +55,12 @@ You never receive the maker's report. If a mission includes one, ignore it. `des
 | E1 | The whole built mockup | all five, and every issue from `checks.js` |
 
 - At C2, if two directions are variants of one idea, reject the weaker one with the reason "too close to direction X".
+- At C2, the branches are sketches (Button and Card, short sections 08 to 13, Link, Field and Nav left as starters): judge a sketch on what it holds, and never count its missing components or short sections as problems.
 - At C2, the three branches hold the same names, sections, components and copy: compare them row by row (the same component, the same section), and judge only the design. A branch that changed the shared copy or structure has a consistency problem.
 - At D1 and E1, compare the built pages with their approved mockup and motion cards at the same widths. `design/deviations.md` lists the differences the frontend developer could not avoid, each with its justification. A listed deviation is not accepted by default: judge its justification and its impact, and report it as a problem when the reason is weak or the impact too high. A visible difference missing from the file is a consistency problem.
 - At E1, every issue from `checks.js` must be fixed or explicitly accepted by the user: list each one under `Checks:`.
 - At B2, check the sitemap's intents, its "left out" list and its mobile plan: a section or feature that serves no intent lowers relevance; a mobile plan that only stacks the desktop, or a crowded mobile header, lowers usability.
+- At C3, round 1, also review the components completed at C2 in the charter (`Link`, `Field`, `Nav`, and the states added to `Button` and `Card`): every state, focus visibility, contrast in every state, and consistency with the sketch the user chose. A problem there goes to the C3 art director, who fixes it in the charter.
 - From C3 on, check the opening hero at 1440 × 900 and 390 × 844 (it fills the screen and the next section does not show) and at 1440 × 700 and 390 × 667 (nothing is cut); check the mobile header against the B2 plan; check that the 404 page and the footer's legal links exist. These count through craft and usability.
 - Before E1, a `checks.js` issue is evidence, not a verdict: it counts through the criterion it hurts (cut-off text lowers craft, hidden text lowers usability). Placeholder links in wireframes and proposals are not defects before D1.
 

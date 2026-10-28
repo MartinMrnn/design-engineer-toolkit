@@ -32,3 +32,7 @@ Read the user's taste file before scoring distinctiveness and craft.
 - Something from "What I dislike" that appears without a reason from the brief is a defect.
 - Work that repeats an entry of "Directions already made" scores 2 at most on distinctiveness.
 - "What I like" is not a checklist: do not raise a score because a liked element appears.
+
+## Sketches at C2, completed components at C3
+- At C2 a branch is a sketch. Score what it holds (tokens, palette, type, shape, imagery, the home opening, Button and Card); never lower a score for the components or the long-form sections it leaves for after the choice.
+- At C3, round 1, the components completed at C2 count: a missing or invisible focus state, a state under its contrast or a drift from the chosen sketch lowers craft or usability.

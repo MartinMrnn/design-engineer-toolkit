@@ -70,7 +70,7 @@ Fonts: a file in `fonts/`, listed in `type.fonts` as `{"family", "file", "weight
 
 - HTML and CSS only. `components/bundle.js` holds no component: `charter.py init` and `branch` write it so that the type runs previews live (their scripts and their relative files load); never edit it. Styles live in `components/bundle.css`. Classes start with `ds-`. Previews show states with `is-hover`, `is-focus` and `is-active` (styled like `:hover`, `:focus-visible` and `:active`) and the real `:disabled`. Focus is `outline: var(--focus-width) solid var(--focus-ring); outline-offset: var(--focus-offset)`.
 - Each component has `components/<Name>/preview.html` (one component, every state, real copy) and `components/<Name>/README.md` (first sentence: what it is for; then what the page provides, when to use it, do and don't).
-- The base set, at C2, with these states:
+- The base set, at C2, with these states. A branch before the choice is a sketch: `check --step C2 --sketch` requires only `Button` and `Card` (normal and hover states, styles in `bundle.css`, a short `README.md`) and accepts the starters for `Link`, `Field` and `Nav`; short sections 08 to 13 and short `README.md` rules, `14-sources.md`, tokens, `Cover` and `Showcase` complete. After the choice, the base instance completes the charter and the full `check --step C2` applies:
   - `Button`: primary and secondary; default, hover, focus, active, disabled.
   - `Link`: inline and standalone; default, hover, focus.
   - `Card`: default, hover.

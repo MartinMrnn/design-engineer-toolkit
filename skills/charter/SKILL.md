@@ -22,7 +22,7 @@ Run from the project folder: `python3 "<charter skill directory>/scripts/charter
 | Command | When |
 |---|---|
 | `init --title "<Client>"` | A1, once (the lead) |
-| `check --step <id>` | before you report, on what you wrote; the lead runs it again before a publish |
+| `check --step <id>` | before you report, on what you wrote; the lead runs it again before a publish. `check --step C2 --sketch --root design/branches/<id>`: a C2 branch before the choice, which needs only `Button` and `Card` (the other base components may stay starters) |
 | `css` | after any change to `tokens.json` |
 | `cards` | after adding or changing a page card (`Wireframe…`, `Showcase`, `Mockup…`, `Motion`); a card's `mobile-height=<n>` sets its 390 px copy's height |
 | `branch a b c` | C2, the lead |
