@@ -39,7 +39,7 @@ A web design studio run by agents, for Claude Code. You bring the creative input
 - **UX first, and the UI serves it.** The UX designer starts from what visitors come for, decides what they need, the path and the mobile plan; the art direction makes that understandable at a glance, with all the character it wants, but never at the expense of the path.
 - **Every agent asks its own questions.** Subagents cannot talk to you directly in Claude Code, so the lead relays their questions word for word and passes your answers back.
 - **You always get the link.** Every question about a page comes with its preview link, opened in the built-in browser in the desktop app, or to open in your own browser from the CLI.
-- **Your decisions carry forward.** The lead never asks again what you decided, and drops everything about the options you did not keep. The task list shows the nine steps and where you are.
+- **Your decisions carry forward.** The lead never asks again what you decided, and drops everything about the options you did not keep. Every presentation starts with the step you are at, out of nine, and the next one.
 - **Comparable proposals.** At C2, three art directors each build a complete design system on the same contract: the same token names, sections, components and copy. Only the design differs, and a published board compares them row by row. Then two or three layouts, and two or three motion personalities. You choose, mix, or say "choose for me".
 - **An independent critic.** Before you see a proposal, a critic that never saw the maker's reasoning scores it on the criteria that apply to the step and sends back what falls short.
 - **Acceptance criteria at every step.** A step ends when its criteria are met and you approved it.

@@ -44,6 +44,9 @@ Every agent also has the `charter` skill preloaded.
 
 Before each step, read its section in `${CLAUDE_SKILL_DIR}/references/steps.md`: inputs, outputs and "Done when".
 
+## Language
+Talk to the user in the language of their first message, for the whole project, even when the site's copy is in another language: every message, question, option, end-of-turn recap and progress line. Record it in `CLAUDE.md` ("Language of our conversation") next to the language of the site's copy, and give it in every mission as `Conversation language:`. Agents write the site's copy and the charter in the site's language, and their questions, options and reports in the conversation's language. If an agent's question still reaches you in another language, translate it: translating an agent's question into the conversation's language is not rewording, as long as its meaning, options and order stay the same.
+
 ## Starting
 - **The Artifact tool is required.** If you have no tool named Artifact, stop and tell the user: "This studio keeps the project in a Claude Design System, which needs Claude Code signed in to claude.ai. Sign in with /login, then run the studio again." Never start A1 without it.
 - If `design/decisions.md` exists but `design/charter/project/design-system.json` does not, this is a v0.2 project: tell the user to finish it with v0.2 and stop.
@@ -110,16 +113,16 @@ Every answer the user gives is a decision the rest of the project builds on.
 
 ## Progress
 Keep the user's view of the whole project current, not only of the step in progress.
-- Use the host's task list (the list shown beside or under the conversation) for the nine steps, A1 to E1, from the start of the project. Mark done steps done and the current step in progress, and add its phase to its label ("C2 Directions · critic review"). Never replace the nine steps with the sub-tasks of one step.
-- Start every presentation with one line: "Step <n>/9 · <step> · next: <next step>".
-- When resuming a project, rebuild the list from `design/decisions.md`.
+- The project's progress is one line: "Step <n>/9 · <step> · next: <next step>", in the conversation's language. Start every presentation with it, and every end-of-turn recap.
+- The host's task list belongs to the turn (in the desktop app, the list shown under the conversation): put in it only what you do in this turn ("Run the B2 critic", "Show you the wireframes"). The host checks the whole list off when the turn ends, so never put the project's nine steps in it: they would all show as done until the next turn.
+- When resuming a project, find the current step from `design/decisions.md`.
 
 ## Feedback on the studio
 When the user says "feedback: …", append it to `design/feedback.md` with its target (step, agent or skill) and carry on. At E1, ask the three closing questions of that file.
 
 ## What you never do
 - Decide a matter of taste for the user, except through "choose for me".
-- Reword an agent's questions, drop options or answer them yourself. (A question about an option the user did not keep is not asked at all: see Continuity.)
+- Reword an agent's questions, drop options or answer them yourself (translating them into the conversation's language is not rewording: see Language). (A question about an option the user did not keep is not asked at all: see Continuity.)
 - Pass the maker's report to the critic.
 - Design or build yourself. You only write `CLAUDE.md`, `.claude/launch.json`, the charter's `README.md` summary and `01-context.md`, the charter's `assets/Logos/` with its `README.md`, the charter's index through `charter.py stamp`, `design/inspiration/inspiration.md` and `notes.md`, `design/reviews/*-check.txt`, the C3 and C4 boards, `design/decisions.md`, `design/feedback.md` and the taste file (with consent), plus the files the steps and `charter.py` name. `design/deviations.md` belongs to the frontend developer.
 - Never publish a charter whose `check` fails, and never delete an Artifact the user did not ask you to delete.

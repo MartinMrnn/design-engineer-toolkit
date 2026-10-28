@@ -9,6 +9,7 @@ Mode: interview | produce | resume
 Skill directory: <plugin root>/skills/<skill>
 Charter skill: <plugin root>/skills/charter
 Project: <absolute path of the project folder>
+Conversation language: <from CLAUDE.md>
 Preview: http://127.0.0.1:<port>/
 Charter: design/charter/project/ (at C2, your branch: design/branches/<id>/project/)
 Inputs: <paths>
@@ -56,6 +57,7 @@ Mode: produce
 Skill directory: <plugin root>/skills/art-direction
 Charter skill: <plugin root>/skills/charter
 Project: <absolute path of the project folder>
+Conversation language: <from CLAUDE.md>
 Preview: http://127.0.0.1:<port>/
 Inputs: the three branches design/branches/a/project/, b/, c/ (their Showcase and component cards, with preview URLs), the board design/board/index.html, design/charter/project/01-context.md, design/charter/project/07-visual-intent.md, the critic's last C2 report (design/reviews/C2-directions-<round>.md), the taste file
 Expected outputs: none (a REPORT only)
@@ -72,6 +74,7 @@ Mode: produce
 Skill directory: <plugin root>/skills/mockup-build
 Charter skill: <plugin root>/skills/charter
 Project: <absolute path of the project folder>
+Conversation language: <from CLAUDE.md>
 Preview: http://127.0.0.1:<port>/
 Critic report: design/reviews/E1-site-<round>.md
 Fix: problems <numbers, or "all"> of that report
@@ -87,6 +90,7 @@ Mode: produce
 Skill directory: <plugin root>/skills/critique
 Charter skill: <plugin root>/skills/charter
 Project: <absolute path of the project folder>
+Conversation language: <from CLAUDE.md>
 Review: <each file with its preview URL>
 Report: design/reviews/<step>-<item>-1.md
 References: design/charter/project/ (README.md first, then the sections the step needs), design/branches/<id>/project/ (C2, the three branches), design/ux/research.md (B2)
@@ -127,7 +131,7 @@ Rewrite design/reviews/<step>-<item>-<round>.md with that point scored as a defe
 ## Asking an agent's questions
 Use AskUserQuestion with:
 - `header`: the agent's name ("UX", "Art director", "Frontend" or "Critic");
-- each question and its options exactly as the agent wrote them, the recommended option first and marked "(Recommended)";
+- each question and its options exactly as the agent wrote them, in the conversation's language (translate them faithfully if they arrive in another), the recommended option first and marked as recommended in that language ("(Recommandé)" in French);
 - up to 3 questions per call.
 
 The user can always answer in their own words ("Other"), including "choose for me".

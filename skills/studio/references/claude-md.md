@@ -6,6 +6,7 @@ This folder is a design studio project. The deliverable is a high-fidelity stati
 - Client: [one line]
 - User: [the user's name, which signs the charter's changes]
 - Pages in scope: [list], plus the supporting pages: 404, legal notice [, terms of sale] [, privacy policy]
+- Language of our conversation: [the language of the user's first message; every message, question and report to the user uses it]
 - Language of the site's copy: [language]
 - Preview: http://127.0.0.1:[port]/ (this folder, served by the preview server)
 - Charter: [Artifact URL] (files: `design/charter/project/`)
