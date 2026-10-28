@@ -33,6 +33,12 @@ Read the user's taste file before scoring distinctiveness and craft.
 - Work that repeats an entry of "Directions already made" scores 2 at most on distinctiveness.
 - "What I like" is not a checklist: do not raise a score because a liked element appears.
 
+## Colour
+- Judge colour inside the criteria above, never as a sixth one: against the colour intent of `01-context.md`, the project's context, the existing identity when there is one (as binding as the brief recorded), the coherence of the direction and the visible hierarchy.
+- A required WCAG pair under its threshold (`colour.py palette`, or `charter.py check`) is a craft defect: text under 4.5:1 is the anchor of craft 1. Any other number is an indicator: an OKLCH figure, a share of the first screen, a CVD distance, an emotion indicator. Never lower a score for an indicator that is not a requirement; use it to question a claim or a choice.
+- Report any claim of "Why these colours" that the measures contradict, with the command and the figure.
+- Colour-vision deficiency, C3 to E1: when two state colours come close under a simulation, the finding is "check that this state has a non-colour cue". It is a usability finding about the cue, not a pass or fail on the distance.
+
 ## Sketches at C2, completed components at C3
 - At C2 a branch is a sketch. Score what it holds (tokens, palette, type, shape, imagery, the home opening, Button and Card); never lower a score for the components or the long-form sections it leaves for after the choice.
 - At C3, round 1, the components completed at C2 count: a missing or invisible focus state, a state under its contrast or a drift from the chosen sketch lowers craft or usability.

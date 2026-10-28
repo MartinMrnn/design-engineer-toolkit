@@ -8,6 +8,8 @@
 - **Sketches at C2.** Each of the three branches is a sketch (every token, the home opening, Button and Card) checked with `charter.py check --step C2 --sketch`; only the direction you keep is completed in the charter.
 - **No more handoff kit.** The charter is the kit. At the end of C4, `charter.py freeze` checks that every value of the mockups is a token, and the build starts from `charter.py export`. Nine steps instead of ten.
 - **A contract, checked by a script.** `charter.py check` validates the charter at every step: sections due, token names and grammar, text contrast in every theme, components and cards.
+- **A colour skill.** The art director gets a method for colour (`skills/colour/`): it starts from your intent, the context and the identity you already have, gives every colour a role, argues each choice in "Why these colours" and labels what it rests on (standard, empirical finding or design heuristic). Kickoff asks three colour questions inside its existing rounds (three feelings, existing identity and how binding, colours to avoid); C1 writes Colour hypotheses from the moodboard's captures; the critic reruns the measures at C2 and checks that colour is never the only cue from C3 on.
+- **`colour.py`.** A measuring script with no dependency: WCAG 2.2 contrast, OKLCH, colour-vision-deficiency simulation, the dominant colours of a capture and a palette report on the charter's tokens. The C2 board gains a "Colour, measured" row. Its sources and licences are listed in `skills/colour/references/sources.md`.
 - **Requires Claude Code signed in to claude.ai.** v0.3 does not resume a project started with v0.2; finish it with v0.2.
 
 ## 0.2.0 · 2026-10-24 · first public release

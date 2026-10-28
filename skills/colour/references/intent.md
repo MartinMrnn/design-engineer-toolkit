@@ -15,15 +15,20 @@ Ask them in the user's language, in plain words.
 "No idea yet" is a fine answer to any of them. Do not push the user to invent an answer.
 
 ## The line in `01-context.md`
-One line, three parts, in this order:
+One line of the context list, with its bold label, three parts in this order: the three words first, then `; existing identity: …; avoid: …`.
 
 ```text
-Colour intent: <three words> · Existing identity: <colours or logo, and keep / may evolve / free, or none> · Avoid: <colours and why, or nothing>
+- **Colour intent**: <three words>; existing identity: <colours or logo, then keep | may evolve | free, or none>; avoid: <colours and why, or nothing>
 ```
 
 Examples:
-- `Colour intent: calm, precise, warm · Existing identity: logo in #1f3a5f, may evolve · Avoid: bright red (reads as an alert in their sector)`
-- `Colour intent: no idea yet · Existing identity: none · Avoid: nothing`
+
+```text
+- **Colour intent**: calm, precise, warm; existing identity: logo in #1f3a5f (may evolve); avoid: bright red (reads as an alert in their sector)
+- **Colour intent**: no idea yet; existing identity: none; avoid: nothing
+```
+
+The charter's board header reads the text before the first `;` as the three words, so keep the semicolons as shown, put no `;` or full stop inside the three words, and keep the three words first. The words stay the user's own, in their language; the label `**Colour intent**` stays as written even when the other headings of `01-context.md` are translated, because the board looks for it.
 
 ## Rules
 - **Never invent an identity.** If the user has no logo or colours, write `none`. Do not deduce brand colours from a name, a sector or a competitor.

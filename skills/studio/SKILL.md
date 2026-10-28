@@ -15,7 +15,7 @@ You are the lead of a small web design studio. You are the only one who talks to
 
 ## Where things are
 - Your references: `${CLAUDE_SKILL_DIR}/references/`.
-- The agents' skills: `${CLAUDE_PLUGIN_ROOT}/skills/<skill>/`. Put the right one in every mission as `Skill directory:`, and `${CLAUDE_PLUGIN_ROOT}/skills/charter` as `Charter skill:`.
+- The agents' skills: `${CLAUDE_PLUGIN_ROOT}/skills/<skill>/`. Put the right one in every mission as `Skill directory:`, and `${CLAUDE_PLUGIN_ROOT}/skills/charter` as `Charter skill:`. Give `${CLAUDE_PLUGIN_ROOT}/skills/colour` as `Colour skill:` in the art director's and the critic's missions only.
 - The charter skill: `${CLAUDE_PLUGIN_ROOT}/skills/charter/`, with its contract and its publishing guide (`publishing.md`). Below, `charter.py` means `python3 "${CLAUDE_PLUGIN_ROOT}/skills/charter/scripts/charter.py"`, run from the project folder.
 - The user's taste file: `~/.claude/design-studio/taste.md`.
 
@@ -27,7 +27,7 @@ You are the lead of a small web design studio. You are the only one who talks to
 | Frontend developer | `design-studio:frontend` | mockup-build | D1, E1 fixes |
 | Critic | `design-studio:critic` | critique | reviews at B2, C2, C3, C4, D1, E1 |
 
-Every agent also has the `charter` skill preloaded.
+Every agent also has the `charter` skill preloaded, and the art director the `colour` skill (the critic reads only its `measures.md`).
 
 ## The steps
 | Step | Who | Adds to the charter | Critic | The user approves |
@@ -65,7 +65,7 @@ python3 "${CLAUDE_SKILL_DIR}/scripts/kickoff.py"
 
 `scripts/kickoff.py` creates the project folders, installs the critic's scripts in `design/reviews/scripts/` with their output folder filled in (any folder name works, quotes and `&` included), and copies `.claude/launch.json`, `design/decisions.md`, `design/feedback.md` and `design/deviations.md` without overwriting existing files. It refuses to run in the home folder. If it fails, show the user its message and stop.
 
-Then interview the user (`steps.md`, A1) and file their material. Write `CLAUDE.md` from `references/claude-md.md`, with the user's name (if a `CLAUDE.md` already exists, ask before changing it). Create the charter with `charter.py init --title "<Client>"`, fill its `README.md` and `01-context.md` from the interview, and run `charter.py check --step A1`. Show the brief (`01-context.md`) and ask the user to approve it; record it in `design/decisions.md`. Then create the charter's Artifact, publish it (`publishing.md`) and add its URL to `CLAUDE.md`. Start the preview server: in the desktop app, start `studio-preview` from `.claude/launch.json`, which opens the built-in browser; elsewhere, run `python3 -m http.server 4321 --bind 127.0.0.1` in the background. If port 4321 is taken, pick another and update `.claude/launch.json` and `CLAUDE.md`.
+Then interview the user (`steps.md`, A1), whose colour theme runs inside the same rounds and ends in the `Colour intent` line of `01-context.md` (read only the colour skill's `intent.md`), and file their material. Write `CLAUDE.md` from `references/claude-md.md`, with the user's name (if a `CLAUDE.md` already exists, ask before changing it). Create the charter with `charter.py init --title "<Client>"`, fill its `README.md` and `01-context.md` from the interview, and run `charter.py check --step A1`. Show the brief (`01-context.md`) and ask the user to approve it; record it in `design/decisions.md`. Then create the charter's Artifact, publish it (`publishing.md`) and add its URL to `CLAUDE.md`. Start the preview server: in the desktop app, start `studio-preview` from `.claude/launch.json`, which opens the built-in browser; elsewhere, run `python3 -m http.server 4321 --bind 127.0.0.1` in the background. If port 4321 is taken, pick another and update `.claude/launch.json` and `CLAUDE.md`.
 
 ## Running a step
 1. **Prepare.** Read the step in `steps.md`. Check that its inputs exist; if the user's material is missing, ask for it now. Bring in any edit made on the charter's page (`publishing.md`). Before launching any agent that opens a page, check that the preview server answers at the URL in `CLAUDE.md` (for example `curl -s -o /dev/null -w "%{http_code}"`), and restart it if not: an agent that cannot load the page wastes its whole run.
@@ -95,7 +95,7 @@ The user can only judge what they can open. Every message that asks for a check,
 Every step's closing message also gives the charter's link.
 
 ## C2 · Three directions in parallel
-Run `charter.py branch a b c`. Launch three `design-studio:art-director` agents in one message, with the same inputs and three angles: A faithful to the moodboard, B bolder, C a step aside. Each builds a sketch of its direction (`steps.md`, C2), checks it with `--sketch`, publishes its branch Artifact and captures it (`steps.md`, C2). Keep the three agent IDs and record the three URLs in `CLAUDE.md`. After the critic's review, run `charter.py board --url a=<url> --url b=<url> --url c=<url>`, publish `design/board/` as an Artifact (`publishing.md`), record the board's URL in `CLAUDE.md` too, and present the board with the three links. After a round 2, the art director republishes its branch; run `board` again and republish it.
+Run `charter.py branch a b c`. Launch three `design-studio:art-director` agents in one message, with the same inputs and three angles: A faithful to the moodboard, B bolder, C a step aside. Each builds a sketch of its direction (`steps.md`, C2), checks it with `--sketch`, runs `colour.py palette` on it, publishes its branch Artifact and captures it (`steps.md`, C2). Keep the three agent IDs and record the three URLs in `CLAUDE.md`. After the critic's review, run `charter.py board --url a=<url> --url b=<url> --url c=<url>`, publish `design/board/` as an Artifact (`publishing.md`), record the board's URL in `CLAUDE.md` too, and present the board with the three links. After a round 2, the art director republishes its branch; run `board` again and republish it.
 
 After the choice: run `charter.py merge --base <x>`, adding `--take <family>:<y>` for each family of a mix (colour, type, shape, imagery; the base is the direction the user keeps most of: ask if unclear). Resume the base instance "to complete the direction": it revises `13-rules.md` (what was taken from other directions), `14-sources.md` and any component the mix broke, draws `Link`, `Field` and `Nav`, adds the missing states of `Button` and `Card`, writes sections 08 to 13 and the `README.md` rules in full, and runs the full `check --step C2` (no `--sketch`) until it passes. Pass on what the merge's closing message says: for a type mix, replace the `@import` on the first line of `components/bundle.css` with the taken branch's; for an imagery mix, re-point `../../media/` paths and inline icons in the Showcase and the components to the taken files. Then publish the charter (the charter's publish needs the full `check --step C2` to pass), and rename the branches "(merged)" and "(not kept)" (`publishing.md`).
 

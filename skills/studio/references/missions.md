@@ -8,6 +8,7 @@ Step: <id · name>
 Mode: interview | produce | resume
 Skill directory: <plugin root>/skills/<skill>
 Charter skill: <plugin root>/skills/charter
+Colour skill: <plugin root>/skills/colour (art director and critic only)
 Project: <absolute path of the project folder>
 Conversation language: <from CLAUDE.md>
 Preview: http://127.0.0.1:<port>/
@@ -18,6 +19,8 @@ Constraints: <angle, scope>
 Decisions to respect: <the entries of design/decisions.md this step builds on, in the user's words; for an option step, the options already discarded>
 Done when: <the step's "Done when", copied from steps.md; you check the criteria about the critic, the publication and the user>
 ```
+
+`Colour skill:` goes in the art director's and the critic's missions only; leave the line out of the UX designer's. The art director's skills are preloaded, so the line gives it the folder of `colour.py`; the critic reads only the colour skill's `references/measures.md`.
 
 A mission starts a new agent for its step. Resume an agent only within its step: with the user's answers, for round 2, or, at C2, for the base instance to complete the direction in the merged charter.
 
@@ -56,6 +59,7 @@ Step: C2 · Art directions · comparison
 Mode: produce
 Skill directory: <plugin root>/skills/art-direction
 Charter skill: <plugin root>/skills/charter
+Colour skill: <plugin root>/skills/colour
 Project: <absolute path of the project folder>
 Conversation language: <from CLAUDE.md>
 Preview: http://127.0.0.1:<port>/
@@ -89,6 +93,7 @@ Step: <id · name> · <item> · round 1
 Mode: produce
 Skill directory: <plugin root>/skills/critique
 Charter skill: <plugin root>/skills/charter
+Colour skill: <plugin root>/skills/colour
 Project: <absolute path of the project folder>
 Conversation language: <from CLAUDE.md>
 Review: <each file with its preview URL>

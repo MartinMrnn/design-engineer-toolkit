@@ -79,6 +79,15 @@ To resume a project, run the same command in the same folder: the lead reads `de
 | D1 Mockup build | Frontend developer, critic | What must be interactive | `site/`, built from the charter page by page, and any deviation that could not be avoided | Each page type and its deviations |
 | E1 Final review | Critic, then frontend developer | Your final remarks | A checked, fixed mockup, ready to send | The final mockup |
 
+## Colour
+
+The art director carries a colour method, `skills/colour/`: colour is chosen from your intent (three words for what the site should make people feel, asked at kickoff), the context and any visual identity you already have, given roles, argued in the charter's "Why these colours", and measured.
+- **Three kinds of knowledge**, each claim labelled: a standard (WCAG 2.2, CSS Color 4), an empirical finding (a published study, with its scope), or a design heuristic. A heuristic is a starting point, never a rule.
+- **`colour.py`**, a Python 3 script with no dependency: contrast against WCAG 2.2, conversion to OKLCH, lightness ramps, colour-vision-deficiency simulation, the dominant colours of a capture, and a `palette` report on a charter's tokens. It never scores a palette: the contrast pairs the contract requires pass or fail, and the rest informs. `charter.py check` shares its WCAG module.
+- **The C2 board** gains a "Colour, measured" row (OKLCH, text contrast, share of the first screen), headed by your three words.
+- **Sources**: every source, its link and its licence is in `skills/colour/references/sources.md`. The method draws on the open `meodai/skill.color-expert` skill (CC BY 4.0), cited there, and no text of it is copied.
+- Competitors' colours are not analysed unless you ask.
+
 ## What to bring, and when
 
 Bring everything you already have at kickoff, in any form: client information, the existing site, goals, constraints, and also a moodboard, colour ideas, fonts or reference sites. The lead files it in the right place and each agent uses it at its step; the kickoff questions skip what your material already answers. If something is missing when a step needs it (your moodboard before C1, for example), the lead asks for it just before that step.
