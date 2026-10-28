@@ -47,7 +47,7 @@
     "duration": {"step": "C4", "names": ["duration-fast", "duration-base", "duration-slow"]},
     "easing": {"step": "C4", "names": ["ease-out", "ease-in-out"]}
   },
-  "components": {"step": "C2", "names": ["Button", "Link", "Card", "Field", "Nav"]},
+  "components": {"step": "C2", "names": ["Button", "Link", "Card", "Field", "Nav"], "sketch": ["Button", "Card"]},
   "cards": [
     {"prefix": "Wireframe", "step": "B2", "group": "Wireframes", "links": false},
     {"name": "Showcase", "step": "C2", "group": "Pages", "links": true},

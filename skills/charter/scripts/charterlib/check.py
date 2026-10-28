@@ -7,13 +7,13 @@ from .index import read_json, read_text
 LINKS = ('href="../../tokens.css"', 'href="../bundle.css"')
 
 
-def check(root, contract, due):
+def check(root, contract, due, sketch=False):
     project = root / "project"
     problems = _index(project)
     problems += _sections(project, contract, due)
     if contract["tokens_step"] in due:
         problems += _tokens(project, contract, due)
-        problems += _components(project, contract)
+        problems += _components(project, contract, sketch)
     problems += _cards(project, contract, due)
     return problems
 
@@ -104,7 +104,7 @@ def _card(folder, group, page, links, contract):
     return problems
 
 
-def _components(project, contract):
+def _components(project, contract, sketch=False):
     components = project / "components"
     problems = []
     bundle = components / "bundle.css"
@@ -114,7 +114,7 @@ def _components(project, contract):
         for cls in sorted(selector_classes(read_text(bundle))):
             if not cls.startswith(("ds-", "is-")):
                 problems.append("components/bundle.css: class .{} must start with ds- (states: is-)".format(cls))
-    for name in contract["components"]["names"]:
+    for name in contract["components"]["sketch" if sketch else "names"]:
         folder = components / name
         problems += _card(folder, None, False, True, contract)
         readme = folder / "README.md"

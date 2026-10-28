@@ -93,11 +93,19 @@ def add_cards(sub):
     p.set_defaults(func=lambda a, c: print(cf.cards(Path(a.root))))
 
 
+def run_check(args, contract):
+    if args.sketch and args.step != "C2":
+        fail("--sketch only applies to --step C2")
+    due = ct.due_steps(contract, args.step)
+    report("check {}".format(args.step), ck.check(Path(args.root), contract, due, args.sketch))
+
+
 def add_check(sub):
     p = sub.add_parser("check", help="validate the charter against the contract up to a step")
     p.add_argument("--step", required=True)
+    p.add_argument("--sketch", action="store_true", help="at C2, require only the sketch components (Button, Card)")
     root_arg(p)
-    p.set_defaults(func=lambda a, c: report("check {}".format(a.step), ck.check(Path(a.root), c, ct.due_steps(c, a.step))))
+    p.set_defaults(func=run_check)
 
 
 def add_merge(sub):
