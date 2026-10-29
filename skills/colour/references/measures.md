@@ -16,11 +16,15 @@ What each colour measure is for, what it is not, and how to read `colour.py`'s o
 ### Reading `palette`
 `palette <tokens.json>` reads the charter's tokens (aliases and themes resolved by the charter's own code) and prints, for each theme:
 1. every colour token with its hex and OKLCH;
-2. every contrast pair the contract requires, the same list `charter.py check` uses: each text token of the contract (`ink`, `ink-muted`, `on-accent`…) on each ground its usage note names, at 4.5:1, then the focus ring on each ground of the contract, at 3:1; with the ratio, the threshold and pass or fail;
-3. the CVD distances of the `state-*` colours (below);
-4. the line "Emotion indicators are not available in this version."
+2. every contrast pair the contract requires, the same list `charter.py check` uses: each text token of the contract (`ink`, `ink-muted`, `on-accent`…) on each ground its usage note names, at 4.5:1, then each `on-surface-n` on its `surface-n`, at 4.5:1, then the focus ring on each ground of the contract, at 3:1; with the ratio, the threshold and pass or fail;
+3. when the palette has tones or surfaces, the contrast between neighbouring tones (`tone-1` with `tone-2`, and so on) and between each surface and `ground`, as information with no verdict;
+4. the CVD distances of the `state-*` colours (below);
+5. the line "Emotion indicators are not available in this version."
 
-A FAIL in part 2 is a defect. Part 3 is a diagnosis, not a verdict.
+A FAIL in part 2 is a defect. Part 3 and part 4 are information, not verdicts.
+
+- **Standard**: an `on-surface-n` on its `surface-n` is text, so it needs 4.5:1, compared unrounded (SC 1.4.3), like every text pair. It is required whenever the surface exists. The focus ring on a surface takes that `on-surface-*` colour, so it clears the 3:1 of SC 1.4.11 by construction.
+- **Design heuristic**: the neighbouring-tone and surface-vs-ground contrasts show whether a rhythm of tones or surfaces reads as distinct layers. Two neighbouring tones close to 1:1 may blur into one; a surface very close to `ground` may not read as a panel. That can be the intent (a subtle tone-on-tone): there is no threshold, and no pass or fail.
 
 ## APCA: not built
 - **APCA is not built** in this version of the studio.
@@ -62,4 +66,10 @@ How to read the match:
 - Exact ties go to the token listed first in `tokens.json`, so the result is reproducible.
 - `--theme` picks the theme whose colours are matched (the first by default).
 
-What it is for: on a Showcase capture, how much of the first screen each role really covers (the visible hierarchy) and how much the accent takes. On a moodboard capture, colours seen in the references, to read for their character, not to copy as tokens. For a reference website, read the interface colours from its computed styles rather than from pixels.
+What it is for: on a Showcase capture, how much of the opening each role really covers (the visible hierarchy) and how much the accent takes.
+
+### Reading the surface and tone shares
+- With `--match`, the `surface-*` and `tone-*` tokens get their shares like any other token. Read their sum next to the accent share: it is how much of the capture the strategy's colour actually covers.
+- **Design heuristic**: a dominant strategy should show a large coloured share (Colour surfaces, Flood and tone-on-tone, or any direction for a *dominant* appetite); a Signal or Content-carries-the-colour direction a small one, with the colour on the actions or in the unassigned photo pixels. This is information for the art director and the critic: there is no threshold, and a share never passes or fails a direction.
+- A surface aliased to a tone or to the accent has the same value, so it is one colour listed with all its names: its share counts once.
+- Neighbouring tones are often closer than d: read the close-token warning, and read their shares together when it names them. On a moodboard capture, colours seen in the references, to read for their character, not to copy as tokens. For a reference website, read the interface colours from its computed styles rather than from pixels.
