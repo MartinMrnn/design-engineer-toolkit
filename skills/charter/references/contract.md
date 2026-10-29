@@ -106,11 +106,11 @@ Every `preview.html` starts with the type's marker on line 1, then a small compl
 | Base components | `group="Actions"` (Button, Link), `group="Content"` (Card), `group="Forms"` (Field), `group="Navigation"` (Nav); `height=` to fit | C2 |
 | `Cover` | `height=288`, no group; its folder holds only `preview.html` | C2, last |
 | `Wireframe<Page>` | `group="Wireframes" page width=1440 height=<page height>`; `mobile-height=<n>` when the 390 px page is longer than 844 | B2 |
-| `Showcase` | `group="Pages" page width=1440 height=900` | C2 |
+| `Showcase` | `group="Pages" page width=1440 height=<content height>`; `mobile-height=<n>` as above | C2 |
 | `Mockup<Page>` | `group="Pages" page width=1440 height=<page height>`; `mobile-height=<n>` as above | C3 |
 | `Motion` | `group="Pages" page width=1440 height=<page height>`; `mobile-height=<n>` as above | C4 |
 
-Page cards get a 390 px copy, `<Name>Mobile`, written by `charter.py cards` (its line 2 says it is generated); the copy is 844 px high, or the card's `mobile-height`. Never edit a copy: edit its card and run `cards` again; `check` reports a copy that is out of date. A copy drawn by hand instead (no generated line) is kept. Page names are PascalCase: `Home`, `Coffees`, `NotFound` for the 404.
+The `Showcase` is the home page's opening and the next section, composed for the direction's colour strategy: its height is its content's, not a fixed 900. Page cards get a 390 px copy, `<Name>Mobile`, written by `charter.py cards` (its line 2 says it is generated); the copy is 844 px high, or the card's `mobile-height`. Never edit a copy: edit its card and run `cards` again; `check` reports a copy that is out of date. A copy drawn by hand instead (no generated line) is kept. Page names are PascalCase: `Home`, `Coffees`, `NotFound` for the 404.
 
 Local preview URL of a card: `<preview>/design/charter/project/components/<Name>/preview.html` (a branch: `<preview>/design/branches/<id>/project/components/<Name>/preview.html`).
 

@@ -4,4 +4,4 @@
 
 ## Colour hypotheses
 
-<!-- charter: fill at C1, after Keep, Avoid and Keywords. The colours of the moodboard captures, read with `colour.py dominant` and written as colours seen in the references, not tokens; their character (lightness, chroma) against the Colour intent of 01-context.md; the contradictions to settle with the user; 2 or 3 hypotheses for C2. -->
+<!-- charter: fill at C1, after Keep, Avoid and Keywords. The colours of the moodboard captures, read with `colour.py dominant` and written as colours seen in the references, not tokens; their character (lightness, chroma) against the Colour intent of 01-context.md; the contradictions to settle with the user; 2 or 3 hypotheses for C2, each proposing a colour strategy (`references/composition.md` of the colour skill) and citing the moodboard references that show it; the Colour intent's appetite narrows the choice. -->

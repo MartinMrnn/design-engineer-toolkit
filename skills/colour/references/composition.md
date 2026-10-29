@@ -54,7 +54,7 @@ There are six strategies. Each is a **Design heuristic**: a way of working seen 
 
 ## Surfaces and tones: the rules
 The art director follows these whatever the strategy: they are the charter contract's rules, and `charter.py check` enforces them. All these tokens are optional: a palette that uses none of them is valid.
-- **Standard**: each `on-surface-n` is a text colour, at least 4.5:1 on its own `surface-n`, compared unrounded (WCAG 2.2, SC 1.4.3). Its usage note names its surface. `charter.py check` requires it whenever the surface exists.
+- **Standard**: each `on-surface-n` is a text colour, at least 4.5:1 on its own `surface-n`, compared unrounded (WCAG 2.2, SC 1.4.3). Its usage note names its surface in backticks ("Text and icons on `surface-2`."). `charter.py check` requires it whenever the surface exists.
 - **Text never sits directly on a tone.** Tones carry no text. Text sits on a tone only through a surface that aliases it, `"surface-2": "{tone-3}"`, and its `on-surface-2`, so every text pair is checked. A usage note that names a tone as a text ground is reported.
 - **Standard**: the focus ring stays visible on every surface, at 3:1 (SC 1.4.11). So on a surface, the focus ring takes that surface's `on-surface-*` colour: it reaches 4.5:1 there, so it clears 3:1 by construction.
 - For each surface, a class `.ds-surface-n` in `components/bundle.css` sets its background, its text colour and its focus outline colour. `check` reports a `surface-n` without its class.
