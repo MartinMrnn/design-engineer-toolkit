@@ -3,6 +3,7 @@
 The UI makes the UX visible: it helps the brain understand what the page says and what can be done. Start every layout from `design/charter/project/06-structure.md`: the intents, the role of each section, what shows at once and what is revealed on demand, and the mobile plan.
 
 ## Hierarchy
+- **Two hierarchies.** The functional hierarchy is the UX's: the rank of each element in a screen, in `06-structure.md`. The visual hierarchy is yours: how each rank is expressed. Explore it freely, then check that the result serves the ranks: the blur test of `diagnosis.md` shows where the eye goes. A decoration that becomes the focal point instead of the main action is a defect.
 - Each screen has one focal point and one main action. Decide the reading order of every section before styling it: what is seen first, second, third.
 - Build hierarchy with size, weight, colour and space together, not with one alone.
 - What can be clicked looks clickable, and alike everywhere. What cannot be clicked never looks like a button.
@@ -28,7 +29,7 @@ The UI makes the UX visible: it helps the brain understand what the page says an
 ## Mobile
 - Compose the 390 px layout; do not just stack the desktop columns. Decide what moves, what shrinks, what is hidden behind a disclosure, and what stays within thumb reach.
 - Draw the navigation pattern of the B2 mobile plan. The top of the screen never looks crowded: few items, room around them, nothing pressed against the edges, nothing wrapping onto a second row.
-- Touch targets of at least 44 px, with at least 8 px between them.
+- Touch targets of at least 44 px, with at least 8 px between them. This is the studio's rule (`target-min`), beyond WCAG: SC 2.5.8 (level AA) asks for 24 × 24 CSS px or enough spacing, and the 44 px of SC 2.5.5 is level AAA.
 
 ## The design system is a shared language
 Tokens and components make the pages feel made by one hand; they do not make every screen identical. A page may depart from a rule when that helps the visitor understand or act, and the charter's `13-rules.md` says where and why.

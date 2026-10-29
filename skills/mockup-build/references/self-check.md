@@ -3,7 +3,7 @@
 1. Make sure the preview server runs (its URL is in the project `CLAUDE.md`).
 2. With the Playwright MCP server, open the approved mockup and the built page at 1440 × 900, then at 390 × 844. Compare them by measure first: one script (`browser_run_code_unsafe`) that lists, for every heading, paragraph, image, button and section, its position, size, font, colour and background in both files, and reports the differences.
 3. Then look, with screenshots only where the eye is needed: the first screen of each at both widths, and the places where the measures differ. Every visible difference is either fixed now or, when it cannot be avoided, recorded in `design/deviations.md` with its justification. Every image stays in your context: take only those you need.
-4. Run the project's checks on the built page: `browser_navigate` to it, then `browser_run_code_unsafe` with `{ "filename": "design/reviews/scripts/checks.js" }`. Fix every issue it returns.
+4. Run the project's checks on the built page: `browser_navigate` to it, then `browser_run_code_unsafe` with `{ "filename": "design/reviews/scripts/checks.js" }`. Fix every issue it returns. Its `review` list holds what axe could not decide (text over an image, for example): check each item by hand and fix what fails. A clean result covers those rules only: it is not WCAG conformance.
 5. Check by hand:
    - every link goes to a page in scope, `legal.html`, an anchor or a real external URL;
    - the opening hero fills the screen at 1440 × 900 and 390 × 844 with the next section out of view, and nothing is cut at 1440 × 700 and 390 × 667;

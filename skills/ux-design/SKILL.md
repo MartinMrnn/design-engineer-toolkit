@@ -31,7 +31,7 @@ While you work:
 ## B1 · Product
 
 1. List the sites to study: the existing site (for a redesign), the competitors the user named, then peers you find with a web search (same trade, same area or same audience). Five at most.
-2. For each site, open it with the Playwright MCP server and save a capture of the first screen at 1440 px and at 390 px in `design/ux/captures/`. Read the copy of its main pages (a web fetch is enough for text).
+2. For each site, open it with the Playwright MCP server, in your own browser context (`browser_run_code_unsafe` with `page.context().browser().newContext()`: the art director reads the moodboard at the same time), and save a capture of the first screen at 1440 px and at 390 px in `design/ux/captures/`. Read the copy of its main pages (a web fetch is enough for text).
 3. Note for each: what it promises, how it proves it, its main action, how its mobile navigation works, and what is missing or confusing.
 4. Write `design/ux/research.md`:
    - **Sites studied**: one line each, with the link and the capture paths;
@@ -61,7 +61,7 @@ Write points 1 to 6 below in the charter's `06-structure.md`, then the copy into
    - what the first screen shows at 390 px, and what can wait;
    - the navigation pattern and why: a compact top bar that keeps the main action and opens a menu sheet, a floating bottom bar within thumb reach, or another pattern that fits the site. The top must never look crowded: few items, enough room, nothing pushed against the edges;
    - where the main action stays reachable while scrolling;
-   - targets of at least 44 px, and nothing that depends on hover.
+   - targets of at least 44 px (the studio's rule, beyond the 24 × 24 px of WCAG 2.2 SC 2.5.8, level AA), and nothing that depends on hover.
 7. **Copy.** Write the real text of every section: headline, supporting text, labels, calls to action. Follow `references/copy.md`. Missing facts are written `[to provide: what]`.
 8. **Wireframes.** One card per page, `design/charter/project/components/Wireframe<Page>/preview.html` (the page name in PascalCase: `WireframeHome`, `WireframeCoffees`, `WireframeNotFound` for the 404), built from `references/wireframe.html`: keep its first line, the card marker, and set its `height` to the page's height at 1440 px, and `mobile-height=<n>` to its height at 390 px when it is taller than 844. Grey blocks, real copy, one responsive file per page, composed for 1440 px and for 390 px (the mobile layout is a decision, not a stack of the desktop columns). Each section shows its role in a small label. The header shows the mobile navigation pattern you chose; the footer holds the legal links. No colours, fonts or images beyond the template's greys. The legal pages get no wireframe. Then run `charter.py cards`, which writes each card's 390 px copy, and `charter.py check --step B2`. Preview a card at `<preview>/design/charter/project/components/WireframeHome/preview.html`.
 9. **Variants.** Propose one structure. Offer up to two variants only when a real choice exists (for example a home page that tells a story versus one that lists services), as separate files in `design/ux/variants/`, built like the cards, and recommend one; the chosen one becomes the card.

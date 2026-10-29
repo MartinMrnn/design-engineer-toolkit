@@ -49,6 +49,7 @@ site/
 - Semantic HTML: `header`, `nav`, `main`, `footer`; one `h1` per page; `button` for actions, `a` for navigation; `alt` on images; `label` on form fields; `lang` on `html` in the language of the site's copy.
 - A visible focus style on every interactive element, as the charter's components draw it.
 - Responsive from 390 to 1440 px; check 768 px too. Nothing overflows horizontally.
+- Touch targets of at least `var(--target-min)`: the studio's 44 px, beyond the 24 × 24 px of WCAG 2.2 SC 2.5.8 (level AA).
 - The opening hero fills the first screen: `min-height: var(--hero-min-height)` (with the header's height taken off when the header is not over the hero), its headline sized with the `fluid` tokens as the mockup does (`font-size: var(--fluid-display-xl)`), and never a fixed `height` that would cut content on a short screen. The next section does not show at 1440 × 900 or 390 × 844.
 - The mobile navigation is built as the mockup shows it; its keyboard order follows its visual order.
 - Images: `width` and `height` set, `loading="lazy"` below the first screen, exported at twice their displayed width.
