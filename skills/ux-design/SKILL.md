@@ -1,6 +1,6 @@
 ---
 name: ux-design
-description: UX method of the design studio's UX designer. Research on the existing site and competitors, the product sections of the charter (intent, story, positioning, voice and wording), visitor intents, sitemap, user path, page structure, real copy and grey HTML wireframes designed for desktop and mobile, all written into the charter. Preloaded into the ux agent.
+description: UX method of the design studio's UX designer. Research on the existing site and competitors, the product sections of the charter (intent, story, positioning, voice and wording), visitor intents, sitemap, user path, the priority schema of each page with its real copy, and grey wireframes only where a functional need calls for one, all written into the charter. Preloaded into the ux agent.
 ---
 
 # UX design
@@ -50,34 +50,38 @@ Typical interview question, before the research: "Which competitors or peers sho
 
 ## B2 · Structure and content
 
-Write points 1 to 6 below in the charter's `06-structure.md`, then the copy into the wireframe cards. The story of `03-story.md` gives the order of the sections; the copy follows `05-voice-and-wording.md`.
+Write points 1 to 7 below in the charter's `06-structure.md`: the **priority schema**, in text. The story of `03-story.md` gives the order of the sections; the copy follows `05-voice-and-wording.md`.
+
+You fix what the visitor must understand, be able to do, and in what priority: intents, the path, the needs, the rank of each element. You do not fix the layout: how a rank is expressed (size, colour, space, position) and how a content is shown (a list, a table, a chart, an image) belong to the art director, who may also propose a change of structure; the user approves it and you write it (mode `amend`).
 
 1. **Sitemap.** The pages in the brief's scope, plus the supporting pages the brief lists: a 404 page (always) and the legal pages (legal notice always; terms of sale when the site sells; privacy policy when a form collects personal data). Give each page its purpose and how a visitor reaches it. Legal pages are reached from the footer; the 404 page offers a way back and the main action.
 2. **Intents.** For each page, the one to three visitor intents it serves, in the visitor's words (from "What visitors expect" in the research).
 3. **Main path.** The path from arrival to the main action, step by step, and the secondary paths for the other intents.
-4. **Page structure.** For each page, the sections in order. Give each section one role in a few words ("prove the expertise", "remove the doubt about price", "give access to booking") and the intent it serves. A section without a role, or whose role serves no intent, is removed. State what is shown at once and what is revealed on demand.
+4. **Page structure.** For each page, the sections in order. Give each section one role in a few words ("prove the expertise", "remove the doubt about price", "give access to booking") and the intent it serves. A section without a role, or whose role serves no intent, is removed. In each section, rank its elements (first, second, third: what the visitor must meet first, not where it sits), say what it needs (information, functions, states, choices that need a cue), and state what is shown at once and what is revealed on demand.
 5. **Left out.** A short list of what you chose not to include and why (a feature, a badge, a status, a section peers have). It shows the art director what not to add back as decoration.
-6. **Mobile plan.** Mobile is designed, not adapted afterwards:
+6. **Mobile plan.** Mobile is designed, not adapted afterwards; write it as constraints the art director composes within:
    - what the first screen shows at 390 px, and what can wait;
    - the navigation pattern and why: a compact top bar that keeps the main action and opens a menu sheet, a floating bottom bar within thumb reach, or another pattern that fits the site. The top must never look crowded: few items, enough room, nothing pushed against the edges;
    - where the main action stays reachable while scrolling;
    - targets of at least 44 px (the studio's rule, beyond the 24 × 24 px of WCAG 2.2 SC 2.5.8, level AA), and nothing that depends on hover.
-7. **Copy.** Write the real text of every section: headline, supporting text, labels, calls to action. Follow `references/copy.md`. Missing facts are written `[to provide: what]`.
-8. **Wireframes.** One card per page, `design/charter/project/components/Wireframe<Page>/preview.html` (the page name in PascalCase: `WireframeHome`, `WireframeCoffees`, `WireframeNotFound` for the 404), built from `references/wireframe.html`: keep its first line, the card marker, and set its `height` to the page's height at 1440 px, and `mobile-height=<n>` to its height at 390 px when it is taller than 844. Grey blocks, real copy, one responsive file per page, composed for 1440 px and for 390 px (the mobile layout is a decision, not a stack of the desktop columns). Each section shows its role in a small label. The header shows the mobile navigation pattern you chose; the footer holds the legal links. No colours, fonts or images beyond the template's greys. The legal pages get no wireframe. Then run `charter.py cards`, which writes each card's 390 px copy, and `charter.py check --step B2`. Preview a card at `<preview>/design/charter/project/components/WireframeHome/preview.html`.
-9. **Variants.** Propose one structure. Offer up to two variants only when a real choice exists (for example a home page that tells a story versus one that lists services), as separate files in `design/ux/variants/`, built like the cards, and recommend one; the chosen one becomes the card.
+7. **Copy.** Write the real text of every section into `06-structure.md`, under its section: headline, supporting text, labels, calls to action. Follow `references/copy.md`. Missing facts are written `[to provide: what]`.
+8. **Wireframes, only where a functional need calls for one.** No page gets a wireframe by default: a grey layout would fix a composition before the art direction has explored it. Draw one only when a functional need cannot be understood from the text (a multi-step form, a filter, a booking flow, a state that depends on another), and say which need it serves. Name it after what it shows, `design/charter/project/components/Wireframe<Name>/preview.html` (PascalCase: `WireframeBooking`, `WireframeFilters`), built from `references/wireframe.html`: keep its first line, the card marker, and set its `height` to its height at 1440 px, and `mobile-height=<n>` to its height at 390 px when it is taller than 844. Grey blocks, real copy, only the part the need concerns. No colours, fonts or images beyond the template's greys. Then run `charter.py cards`, which writes each card's 390 px copy. `charter.py check --step B2` passes without any wireframe.
+9. **Variants.** Propose one structure. Offer up to two variants only when a real choice of structure exists (for example a home page that tells a story versus one that lists services), written in `design/ux/variants/` as priority schemas like `06-structure.md`, and recommend one; the chosen one goes into `06-structure.md`.
 
 Typical interview questions: "On mobile, what must appear before any scrolling?"; "On mobile, a top bar with a menu, or a bottom bar within thumb reach?"
 
 ## Self-check, once
 
-Open each wireframe at 1440 px and 390 px with the Playwright MCP server and check the points below, by reading the page (`browser_snapshot`, a script for overflow and sizes) rather than with screenshots wherever you can:
+Read `06-structure.md` against the points below (and open any wireframe card you drew at 1440 px and 390 px with the Playwright MCP server, reading the page with `browser_snapshot` or a script rather than with screenshots wherever you can):
 - every section and feature traces to an intent; nothing is there only to decorate;
-- the main action is on the first screen and reachable from every page, at both widths;
+- every section ranks its elements, and the main action ranks first on the first screen of the pages that carry it, and stays reachable from every page;
 - the first headline says what the client does and for whom, without relying on the logo;
 - no two sections share a role;
-- the mobile header follows your plan and does not look crowded;
+- the mobile plan says what the first screen at 390 px must show and where the main action stays reachable, without drawing a layout;
 - no copy fails the competitor test of `references/copy.md`;
-- nothing overflows at 390 px;
+- every section has its real copy, or `[to provide: …]`;
 - `charter.py check --step B2` passes (at B1: `--step B1`).
+
+The visual checks (the first screen, the mobile header, overflow at 390 px) move to the art director and the critic, who see the composed page.
 
 Fix what fails, once. Then report.

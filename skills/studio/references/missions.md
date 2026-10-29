@@ -58,6 +58,22 @@ Also, from the user: <a decision about a critic's question, word for word, or "n
 
 The problems live in the report file: name the file, never copy them. The maker reads the exact words, and the conversation does not carry them twice.
 
+## Structural proposal (C2 and later, UX)
+When the user approves a change of structure an art director proposed (`design/decisions.md`, in the user's words), launch a new UX designer to write it. The art director never edits `06-structure.md`.
+
+```text
+Step: B2 · Structure · amendment
+Mode: amend
+Skill directory: <plugin root>/skills/ux-design
+Charter skill: <plugin root>/skills/charter
+Project: <absolute path of the project folder>
+Conversation language: <from CLAUDE.md>
+Inputs: design/charter/project/06-structure.md, design/decisions.md (the approved proposal)
+Expected outputs: design/charter/project/06-structure.md, amended
+Decisions to respect: <the proposal as the user approved it, word for word>
+Done when: 06-structure.md holds the change and nothing else changed; every section still traces to an intent; charter.py check --step B2 passes
+```
+
 ## Comparison mission (C2, "choose for me")
 Launch a new art director, never one of the three that made the directions.
 
@@ -124,7 +140,7 @@ Phase: with idea
 Your blind reading stays as written. The idea cards: design/ideas/<a>.md (branch a), design/ideas/<b>.md (branch b), design/ideas/<c>.md (branch c). Complete the report.
 ```
 
-`<item>` names what is reviewed, so that no report overwrites another: `ideas` (C1), `wireframes` (B2), `directions` (C2), `home` then each other page or `pages` (C3), `motion` (C4), each page type (D1), `site` (E1).
+`<item>` names what is reviewed, so that no report overwrites another: `ideas` (C1), `structure` (B2), `directions` (C2), `home` then each other page or `pages` (C3), `motion` (C4), each page type (D1), `site` (E1).
 
 Never include the maker's report.
 

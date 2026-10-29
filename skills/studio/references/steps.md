@@ -29,9 +29,10 @@ Read a step's section before starting it. Copy its "Done when" into the mission 
 
 ## B2 · Structure and content (ux, critic)
 - **Inputs**: the charter up to `05-voice-and-wording.md`, the research.
-- **Outputs**: `06-structure.md`; `components/Wireframe<Page>/preview.html` for every page in scope and `WireframeNotFound`; their `…Mobile` copies (`charter.py cards`).
-- **Critic**: relevance, usability.
-- **Done when**: the sitemap matches the scope exactly, supporting pages included; each page states the visitor intents it serves, and every section and feature traces to one of them; the main path is written step by step; the mobile plan is decided (what the first screen shows at 390 px, the navigation pattern and why); the wireframes are designed at 1440 px and 390 px, with real copy that follows `05-voice-and-wording.md` and `[to provide: …]` for missing facts; `charter.py check --step B2` passes; the critic accepts them; the user approves the structure and the copy.
+- **Outputs**: `06-structure.md`, the priority schema with the real copy; a `Wireframe<Name>` card (and its `…Mobile` copy, `charter.py cards`) only where a functional need calls for one.
+- **What is fixed, what stays open**: B2 fixes the intents, the main path, the needs, the rank of each element and the copy. The layout, how each rank is expressed and how each content is shown stay open to the art direction, which may propose a change of structure: the user approves it, and the UX designer writes it (mode `amend`, `missions.md`).
+- **Critic**: relevance, usability, on `06-structure.md` (text) and any wireframe card.
+- **Done when**: the sitemap matches the scope exactly, supporting pages included; each page states the visitor intents it serves, and every section and feature traces to one of them; each section ranks its elements and states its needs; the main path is written step by step; the mobile plan is written as constraints (what the first screen at 390 px must show, the navigation pattern and why, where the main action stays reachable); every section holds its real copy, following `05-voice-and-wording.md`, with `[to provide: …]` for missing facts; any wireframe card names the functional need it serves; `charter.py check --step B2` passes; the critic accepts it; the user approves the structure and the copy.
 
 ## C2 · Directions (art-director ×3, critic)
 - **Launch**: you run `charter.py branch a b c`, then launch three art-director agents in one message, same inputs, each with one idea card: the first three of the `Ideas:` line of the C1 entry in `design/decisions.md`. No interview: they start from C1.

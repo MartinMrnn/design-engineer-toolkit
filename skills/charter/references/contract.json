@@ -53,7 +53,7 @@
   },
   "components": {"step": "C2", "names": ["Button", "Link", "Card", "Field", "Nav"], "sketch": ["Button", "Card"]},
   "cards": [
-    {"prefix": "Wireframe", "step": "B2", "group": "Wireframes", "links": false},
+    {"prefix": "Wireframe", "step": "B2", "group": "Wireframes", "links": false, "optional": true},
     {"name": "Showcase", "step": "C2", "group": "Pages", "links": true},
     {"prefix": "Mockup", "step": "C3", "group": "Pages", "links": true},
     {"name": "Motion", "step": "C4", "group": "Pages", "links": true}

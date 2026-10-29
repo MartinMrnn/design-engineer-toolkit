@@ -35,7 +35,7 @@ Every agent also has the `charter` skill preloaded, and the art director the `co
 | A1 Kickoff | you | `README.md`, `01-context.md` | — | the brief (`01-context.md`) |
 | B1 Product | ux | `02-intent.md` to `05-voice-and-wording.md` | — | the key messages, then the product sections |
 | C1 Moodboard reading and ideas (alongside B1) | art-director | `07-visual-intent.md`, the idea cards `design/ideas/` | yes, the cards | the reading |
-| B2 Structure and content | ux | `06-structure.md`, wireframe cards | yes | structure and copy |
+| B2 Structure and content | ux | `06-structure.md` (priority schema and copy); a wireframe card only for a functional need | yes | structure and copy |
 | C2 Directions | art-director ×3 | three branches, then the merge | yes | a direction or a mix |
 | C3 Key mockups | art-director | mockup cards, new components | yes | one layout per page |
 | C4 Motion | art-director | `12-motion.md`, motion tokens, the `Motion` card; freeze | yes | one personality |

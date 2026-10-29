@@ -1,3 +1,3 @@
 # Structure
 
-<!-- charter: fill at B2. Sitemap with the supporting pages; for each page its visitor intents and its sections with their roles; the main path step by step; what was left out and why; the mobile plan (first screen at 390 px, navigation pattern and why, where the main action stays reachable). -->
+<!-- charter: fill at B2. The priority schema, in text: the sitemap with the supporting pages; then, for each page, its visitor intents and its sections in order, each with its role, the intent it serves, the rank of its elements (first, second, third: a rank, not a position), what it needs (information, functions, states, cues), what shows at once and what waits, and its real copy; the main path step by step; what was left out and why; the mobile plan, written as constraints (what the first screen at 390 px must show, the navigation pattern and why, where the main action stays reachable). No layout: the art direction composes it. -->

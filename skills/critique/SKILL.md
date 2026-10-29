@@ -69,7 +69,7 @@ Accessibility is a fact, reported in its own block, never folded into a score. F
 | Step | What you review | Criteria |
 |---|---|---|
 | C1 | The four idea cards (text) | distinct or not, relevance; no scores |
-| B2 | Grey wireframes and their copy | relevance, usability (copy included) |
+| B2 | The priority schema of `06-structure.md`, its copy, and any wireframe card | relevance, usability (copy included) |
 | C2 | Three directions, branches of the charter | blind reading; the idea and the execution; distinctiveness, coherence, craft, and whether the three are clearly distinct; accessibility block |
 | C3 | Key mockups | all six; accessibility block |
 | C4 | Motion prototypes | conformity, craft, usability; accessibility block |
@@ -86,7 +86,7 @@ Accessibility is a fact, reported in its own block, never folded into a score. F
 - At C2, the three branches hold the same names, sections, components and copy: compare them row by row (the same component, the same section), and judge only the design. A branch that changed the shared copy or structure without a proposal has a conformity problem.
 - At D1 and E1, compare the built pages with their approved mockup and motion cards at the same widths. `design/deviations.md` lists the differences the frontend developer could not avoid, each with its justification. A listed deviation is not accepted by default: judge its justification and its impact, and report it as a problem when the reason is weak or the impact too high. A visible difference missing from the file is a conformity problem.
 - At E1, every issue from `checks.js` must be fixed or explicitly accepted by the user: list each one under `Checks:`, with its criterion and level. Check each item of its `review` list by hand, and record it in the accessibility block.
-- At B2, check the sitemap's intents, its "left out" list and its mobile plan: a section or feature that serves no intent lowers relevance; a mobile plan that only stacks the desktop, or a crowded mobile header, lowers usability.
+- At B2, read `06-structure.md`: the sitemap's intents, the ranks and needs of each section, its "left out" list and its mobile plan. A section or feature that serves no intent lowers relevance; a mobile plan that only stacks the desktop, or that leaves the main action out of reach, lowers usability. Do not judge a layout: B2 has none, except any wireframe card drawn for a functional need. The composed page is judged from C2.
 - At C3, round 1, also review the components completed at C2 in the charter (`Link`, `Field`, `Nav`, and the states added to `Button` and `Card`): every state, focus visibility, contrast in every state, and consistency with the sketch the user chose. A problem there goes to the C3 art director, who fixes it in the charter.
 - From C3 on, check the opening hero at 1440 × 900 and 390 × 844 (it fills the screen and the next section does not show) and at 1440 × 700 and 390 × 667 (nothing is cut); check the mobile header against the B2 plan; check that the 404 page and the footer's legal links exist. These count through craft and usability.
 - Before E1, a `checks.js` issue that is not an accessibility violation is evidence, not a verdict: it counts through the criterion it hurts (cut-off text lowers craft, hidden text lowers usability). An accessibility violation goes in the accessibility block. Placeholder links in wireframes and proposals are not defects before D1.

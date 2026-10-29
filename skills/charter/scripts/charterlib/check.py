@@ -162,7 +162,9 @@ def _cards(project, contract, due):
             folders = sorted(d for d in components.iterdir() if d.is_dir() and d.name.startswith(spec["prefix"])
                              and d.name not in copies) if components.exists() else []
             if not folders:
-                problems.append("no {}<Page> card yet (due at {})".format(spec["prefix"], spec["step"]))
+                # An optional kind (the wireframes, drawn only when a functional need justifies one) may be absent.
+                if not spec.get("optional"):
+                    problems.append("no {}<Page> card yet (due at {})".format(spec["prefix"], spec["step"]))
                 continue
         for folder in folders:
             problems += _card(folder, spec["group"], True, spec["links"], contract)

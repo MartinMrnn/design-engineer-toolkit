@@ -9,7 +9,7 @@ The charter is one Claude Design System Artifact per project. Its files live in 
 | A1 | `README.md` (summary and how to use the charter), `01-context.md` | lead |
 | B1 | `02-intent.md`, `03-story.md`, `04-positioning.md`, `05-voice-and-wording.md` | ux |
 | C1 | `07-visual-intent.md` | art director |
-| B2 | `06-structure.md`; a `Wireframe<Page>` card per page in scope and for the 404 (`WireframeNotFound`) | ux |
+| B2 | `06-structure.md`, the priority schema with the copy; optional `Wireframe<Name>` cards, only where a functional need justifies one | ux |
 | C2 | `tokens.json` and `tokens.css`; `08-colour.md` to `14-sources.md` (`12-motion.md` holds the motion intent in one sentence); the rules of `README.md`; `components/bundle.css`; the base components; `Cover`; `Showcase` | the three art directors in their branches, then the merge |
 | C3 | a `Mockup<Page>` card per page in scope and for the 404 (`MockupNotFound`); every new component; `14-sources.md` updated | art director |
 | C4 | the `duration` and `easing` families; `12-motion.md` completed; the `Motion` card; `charter.py freeze` passes | art director |
@@ -105,7 +105,7 @@ Every `preview.html` starts with the type's marker on line 1, then a small compl
 |---|---|---|
 | Base components | `group="Actions"` (Button, Link), `group="Content"` (Card), `group="Forms"` (Field), `group="Navigation"` (Nav); `height=` to fit | C2 |
 | `Cover` | `height=288`, no group; its folder holds only `preview.html` | C2, last |
-| `Wireframe<Page>` | `group="Wireframes" page width=1440 height=<page height>`; `mobile-height=<n>` when the 390 px page is longer than 844 | B2 |
+| `Wireframe<Name>` (optional) | `group="Wireframes" page width=1440 height=<page height>`; `mobile-height=<n>` when the 390 px page is longer than 844. Drawn only when a functional need justifies it (a multi-step form, a filter, a booking flow): never a composition imposed on the art direction | B2 |
 | `Showcase` | `group="Pages" page width=1440 height=<content height>`; `mobile-height=<n>` as above | C2 |
 | `Mockup<Page>` | `group="Pages" page width=1440 height=<page height>`; `mobile-height=<n>` as above | C3 |
 | `Motion` | `group="Pages" page width=1440 height=<page height>`; `mobile-height=<n>` as above | C4 |
