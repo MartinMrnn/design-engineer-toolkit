@@ -6,8 +6,10 @@ Per theme (all of them, or the one given):
   token over the grounds its usage note names (text, WCAG 2.2 SC 1.4.3) and the focus ring over each ground (non-text,
   SC 1.4.11). The pairs come from the charter's own code (charterlib.tokens.required_pairs), the ratio, the threshold and
   the pass or fail from colourlib.wcag, so the results are identical to charter.py's by construction;
-- the contrast between neighbouring tones (tone-1 to tone-2 … tone-6 to tone-7) and between each surface-n and `ground`,
-  as information with no verdict: they show whether the rhythm reads, they are not requirements;
+- for neighbouring tones (tone-1 to tone-2 … tone-6 to tone-7), for each pair of surfaces and for each surface-n against
+  `ground`, two measures as information with no verdict, kept in separate columns: the WCAG contrast ratio (relative
+  luminance, linear light) and ΔL, the difference of their OKLCH lightness (a perceptual scale). They show whether the
+  rhythm reads; they are not requirement pairs, and neither is a threshold;
 - the CVD pair distances of the state-* colours, closest first, with no verdict (colourlib.cvd).
 
 There is no emotion section: the emotion indicators are not built in this version (spec 6.5).
@@ -50,9 +52,12 @@ def build(data, path, theme=None):
                 "requirement": threshold.label, "threshold": threshold.minimum, "sc": threshold.sc, "level": threshold.level,
                 "meets": wcag.meets(value, threshold),
             })
-        tone_steps = [_step([a, b], hexes) for a, b in zip(tones, tones[1:]) if a in hexes and b in hexes]
-        surface_grounds = [dict(_step([s, GROUND], hexes), surface=s, ground=GROUND) for s in surfaces
-                           if s in hexes and GROUND in hexes]
+        lightness = {c["name"]: c["oklch"][0] for c in colours}
+        tone_steps = [_step([a, b], hexes, lightness) for a, b in zip(tones, tones[1:]) if a in hexes and b in hexes]
+        present = [s for s in surfaces if s in hexes]
+        surface_pairs = [_step([a, b], hexes, lightness) for i, a in enumerate(present) for b in present[i + 1:]]
+        surface_grounds = [dict(_step([s, GROUND], hexes, lightness), surface=s, ground=GROUND) for s in present
+                           if GROUND in hexes]
         states = [c for c in colours if c["name"].startswith(STATE_PREFIX)]
         described = [dict(cvd.describe(wcag.parse_hex(c["hex"])), name=c["name"]) for c in states]
         cvd_pairs = []
@@ -61,7 +66,7 @@ def build(data, path, theme=None):
                 cvd_pairs.append(dict(cvd.pair(one, two), names=[one["name"], two["name"]]))
         cvd_pairs.sort(key=lambda p: p["closest"]["distance"])  # closest first; equals keep the file's order
         themes.append({"id": tid, "colours": colours, "pairs": contrast,
-                       "tone_steps": tone_steps, "surface_grounds": surface_grounds,
+                       "tone_steps": tone_steps, "surface_pairs": surface_pairs, "surface_grounds": surface_grounds,
                        "cvd": {"colours": [{"name": d["name"], "hex": d["hex"], "simulated": d["simulated"]} for d in described],
                                "pairs": cvd_pairs}})
     return {
@@ -77,12 +82,15 @@ def build(data, path, theme=None):
     }
 
 
-def _step(names, hexes):
-    """The contrast between two colours, as information: the ratio unrounded, a display with two decimals. No threshold
-    applies, so no verdict is given and rounding hides none."""
+def _step(names, hexes, lightness):
+    """Two colours, as information: their WCAG contrast ratio (relative luminance) and ΔL, the absolute difference of
+    their OKLCH lightness, both unrounded, with displays of two and four decimals. Two different measures, kept apart;
+    no threshold applies, so no verdict is given and rounding hides none."""
     a, b = hexes[names[0]], hexes[names[1]]
     value = wcag.ratio(a, b)
-    return {"names": names, "hexes": [a, b], "ratio": value, "ratio_display": "{:.2f}".format(value)}
+    delta = abs(lightness[names[0]] - lightness[names[1]])
+    return {"names": names, "hexes": [a, b], "ratio": value, "ratio_display": "{:.2f}".format(value),
+            "delta_l": delta, "delta_l_display": "{:.4f}".format(delta)}
 
 
 def _requirement(p):
@@ -107,13 +115,17 @@ def text(r):
                                                              _requirement(p), "pass" if p["meets"] else "FAIL", w=pw))
         else:
             out.append("  No pair: the usage notes name no ground.")
-        if t["tone_steps"] or t["surface_grounds"]:
-            out += ["", "Contrast between neighbouring tones and between each surface and ground, for information only; "
-                        "it shows whether the rhythm reads:"]
-            steps = [("{} / {}".format(*s["names"]), s) for s in t["tone_steps"]]
+        if t["tone_steps"] or t["surface_pairs"] or t["surface_grounds"]:
+            out += ["", "For neighbouring tones, the surfaces against each other and each surface against ground, for "
+                        "information only: they show whether the rhythm reads. Two measures, read apart: the WCAG "
+                        "contrast ratio of their relative luminances, and ΔL, the difference of their OKLCH lightness. "
+                        "These are not the pairs the contract checks, and neither figure is a threshold:"]
+            steps = [("{} / {}".format(*s["names"]), s) for s in t["tone_steps"] + t["surface_pairs"]]
             steps += [("{} / {}".format(s["surface"], s["ground"]), s) for s in t["surface_grounds"]]
             sw = max(len(label) for label, _ in steps)
-            out += ["  {:<{w}}  {:>7}:1".format(label, s["ratio_display"], w=sw) for label, s in steps]
+            out.append("  {:<{w}}  {:>9}  {}".format("", "ratio", "ΔL", w=sw))
+            out += ["  {:<{w}}  {:>7}:1  {}".format(label, s["ratio_display"], s["delta_l_display"], w=sw)
+                    for label, s in steps]
         out += ["", "Colour-vision deficiency of the state-* colours ({}). {}:".format(r["cvd"]["model"], r["cvd"]["distance"])]
         if t["cvd"]["pairs"]:
             names = max(len(" ".join(p["names"])) for p in t["cvd"]["pairs"])
