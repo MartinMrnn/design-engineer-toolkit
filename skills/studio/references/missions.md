@@ -15,14 +15,21 @@ Preview: http://127.0.0.1:<port>/
 Charter: design/charter/project/ (at C2, your branch: design/branches/<id>/project/)
 Inputs: <paths>
 Expected outputs: <paths>
-Constraints: <angle, scope; at C2, the angle and its colour strategy, from the `C2 strategies:` line of the C1 decision>
+Constraints: <scope; at C2, the direction's idea card, design/ideas/<id>.md, from the `Ideas:` line of the C1 decision>
 Decisions to respect: <the entries of design/decisions.md this step builds on, in the user's words; for an option step, the options already discarded>
 Done when: <the step's "Done when", copied from steps.md; you check the criteria about the critic, the publication and the user>
 ```
 
-At C2, the lead gives each art director its angle and its colour strategy, from the `C2 strategies:` line of the C1 entry in `design/decisions.md` (a different colour strategy for each of the three, unless that line says two share one). `Colour skill:` goes in the art director's and the critic's missions only; leave the line out of the UX designer's. The art director's skills are preloaded, so the line gives it the folder of `colour.py`; the critic reads only the colour skill's `references/measures.md`.
+At C2, the lead gives each art director one idea card, from the `Ideas:` line of the C1 entry in `design/decisions.md`: the first three, in that order. `Colour skill:` goes in the art director's and the critic's missions only; leave the line out of the UX designer's. The art director's skills are preloaded, so the line gives it the folder of `colour.py`; the critic reads only the colour skill's `references/measures.md`.
 
-A mission starts a new agent for its step. Resume an agent only within its step: with the user's answers, for round 2, or, at C2, for the base instance to complete the direction in the merged charter.
+A mission starts a new agent for its step. Resume an agent only within its step: with the user's answers, for round 2, at C1 for the idea cards once B1 is approved, at C2 for the critic's phase 2, or, at C2, for the base instance to complete the direction in the merged charter.
+
+To resume the C1 art director for the idea cards:
+
+```text
+Mode: resume
+B1 is approved. Read design/charter/project/02-intent.md to 05-voice-and-wording.md, then write the four idea cards and the part Ideas of 07-visual-intent.md (art-direction skill, C1 step 7), and report.
+```
 
 To resume with the user's answers:
 
@@ -90,6 +97,7 @@ Done when: each listed problem is fixed, or recorded in design/deviations.md wit
 
 ```text
 Step: <id · name> · <item> · round 1
+Phase: <at C2: blind; otherwise leave the line out>
 Mode: produce
 Skill directory: <plugin root>/skills/critique
 Charter skill: <plugin root>/skills/charter
@@ -106,7 +114,17 @@ Accepted check issues (E1): <the checks.js issues the user accepted, or "none">
 Taste file: ~/.claude/design-studio/taste.md
 ```
 
-`<item>` names what is reviewed, so that no report overwrites another: `wireframes` (B2), `directions` (C2), `home` then each other page or `pages` (C3), `motion` (C4), each page type (D1), `site` (E1).
+At C1, the critic's item is `ideas`: `Review:` lists the idea cards, with no preview link, and `References:` the charter's `01-context.md` to `05-voice-and-wording.md` and `07-visual-intent.md`.
+
+At C2, phase 1 is blind: `Review:` gives the preview links, `References:` the branches without `design/ideas/`, and nothing in the mission names or quotes an idea. When the critic reports "phase 1 written", resume it for phase 2:
+
+```text
+Mode: resume
+Phase: with idea
+Your blind reading stays as written. The idea cards: design/ideas/<a>.md (branch a), design/ideas/<b>.md (branch b), design/ideas/<c>.md (branch c). Complete the report.
+```
+
+`<item>` names what is reviewed, so that no report overwrites another: `ideas` (C1), `wireframes` (B2), `directions` (C2), `home` then each other page or `pages` (C3), `motion` (C4), each page type (D1), `site` (E1).
 
 Never include the maker's report.
 

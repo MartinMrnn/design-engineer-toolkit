@@ -1,5 +1,5 @@
 {
-  "steps": ["A1", "B1", "B2", "C1", "C2", "C3", "C4", "D1", "E1"],
+  "steps": ["A1", "B1", "C1", "B2", "C2", "C3", "C4", "D1", "E1"],
   "placeholder": "<!-- charter:",
   "sections": [
     {"file": "README.md", "step": "A1"},

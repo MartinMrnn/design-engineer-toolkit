@@ -8,8 +8,8 @@ The charter is one Claude Design System Artifact per project. Its files live in 
 |---|---|---|
 | A1 | `README.md` (summary and how to use the charter), `01-context.md` | lead |
 | B1 | `02-intent.md`, `03-story.md`, `04-positioning.md`, `05-voice-and-wording.md` | ux |
-| B2 | `06-structure.md`; a `Wireframe<Page>` card per page in scope and for the 404 (`WireframeNotFound`) | ux |
 | C1 | `07-visual-intent.md` | art director |
+| B2 | `06-structure.md`; a `Wireframe<Page>` card per page in scope and for the 404 (`WireframeNotFound`) | ux |
 | C2 | `tokens.json` and `tokens.css`; `08-colour.md` to `14-sources.md` (`12-motion.md` holds the motion intent in one sentence); the rules of `README.md`; `components/bundle.css`; the base components; `Cover`; `Showcase` | the three art directors in their branches, then the merge |
 | C3 | a `Mockup<Page>` card per page in scope and for the 404 (`MockupNotFound`); every new component; `14-sources.md` updated | art director |
 | C4 | the `duration` and `easing` families; `12-motion.md` completed; the `Motion` card; `charter.py freeze` passes | art director |
@@ -28,7 +28,7 @@ A file is done when its `<!-- charter: … -->` comment is replaced by what the 
 | `04-positioning.md` | Where the client stands against the sites studied; the chosen key messages, each linked to a finding. |
 | `05-voice-and-wording.md` | Tone in three words, person, casing, words to use and avoid, five real examples (headline, call to action, error, confirmation, 404 line). |
 | `06-structure.md` | Sitemap with supporting pages, intents per page, sections and their roles, the main path, what was left out, the mobile plan. |
-| `07-visual-intent.md` | Keep (traced to references), Avoid, Keywords. |
+| `07-visual-intent.md` | Keep (traced to references), Avoid, Keywords; Colours seen; Ideas (one line per idea card of `design/ideas/`). |
 | `08-colour.md` | The colour logic in one sentence; roles; the meaning of states, never told by colour alone. |
 | `09-type.md` | The pairing and why; the scale; rules (measure, wrapping, numerals). |
 | `10-shape-and-space.md` | The shape logic in one sentence; the spacing rhythm; the grid; the opening hero. |
