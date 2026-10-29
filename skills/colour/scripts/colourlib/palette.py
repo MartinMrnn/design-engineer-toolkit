@@ -110,8 +110,8 @@ def text(r):
         if t["tone_steps"] or t["surface_grounds"]:
             out += ["", "Contrast between neighbouring tones and between each surface and ground, for information only; "
                         "it shows whether the rhythm reads:"]
-            steps = [("{} on {}".format(*s["names"]), s) for s in t["tone_steps"]]
-            steps += [("{} on {}".format(s["surface"], s["ground"]), s) for s in t["surface_grounds"]]
+            steps = [("{} / {}".format(*s["names"]), s) for s in t["tone_steps"]]
+            steps += [("{} / {}".format(s["surface"], s["ground"]), s) for s in t["surface_grounds"]]
             sw = max(len(label) for label, _ in steps)
             out += ["  {:<{w}}  {:>7}:1".format(label, s["ratio_display"], w=sw) for label, s in steps]
         out += ["", "Colour-vision deficiency of the state-* colours ({}). {}:".format(r["cvd"]["model"], r["cvd"]["distance"])]

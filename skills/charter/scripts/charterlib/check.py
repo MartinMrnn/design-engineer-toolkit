@@ -104,16 +104,14 @@ def _card(folder, group, page, links, contract):
     return problems
 
 
-def _surfaces(project, contract):
-    """The surface-n tokens the palette holds, in the contract's order; none when tokens.json cannot be read (check
-    says so in _tokens)."""
+def _colour_names(project):
+    """The names of the colour tokens in tokens.json; None when it cannot be read (check says so in _tokens)."""
     path = project / "tokens.json"
     try:
         entries = tk.as_list(tk.as_dict(tk.as_dict(read_json(path)).get("color")).get("tokens")) if path.exists() else []
     except ValueError:
-        return []
-    names = {e.get("name") for e in entries if isinstance(e, dict)}
-    return [surface for surface in contract["color"].get("surfaces", {}) if surface in names]
+        return None
+    return {e.get("name") for e in entries if isinstance(e, dict) and isinstance(e.get("name"), str)}
 
 
 def _components(project, contract, sketch=False):
@@ -128,10 +126,14 @@ def _components(project, contract, sketch=False):
                 problems.append("components/bundle.css: class .{} must start with ds- (states: is-)".format(cls))
     if bundle.exists():
         classes = selector_classes(read_text(bundle))
-        for surface in _surfaces(project, contract):
-            if "ds-" + surface not in classes:
-                problems.append("components/bundle.css: {} needs a class .ds-{} (background, text and focus outline colour)".format(
-                    surface, surface))
+        names = _colour_names(project)
+        if names is not None:
+            for surface in contract["color"].get("surfaces", {}):
+                if surface in names and "ds-" + surface not in classes:
+                    problems.append("components/bundle.css: {} needs a class .ds-{} (background, text, and --focus-ring re-pointed to on-surface-n)".format(
+                        surface, surface))
+                elif surface not in names and "ds-" + surface in classes:
+                    problems.append("components/bundle.css: .ds-{} has no {} token".format(surface, surface))
     for name in contract["components"]["sketch" if sketch else "names"]:
         folder = components / name
         problems += _card(folder, None, False, True, contract)

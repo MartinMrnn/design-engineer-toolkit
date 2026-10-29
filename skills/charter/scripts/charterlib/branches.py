@@ -293,6 +293,9 @@ def merge(charter_root, branches_root, base, takes):
     for family, other, _, _ in parsed:
         if family == "type":
             fixes.append("replace the @import on the first line of components/bundle.css with {}'s".format(other))
+        elif family == "colour":
+            fixes.append("copy {}'s .ds-surface-* classes into components/bundle.css, remove the classes of surfaces the taken "
+                         "palette lacks, and recompose the Showcase for the taken strategy".format(other))
         elif family == "imagery":
             fixes.append("re-point the ../../media/ paths and inline icons of the Showcase and the components to "
                          "{}'s files".format(other))

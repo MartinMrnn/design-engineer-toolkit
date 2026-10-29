@@ -124,15 +124,20 @@ def usage_grounds(colours, name):
 
 def required_pairs(colours, spec):
     """The contrast pairs the contract requires, in checking order: (foreground, ground, threshold key of wcag.THRESHOLDS).
-    Each contract text token present, over the grounds its usage note names (text, 4.5:1); each `on-surface-n` over its
-    `surface-n` when both are present (text, 4.5:1); then the focus ring over each contract ground (non-text, 3:1). `colours` maps names to token entries. validate (via _colours) and colour.py palette
-    both read the pairs here, so they always list the same ones."""
+    Each contract text token present, over the grounds its usage note names (text, 4.5:1); each `on-surface-n` present
+    over its `surface-n` (when present) and over every other ground its usage note names (text, 4.5:1); then the focus
+    ring over each contract ground (non-text, 3:1). `colours` maps names to token entries. validate (via _colours) and
+    colour.py palette both read the pairs here, so they always list the same ones."""
     pairs = []
     for name in spec["text"]:
         if name in colours:
             pairs += [(name, ground, "text-aa") for ground in usage_grounds(colours, name)]
-    # Each surface present is read through its own text colour (text, 4.5:1), whatever the usage note says.
-    pairs += [(on, surface, "text-aa") for surface, on in spec.get("surfaces", {}).items() if surface in colours and on in colours]
+    # Each on-surface colour is read over its own surface, whatever the usage note says, then over the other grounds it names.
+    for surface, on in spec.get("surfaces", {}).items():
+        if on in colours:
+            grounds = [surface] if surface in colours else []
+            grounds += [g for g in usage_grounds(colours, on) if g not in grounds]
+            pairs += [(on, ground, "text-aa") for ground in grounds]
     pairs += [(spec["focus"], ground, "non-text-aa") for ground in spec["grounds"]]
     return pairs
 
@@ -197,6 +202,8 @@ def _structure(colours, spec):
     for surface, on in spec.get("surfaces", {}).items():
         if surface in colours and on not in colours:
             problems.append("tokens.json: '{}' is required when '{}' exists".format(on, surface))
+        if on in colours and surface not in colours:
+            problems.append("tokens.json: '{}' needs its surface '{}'".format(on, surface))
     tones = spec.get("tones", [])
     missing = [t for t in tones if t not in colours]
     if missing and len(missing) < len(tones):

@@ -23,9 +23,13 @@ MEASURED_COLOURS = ("ground", "ink", "accent", "on-accent")
 NO_INTENT = "colour intent not recorded"
 # [ \t] and not \s: the line must not run on into the next one (the untouched template line is `- **Colour intent**:`).
 INTENT_LINE = re.compile(r"^[ \t]*[-*][ \t]*\*\*Colour intent:?\*\*[ \t]*:?[ \t]*(.*)$", re.MULTILINE)
-# The line `Strategy: …` of 08-colour.md, plain, bold (`**Strategy**:`, `**Strategy:**`) or as a list item; [ \t] and not \s, so a
-# bare `Strategy:` does not take the next line.
-STRATEGY_LINE = re.compile(r"^[ \t]*(?:[-*][ \t]+)?(?:\*\*Strategy:?\*\*|Strategy:)[ \t]*:?[ \t]*(.*)$", re.MULTILINE)
+# The line `Strategy: …` of 08-colour.md, plain, bold (`**Strategy**:`, `**Strategy:**`) or as a list item, with the label in
+# English or French (`Stratégie :`, a space before the colon allowed); [ \t] and not \s, so a bare `Strategy:` does not take
+# the next line.
+_LABEL = r"Str(?:ategy|at[eé]gie|ategie)"
+_GAP = "[ \t\u00a0\u202f]*"
+STRATEGY_LINE = re.compile(
+    r"^[ \t]*(?:[-*][ \t]+)?(?:\*\*" + _LABEL + _GAP + r":?\*\*|" + _LABEL + _GAP + r":)" + _GAP + r":?[ \t]*(.*)$", re.MULTILINE)
 NO_STRATEGY = "strategy not recorded"
 SURFACE_OR_TONE = re.compile(r"^(?:surface|tone)-\d+$")
 
@@ -172,8 +176,10 @@ def _measured(tokens_path, tokens, capture, strategy=None):
             accent = sum(t["share"] for t in match["tokens"] if "accent" in t["names"])
             items.append("<li>accent {} of the capture</li>".format(_share(accent)))
             if any(SURFACE_OR_TONE.match(name) for name in colours):
-                # An entry whose merged alias names hold several surfaces and tones counts once.
-                flat = sum(t["share"] for t in match["tokens"] if any(SURFACE_OR_TONE.match(n) for n in t["names"]))
+                # An entry whose merged alias names hold several surfaces and tones counts once; one that is also the
+                # accent (a surface aliased to it) counts in the accent share only.
+                flat = sum(t["share"] for t in match["tokens"]
+                           if "accent" not in t["names"] and any(SURFACE_OR_TONE.match(n) for n in t["names"]))
                 items.append("<li>surfaces and tones {} of the capture</li>".format(_share(flat)))
             else:
                 items.append("<li>surfaces and tones none</li>")
