@@ -6,19 +6,25 @@
 // At 1440 × 900 and 390 × 844 it reports:
 // - with motion: console errors (with the failing URL), horizontal scrolling or text cut off at the
 //   edge, images that fail to load (lazy ones included), links to nothing (empty, "#", "javascript:");
-// - with reduced motion: text left invisible, and axe-core WCAG 2 A/AA serious or critical
-//   violations, measured on the final state with every reveal shown.
-// It does not see: text hidden by masks or clip-path, contrast of text over images or gradients
-// (axe only flags those for manual review), links to pages that do not exist, CSS background
-// images, hover and focus states, or any viewport other than these two.
+// - with reduced motion: text left invisible, and every violation of the axe-core rules tagged WCAG
+//   level A or AA (2.0, 2.1 and 2.2: wcag2a, wcag2aa, wcag21a, wcag21aa, wcag22aa; never AAA or best
+//   practice), whatever its impact, with its success criteria and level, measured on the final state
+//   with every reveal shown. target-size (2.5.8, AA) is off by default in axe: it is turned on here.
+// - under `review` (not issues): what axe could not decide (its "incomplete" results, such as text
+//   over an image) and the findings of rules axe marks experimental. A person checks them.
+// It does not see: text hidden by masks or clip-path, links to pages that do not exist, CSS
+// background images, hover and focus states, keyboard use, or any viewport other than these two.
+// A page that passes has no violation of these rules only: it is not proof of WCAG conformance.
 async (page) => {
   const OUT = '__OUT__';
   const AXE = 'https://cdn.jsdelivr.net/npm/axe-core@4.14.0/axe.min.js';
+  const AXE_TAGS = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'];
   const VIEWPORTS = { desktop: { width: 1440, height: 900 }, mobile: { width: 390, height: 844 } };
   const IMAGE_TIMEOUT = 10000;
   const url = page.url().split('#')[0];
   const slug = (new URL(url).pathname.replace(/^\/+|\.html?$/g, '').replace(/[^a-z0-9]+/gi, '-') || 'index').toLowerCase();
   const found = [];
+  const review = [];
   const files = [];
 
   const open = async (size, reducedMotion) => {
@@ -133,14 +139,26 @@ async (page) => {
 
     try {
       await page.addScriptTag({ url: AXE });
-      const violations = await page.evaluate(async () => {
-        const result = await window.axe.run(document, { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa'] } });
-        return result.violations
-          .filter((v) => v.impact === 'serious' || v.impact === 'critical')
-          .map((v) => ({ rule: v.id, impact: v.impact, help: v.help, targets: v.nodes.slice(0, 3).map((n) => n.target.join(' ')) }));
-      });
-      for (const v of violations) {
-        found.push({ kind: 'accessibility', viewport, rule: v.rule, detail: `${v.impact}: ${v.help} (${v.targets.join(', ')})` });
+      const result = await page.evaluate(async (tags) => {
+        const r = await window.axe.run(document, { runOnly: { type: 'tag', values: tags }, rules: { 'target-size': { enabled: true } } });
+        // wcag258 is SC 2.5.8, wcag1412 is SC 1.4.12; wcag2a and wcag21a are level A, wcag2aa to wcag22aa level AA.
+        const criteria = (ruleTags) => ruleTags.map((t) => /^wcag(\d)(\d)(\d+)$/.exec(t)).filter(Boolean).map((m) => `${m[1]}.${m[2]}.${m[3]}`);
+        const level = (ruleTags) => (ruleTags.some((t) => /^wcag2\d?aa$/.test(t)) ? 'AA' : 'A');
+        const item = (v) => ({
+          rule: v.id, sc: criteria(v.tags).join(', '), level: level(v.tags), impact: v.impact || 'unknown',
+          experimental: v.tags.includes('experimental'), help: v.help,
+          targets: v.nodes.slice(0, 3).map((n) => n.target.join(' ')),
+        });
+        return { violations: r.violations.map(item), incomplete: r.incomplete.map(item) };
+      }, AXE_TAGS);
+      const line = (v) => `SC ${v.sc} (level ${v.level}) · ${v.impact}: ${v.help} (${v.targets.join(', ')})`;
+      for (const v of result.violations) {
+        const entry = { kind: 'accessibility', viewport, rule: v.rule, sc: v.sc, level: v.level, impact: v.impact, detail: line(v) };
+        if (v.experimental) review.push({ ...entry, kind: 'needs-review', why: 'experimental rule' });
+        else found.push(entry);
+      }
+      for (const v of result.incomplete) {
+        review.push({ kind: 'needs-review', viewport, rule: v.rule, sc: v.sc, level: v.level, impact: v.impact, why: 'axe could not decide', detail: line(v) });
       }
     } catch (error) {
       found.push({ kind: 'check-failed', viewport, detail: `accessibility checks could not run: ${error.message}` });
@@ -159,11 +177,16 @@ async (page) => {
   await page.waitForLoadState('load');
 
   // The same problem at both widths is reported once.
-  const issues = [];
-  for (const issue of found) {
-    const same = issues.find((i) => i.kind === issue.kind && i.rule === issue.rule && i.detail === issue.detail);
-    if (same) same.viewport = `${same.viewport}, ${issue.viewport}`;
-    else issues.push(issue);
-  }
-  return { url, pass: issues.length === 0, issues, files };
+  const merge = (list) => {
+    const out = [];
+    for (const issue of list) {
+      const same = out.find((i) => i.kind === issue.kind && i.rule === issue.rule && i.detail === issue.detail);
+      if (same) same.viewport = `${same.viewport}, ${issue.viewport}`;
+      else out.push(issue);
+    }
+    return out;
+  };
+  const issues = merge(found);
+  // `pass` covers the issues only; the review items wait for a person.
+  return { url, pass: issues.length === 0, issues, review: merge(review), files };
 }
