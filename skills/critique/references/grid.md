@@ -35,7 +35,7 @@ Read the user's taste file before scoring distinctiveness and craft.
 
 ## Colour
 - Judge colour inside the criteria above, never as a sixth one: against the colour intent of `01-context.md`, the project's context, the existing identity when there is one (as binding as the brief recorded), the coherence of the direction and the visible hierarchy.
-- A required WCAG pair under its threshold (`colour.py palette`, or `charter.py check`) is a craft defect: text under 4.5:1 is the anchor of craft 1. Any other number is an indicator: an OKLCH figure, a share of the first screen, a CVD distance. Never lower a score for an indicator that is not a requirement; use it to question a claim or a choice.
+- A required WCAG pair under its threshold (`colour.py palette`, or `charter.py check`) is a craft defect: text under 4.5:1 is the anchor of craft 1. Any other number is an indicator: an OKLCH figure, a share of the Showcase (opening and next section), a CVD distance. Never lower a score for an indicator that is not a requirement; use it to question a claim or a choice.
 - Report any claim of "Why these colours" that the measures contradict, with the command and the figure.
 - Strategy, C2: score whether the composition puts the colour to work as the direction's `Strategy:` line says (a "surfaces" direction with colour only on buttons lowers distinctiveness and consistency), and whether the three strategies are distinct. The strategy and the surface, tone and accent shares are measures, and measures are evidence, not verdicts.
 - Strategy, C3 to E1: the chosen strategy applied consistently across the pages (consistency).

@@ -66,10 +66,10 @@ How to read the match:
 - Exact ties go to the token listed first in `tokens.json`, so the result is reproducible.
 - `--theme` picks the theme whose colours are matched (the first by default).
 
-What it is for: on a Showcase capture, how much of the opening each role really covers (the visible hierarchy) and how much the accent takes.
+What it is for: on a Showcase capture, how much of the Showcase (opening and next section) each role really covers (the visible hierarchy) and how much the accent takes. On a moodboard capture, colours seen in the references, to read for their character, not to copy as tokens. For a reference website, read the interface colours from its computed styles rather than from pixels.
 
 ### Reading the surface and tone shares
 - With `--match`, the `surface-*` and `tone-*` tokens get their shares like any other token. Read their sum next to the accent share: it is how much of the capture the strategy's colour actually covers.
 - **Design heuristic**: a dominant strategy should show a large coloured share (Colour surfaces, Flood and tone-on-tone, or any direction for a *dominant* appetite); a Signal or Content-carries-the-colour direction a small one, with the colour on the actions or in the unassigned photo pixels. This is information for the art director and the critic: there is no threshold, and a share never passes or fails a direction.
-- A surface aliased to a tone or to the accent has the same value, so it is one colour listed with all its names: its share counts once.
-- Neighbouring tones are often closer than d: read the close-token warning, and read their shares together when it names them. On a moodboard capture, colours seen in the references, to read for their character, not to copy as tokens. For a reference website, read the interface colours from its computed styles rather than from pixels.
+- A surface aliased to a tone or to the accent has the same value, so it is one colour listed with all its names: its share counts once. The board's "surfaces and tones" figure leaves out the entry that carries the name `accent` (a surface aliased to the accent counts in the accent share only), so the two figures never count a pixel twice.
+- Neighbouring tones are often closer than d: read the close-token warning, and read their shares together when it names them.

@@ -15,12 +15,12 @@ Preview: http://127.0.0.1:<port>/
 Charter: design/charter/project/ (at C2, your branch: design/branches/<id>/project/)
 Inputs: <paths>
 Expected outputs: <paths>
-Constraints: <angle, scope; at C2, the angle and a distinct colour strategy from the C1 hypotheses>
+Constraints: <angle, scope; at C2, the angle and its colour strategy, from the `C2 strategies:` line of the C1 decision>
 Decisions to respect: <the entries of design/decisions.md this step builds on, in the user's words; for an option step, the options already discarded>
 Done when: <the step's "Done when", copied from steps.md; you check the criteria about the critic, the publication and the user>
 ```
 
-At C2, the lead gives each art director its angle and a distinct colour strategy from the C1 hypotheses (a different colour strategy for each of the three, unless the C1 decision says otherwise). `Colour skill:` goes in the art director's and the critic's missions only; leave the line out of the UX designer's. The art director's skills are preloaded, so the line gives it the folder of `colour.py`; the critic reads only the colour skill's `references/measures.md`.
+At C2, the lead gives each art director its angle and its colour strategy, from the `C2 strategies:` line of the C1 entry in `design/decisions.md` (a different colour strategy for each of the three, unless that line says two share one). `Colour skill:` goes in the art director's and the critic's missions only; leave the line out of the UX designer's. The art director's skills are preloaded, so the line gives it the folder of `colour.py`; the critic reads only the colour skill's `references/measures.md`.
 
 A mission starts a new agent for its step. Resume an agent only within its step: with the user's answers, for round 2, or, at C2, for the base instance to complete the direction in the merged charter.
 

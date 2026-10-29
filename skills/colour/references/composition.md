@@ -10,7 +10,7 @@ There are six strategies. Each is a **Design heuristic**: a way of working seen 
 ### Choosing one
 - **The appetite** comes from the `Colour intent` line of `01-context.md` (`intent.md`): how present colour should be, *discreet*, *present* or *dominant*.
 - **Design heuristic**: the appetite narrows the choice; it does not pick for you. As tendencies: *discreet* suits Signal and Content carries the colour; *present* suits Vivid pair on neutral, Primaries on white or black and Colour surfaces; *dominant* suits Colour surfaces and Flood and tone-on-tone. A *discreet* project does not get a flood unless the user asks.
-- **C1** proposes a strategy for each colour hypothesis and cites the moodboard references that show it.
+- **C1** proposes three hypotheses, each with a distinct strategy, and cites the moodboard references that show it. When the appetite allows fewer (a *discreet* project: Signal or Content carries the colour), the lead settles with the user which strategies C2 uses and whether two directions may share one, and records it in `design/decisions.md`.
 - **C2**: the three directions differ in strategy by default, so that the user compares ways of using colour, not only hues. Two directions share a strategy only if the C1 decision says so.
 - The site's content counts as much as the appetite: a strategy that needs colourful photos fails without them.
 
@@ -57,7 +57,7 @@ The art director follows these whatever the strategy: they are the charter contr
 - **Standard**: each `on-surface-n` is a text colour, at least 4.5:1 on its own `surface-n`, compared unrounded (WCAG 2.2, SC 1.4.3). Its usage note names its surface in backticks ("Text and icons on `surface-2`."). `charter.py check` requires it whenever the surface exists.
 - **Text never sits directly on a tone.** Tones carry no text. Text sits on a tone only through a surface that aliases it, `"surface-2": "{tone-3}"`, and its `on-surface-2`, so every text pair is checked. A usage note that names a tone as a text ground is reported.
 - **Standard**: the focus ring stays visible on every surface, at 3:1 (SC 1.4.11). So on a surface, the focus ring takes that surface's `on-surface-*` colour: it reaches 4.5:1 there, so it clears 3:1 by construction.
-- For each surface, a class `.ds-surface-n` in `components/bundle.css` sets its background, its text colour and its focus outline colour. `check` reports a `surface-n` without its class.
+- For each surface, a class in `components/bundle.css`: `.ds-surface-n { background: var(--surface-n); color: var(--on-surface-n); --focus-ring: var(--on-surface-n); }` (components draw focus with `var(--focus-ring)`, so re-pointing the token inside the surface makes every focus ring there use the surface's ink). `check` reports a `surface-n` without its class, and a class whose `surface-n` token is absent.
 - Tones come as a full set: `tone-1` to `tone-7`, `tone-1` the lightest, OKLCH lightness strictly decreasing. Hue and chroma may drift on purpose. A source: `colour.py ramp <colour> --steps 7`, then adjust by eye in place.
 
 ## Roles first

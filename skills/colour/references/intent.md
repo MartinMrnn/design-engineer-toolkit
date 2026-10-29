@@ -1,22 +1,23 @@
 # Colour intent (A1)
 
-The lead asks about colour during the A1 interview, inside the existing rounds: no extra round. The answers become one line of `01-context.md`, **Colour intent**, which the art director starts from at C1 and C2.
+The lead asks about colour during the A1 interview, inside the existing rounds: no extra round, one theme of three questions. The answers become one line of `01-context.md`, **Colour intent**, which the art director starts from at C1 and C2.
 
 ## The questions
 Ask them in the user's language, in plain words.
 
 1. **What should the site make people feel?** Three words. Feelings or qualities ("calm, precise, warm"), not colours. If the user answers with colours, ask what those colours should make people feel.
-2. **Does the project already have a visual identity, a logo or colours in use?** If yes: which ones (hex values, a logo file, a link to a page that uses them), and how binding they are:
+2. **Does the project already have a visual identity, a logo or colours in use, and are there colours to avoid?** If there is an identity: which one (hex values, a logo file, a link to a page that uses them), and how binding it is:
    - **keep**: the colours stay as they are;
    - **may evolve**: they are a starting point the studio may adjust;
    - **free**: they exist, but the studio is not bound by them.
+
+   Then, in the same question, any colours to avoid, and why: a competitor's colour, a colour with a bad association for this audience, a personal dislike. The reason matters: it tells the art director how wide the exclusion is.
 3. **How present should colour be?** The appetite, one of three values:
    - **discreet**: colour stays in the background; a quiet page where it marks a few things;
    - **present**: colour is clearly part of the identity, in places: panels, tags, a brand colour, the content;
    - **dominant**: colour takes over large areas, whole sections or whole screens.
 
    "Choose for me" is fine: write the value you would propose and say so to the user. The appetite narrows the art director's colour strategy (the colour skill's `references/composition.md`); it does not pick one.
-4. **Any colours to avoid, and why?** A competitor's colour, a colour with a bad association for this audience, a personal dislike. The reason matters: it tells the art director how wide the exclusion is.
 
 "No idea yet" is a fine answer to any of them. Do not push the user to invent an answer.
 
