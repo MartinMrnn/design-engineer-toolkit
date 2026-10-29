@@ -23,6 +23,11 @@ MEASURED_COLOURS = ("ground", "ink", "accent", "on-accent")
 NO_INTENT = "colour intent not recorded"
 # [ \t] and not \s: the line must not run on into the next one (the untouched template line is `- **Colour intent**:`).
 INTENT_LINE = re.compile(r"^[ \t]*[-*][ \t]*\*\*Colour intent:?\*\*[ \t]*:?[ \t]*(.*)$", re.MULTILINE)
+# The line `Strategy: …` of 08-colour.md, plain, bold (`**Strategy**:`, `**Strategy:**`) or as a list item; [ \t] and not \s, so a
+# bare `Strategy:` does not take the next line.
+STRATEGY_LINE = re.compile(r"^[ \t]*(?:[-*][ \t]+)?(?:\*\*Strategy:?\*\*|Strategy:)[ \t]*:?[ \t]*(.*)$", re.MULTILINE)
+NO_STRATEGY = "strategy not recorded"
+SURFACE_OR_TONE = re.compile(r"^(?:surface|tone)-\d+$")
 
 
 class Html(str):
@@ -109,11 +114,25 @@ def intent_words(path):
     return re.split(r";|\.(?:\s|$)", value, maxsplit=1)[0].strip() or None
 
 
+def strategy_words(path):
+    """The strategy, from the first `Strategy:` line of a 08-colour.md. None when the file or the line is missing, or the
+    line still holds a placeholder."""
+    if not path.exists():
+        return None
+    found = STRATEGY_LINE.search(read_text(path))
+    if not found:
+        return None
+    value = found.group(1).replace("**", "").strip()
+    if not value or "<!-- charter:" in value or "[to provide" in value:
+        return None
+    return value
+
+
 def _share(share):
     return "{:.2f} %".format(share * 100)
 
 
-def _measured(tokens_path, tokens, capture):
+def _measured(tokens_path, tokens, capture, strategy=None):
     """The cell of the "Colour, measured" row for one branch: OKLCH, text contrast and the capture's shares, as the
     colour skill computes them (colourlib), with no verdict on the design. Only ground, ink, accent and on-accent are
     resolved, in the first theme, which the cell names; one that is missing or does not resolve reads "not set"."""
@@ -128,6 +147,7 @@ def _measured(tokens_path, tokens, capture):
         if value:
             hexes[name] = convert.to_hex(wcag.parse_hex(value))
     items = ['<li class="muted">theme {}</li>'.format(_e(first))]
+    items.append("<li>strategy {}</li>".format(_e(strategy)) if strategy else '<li class="muted">{}</li>'.format(NO_STRATEGY))
     for name in ("ground", "ink", "accent"):
         if name not in hexes:
             items.append("<li><code>{}</code> not set</li>".format(name))
@@ -151,8 +171,14 @@ def _measured(tokens_path, tokens, capture):
         else:
             accent = sum(t["share"] for t in match["tokens"] if "accent" in t["names"])
             items.append("<li>accent {} of the capture</li>".format(_share(accent)))
+            if any(SURFACE_OR_TONE.match(name) for name in colours):
+                # An entry whose merged alias names hold several surfaces and tones counts once.
+                flat = sum(t["share"] for t in match["tokens"] if any(SURFACE_OR_TONE.match(n) for n in t["names"]))
+                items.append("<li>surfaces and tones {} of the capture</li>".format(_share(flat)))
+            else:
+                items.append("<li>surfaces and tones none</li>")
             items.append("<li>unassigned {} of the capture</li>".format(_share(match["unassigned"]["share"])))
-            items.append('<li class="muted">first screen, {}; a pixel counts for a token within {:g} (OKLab)</li>'.format(
+            items.append('<li class="muted">of the Showcase capture, {}; a pixel counts for a token within {:g} (OKLab)</li>'.format(
                 _e(SHOWCASE), match["max_distance"]))
     return '<ul class="list">{}</ul>'.format("".join(items))
 
@@ -244,7 +270,8 @@ def build(branches_root, out_root, urls):
                         "url": urls.get(branch_id),
                         "tokens": tokens, "images": images,
                         "intent": intent_words(project / "01-context.md"),
-                        "colour": _measured(tokens_path, tokens, capture), "leads": [lead(project / f) for f, _ in LEADS]})
+                        "colour": _measured(tokens_path, tokens, capture, strategy_words(project / "08-colour.md")),
+                        "leads": [lead(project / f) for f, _ in LEADS]})
     client = columns[0]["title"].split(" · ")[0]
     (out_root / "index.html").write_text(render(client, columns), encoding="utf-8")
     return warnings

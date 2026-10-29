@@ -63,7 +63,7 @@ def starters():
         "<!-- charter: draw the cover last, as the Design System type's cover.md says: colour blocks, one pattern, the name. -->")
     files["components/Showcase/preview.html"] = card_html(
         "Showcase", '<!-- @dsCard group="Pages" page width=1440 height=900 -->',
-        "<!-- charter: the home page's opening section, with the real copy of 06-structure and its wireframe. -->")
+        "<!-- charter: the home page's opening and the next section, composed for the colour strategy, with the real copy of 06-structure and its wireframe; the starter height=900 is only a starting point: set it to the content's height (any height passes check), and mobile-height when the 390 px page is taller than 844. -->")
     files["components/bundle.css"] = BUNDLE_START
     return files
 
