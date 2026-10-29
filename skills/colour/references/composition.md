@@ -3,16 +3,21 @@
 How colours occupy the page and share it. Each claim carries its kind: **Standard**, **Empirical finding** or **Design heuristic**. Most of this file is heuristic: reference points to use when they help and to leave when the project calls for it.
 
 ## Colour strategies
-A palette is also a way of occupying the page. The same hues give a different site when they mark the actions, paint whole sections or fill the screen. So each direction chooses a strategy before its hues, and composes its Showcase so that the colour does what the strategy says.
+A palette is also a way of occupying the page. The same hues give a different site when they mark the actions, paint whole sections or fill the screen. A direction starts from its governing idea (its idea card, the art direction's `SKILL.md`), and the idea decides how colour occupies the page: which colour dominates, where, in what proportion, next to what. The strategies below are a **vocabulary to name that distribution**, not a slot to fill: the idea chooses one when one fits.
 
-There are six strategies. Each is a **Design heuristic**: a way of working seen in practice, not a rule. They are **never ranked**: none is the safe default, and Signal is one option among six. A direction may combine two, and says which one leads ("Colour surfaces, led; Content carries the colour"). `08-colour.md` names it on its `Strategy:` line and says where the colour goes on the page.
+There are six strategies. Each is a **Design heuristic**: a way of working seen in practice, not a rule. They are **never ranked**: none is the safe default, and Signal is one option among six. A direction may combine two, and says which one leads ("Colour surfaces, led; Content carries the colour"). When one fits, `08-colour.md` names it on its `Strategy:` line and says where the colour goes on the page; a distribution none of the six describes is written in words instead.
 
 ### Choosing one
-- **The appetite** comes from the `Colour intent` line of `01-context.md` (`intent.md`): how present colour should be, *discreet*, *present* or *dominant*.
-- **Design heuristic**: the appetite narrows the choice; it does not pick for you. As tendencies: *discreet* suits Signal and Content carries the colour; *present* suits Vivid pair on neutral, Primaries on white or black and Colour surfaces; *dominant* suits Colour surfaces and Flood and tone-on-tone. A *discreet* project does not get a flood unless the user asks.
-- **C1** proposes three hypotheses, each with a distinct strategy, and cites the moodboard references that show it. When the appetite allows fewer (a *discreet* project: Signal or Content carries the colour), the lead settles with the user which strategies C2 uses and whether two directions may share one, and records it in `design/decisions.md`.
-- **C2**: the three directions differ in strategy by default, so that the user compares ways of using colour, not only hues. Two directions share a strategy only if the C1 decision says so.
+- **The idea leads.** The distribution follows from the idea and from the situations it must hold (the opening, a dense section, an interaction). Nobody assigns a strategy to a direction in advance, and directions differ by their ideas: two may use the same strategy.
+- **The appetite** comes from the `Colour intent` line of `01-context.md` (`intent.md`): how present colour should be, *discreet*, *present* or *dominant*, as a **preference** (the default) or a **constraint** (when the user says so). A constraint binds every direction; a preference informs the ideas. Neither picks a strategy.
+- **Design heuristic**: as tendencies, *discreet* sits well with Signal and Content carries the colour; *present* with Vivid pair on neutral, Primaries on white or black and Colour surfaces; *dominant* with Colour surfaces and Flood and tone-on-tone. Tendencies, not rules: an idea may argue otherwise, and says why.
 - The site's content counts as much as the appetite: a strategy that needs colourful photos fails without them.
+
+### What the blind tests taught about distribution
+**Design heuristic**, from the studio's blind tests of 29 October 2026 (one judge, three briefs: a practical check, not a proof). Each is a question to ask of a distribution, never a threshold.
+- **Neighbours need lightness, not only hue.** Two touching surfaces that differ in hue but hardly in lightness read as one block: clay `#f0d3bc` against sage `#d6e3cf` (ΔL 0.01546, contrast ratio 1.0677:1, `measures.md`) did. The grey test shows it.
+- **The larger the area, the more its chroma weighs.** A pink `#FF61A6` (OKLCH C 0.2019) chosen on a swatch read as heavy over a whole page. A colour that is right as an accent may need less chroma as a surface; the blur test shows the masses.
+- **An identity colour may stay a signature.** Keeping an identity does not mean making its colour the action colour: a logo orange kept as a rare third colour added a dimension, while the same orange on every action lost it. Permuting the roles shows the difference.
 
 ### Signal
 **Design heuristic**. A neutral ground; one colour marks what you can act on, or what matters.
@@ -25,13 +30,13 @@ There are six strategies. Each is a **Design heuristic**: a way of working seen 
 ### Colour surfaces
 **Design heuristic**. Whole sections, panels or bands are painted. Neutral and coloured surfaces alternate, and the alternation gives the page its rhythm.
 - **Tokens**: `surface-1` to `surface-3`, each with its text colour `on-surface-1` to `on-surface-3`; often a surface aliases the accent or a tone.
-- **Watch**: text and focus on each surface (the rules below). The rhythm follows the content (one surface per kind of section, say), not decoration.
+- **Watch**: text and focus on each surface (the rules below). The rhythm follows the content (one surface per kind of section, say), not decoration. Touching surfaces need a difference in lightness, not only in hue (below).
 - **Seen on**: a pet-food brand that paints whole sections in one warm colour, as rounded panels alternating with grey ones, with photos laid on them.
 
 ### Flood and tone-on-tone
 **Design heuristic**. One hue fills large areas, up to the whole screen; depth comes from several lightnesses of that hue rather than from other hues.
 - **Tokens**: a coloured `ground`, `tone-1` to `tone-7`, and surfaces aliased to tones (`"surface-2": "{tone-3}"`) wherever text sits.
-- **Watch**: neighbouring tones need enough difference to read as layers (`palette` lists their contrast, as information). Text only through a surface and its `on-surface-*`.
+- **Watch**: neighbouring tones need enough difference to read as layers (`palette` lists their contrast ratio and ΔL, as information). Text only through a surface and its `on-surface-*`. The larger the flood, the more its chroma weighs (below).
 - **Seen on**: a maker of craft supplies whose product page opens on a full screen of acid colour, then shows the product on a ground of its own hue at a few lightnesses.
 
 ### Vivid pair on neutral

@@ -17,7 +17,7 @@ Ask them in the user's language, in plain words.
    - **present**: colour is clearly part of the identity, in places: panels, tags, a brand colour, the content;
    - **dominant**: colour takes over large areas, whole sections or whole screens.
 
-   "Choose for me" is fine: write the value you would propose and say so to the user. The appetite narrows the art director's colour strategy (the colour skill's `references/composition.md`); it does not pick one.
+   Ask, in the same question, whether it is a **preference** (the default: it informs the ideas) or a **constraint** (it binds every direction). "Choose for me" is fine: write the value you would propose and say so to the user. The appetite never assigns a colour strategy: the art director's idea decides how colour occupies the page (the colour skill's `references/composition.md`).
 
 "No idea yet" is a fine answer to any of them. Do not push the user to invent an answer.
 
@@ -25,18 +25,18 @@ Ask them in the user's language, in plain words.
 One line of the context list, with its bold label, four parts in this order: the three words first, then `; existing identity: …; appetite: …; avoid: …`.
 
 ```text
-- **Colour intent**: <three words>; existing identity: <colours or logo, then keep | may evolve | free, or none>; appetite: discreet | present | dominant; avoid: <colours and why, or nothing>
+- **Colour intent**: <three words>; existing identity: <colours or logo, then keep | may evolve | free, or none>; appetite: discreet | present | dominant, then (constraint) when it binds; avoid: <colours and why, or nothing>
 ```
 
 Examples:
 
 ```text
 - **Colour intent**: calm, reassured, cared for; existing identity: none; appetite: present; avoid: hospital blue and white
-- **Colour intent**: calm, precise, warm; existing identity: logo in #1f3a5f (may evolve); appetite: discreet; avoid: bright red (reads as an alert in their sector)
+- **Colour intent**: calm, precise, warm; existing identity: logo in #1f3a5f (may evolve); appetite: discreet (constraint); avoid: bright red (reads as an alert in their sector)
 - **Colour intent**: no idea yet; existing identity: none; appetite: dominant (chosen for the user); avoid: nothing
 ```
 
-The charter's board header reads the text before the first `;` as the three words, so keep the semicolons as shown, put no `;` or full stop inside the three words, and keep the three words first. Write the appetite in English (`discreet`, `present` or `dominant`), whatever the language of the site, and add "(chosen for the user)" when the user said "choose for me". The words stay the user's own, in their language; the label `**Colour intent**` stays as written even when the other headings of `01-context.md` are translated, because the board looks for it.
+The charter's board header reads the text before the first `;` as the three words, so keep the semicolons as shown, put no `;` or full stop inside the three words, and keep the three words first. Write the appetite in English (`discreet`, `present` or `dominant`), whatever the language of the site, add "(constraint)" when the user made it binding (without it, it is a preference), and "(chosen for the user)" when the user said "choose for me". The words stay the user's own, in their language; the label `**Colour intent**` stays as written even when the other headings of `01-context.md` are translated, because the board looks for it.
 
 ## Rules
 - **Never invent an identity.** If the user has no logo or colours, write `none`. Do not deduce brand colours from a name, a sector or a competitor.
