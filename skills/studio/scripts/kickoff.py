@@ -18,7 +18,7 @@ from pathlib import Path
 
 # The critic's scripts hold this exact literal once; it becomes the output folder.
 TOKEN = "'__OUT__'"
-SCRIPTS = ["capture.js", "checks.js"]
+SCRIPTS = ["capture.js", "checks.js", "views.js"]
 FOLDERS = [
     "design/inspiration/captures",
     "design/ux/captures",
