@@ -6,6 +6,8 @@ Per theme (all of them, or the one given):
   token over the grounds its usage note names (text, WCAG 2.2 SC 1.4.3) and the focus ring over each ground (non-text,
   SC 1.4.11). The pairs come from the charter's own code (charterlib.tokens.required_pairs), the ratio, the threshold and
   the pass or fail from colourlib.wcag, so the results are identical to charter.py's by construction;
+- the contrast between neighbouring tones (tone-1 to tone-2 … tone-6 to tone-7) and between each surface-n and `ground`,
+  as information with no verdict: they show whether the rhythm reads, they are not requirements;
 - the CVD pair distances of the state-* colours, closest first, with no verdict (colourlib.cvd).
 
 There is no emotion section: the emotion indicators are not built in this version (spec 6.5).
@@ -15,6 +17,7 @@ from . import convert, cvd, tokenfile, wcag
 OKLCH_NOTE = "OKLCH on D65, as CSS Color 4 writes it; the values `convert` gives"
 EMOTION_NOTE = "Emotion indicators are not available in this version."
 STATE_PREFIX = "state-"
+GROUND = "ground"
 
 
 def build(data, path, theme=None):
@@ -25,6 +28,7 @@ def build(data, path, theme=None):
     spec = ct.load()["color"]
     entries = tokenfile.table(data)
     pairs = tk.required_pairs(entries, spec)
+    tones, surfaces = spec.get("tones", []), list(spec.get("surfaces", {}))
     themes = []
     for tid in ([theme] if theme else ids):
         resolved = by_theme[tid]
@@ -46,6 +50,9 @@ def build(data, path, theme=None):
                 "requirement": threshold.label, "threshold": threshold.minimum, "sc": threshold.sc, "level": threshold.level,
                 "meets": wcag.meets(value, threshold),
             })
+        tone_steps = [_step([a, b], hexes) for a, b in zip(tones, tones[1:]) if a in hexes and b in hexes]
+        surface_grounds = [dict(_step([s, GROUND], hexes), surface=s, ground=GROUND) for s in surfaces
+                           if s in hexes and GROUND in hexes]
         states = [c for c in colours if c["name"].startswith(STATE_PREFIX)]
         described = [dict(cvd.describe(wcag.parse_hex(c["hex"])), name=c["name"]) for c in states]
         cvd_pairs = []
@@ -54,6 +61,7 @@ def build(data, path, theme=None):
                 cvd_pairs.append(dict(cvd.pair(one, two), names=[one["name"], two["name"]]))
         cvd_pairs.sort(key=lambda p: p["closest"]["distance"])  # closest first; equals keep the file's order
         themes.append({"id": tid, "colours": colours, "pairs": contrast,
+                       "tone_steps": tone_steps, "surface_grounds": surface_grounds,
                        "cvd": {"colours": [{"name": d["name"], "hex": d["hex"], "simulated": d["simulated"]} for d in described],
                                "pairs": cvd_pairs}})
     return {
@@ -67,6 +75,14 @@ def build(data, path, theme=None):
         "emotion": {"available": False, "note": EMOTION_NOTE},
         "themes": themes,
     }
+
+
+def _step(names, hexes):
+    """The contrast between two colours, as information: the ratio unrounded, a display with two decimals. No threshold
+    applies, so no verdict is given and rounding hides none."""
+    a, b = hexes[names[0]], hexes[names[1]]
+    value = wcag.ratio(a, b)
+    return {"names": names, "hexes": [a, b], "ratio": value, "ratio_display": "{:.2f}".format(value)}
 
 
 def _requirement(p):
@@ -91,6 +107,13 @@ def text(r):
                                                              _requirement(p), "pass" if p["meets"] else "FAIL", w=pw))
         else:
             out.append("  No pair: the usage notes name no ground.")
+        if t["tone_steps"] or t["surface_grounds"]:
+            out += ["", "Contrast between neighbouring tones and between each surface and ground, for information only; "
+                        "it shows whether the rhythm reads:"]
+            steps = [("{} on {}".format(*s["names"]), s) for s in t["tone_steps"]]
+            steps += [("{} on {}".format(s["surface"], s["ground"]), s) for s in t["surface_grounds"]]
+            sw = max(len(label) for label, _ in steps)
+            out += ["  {:<{w}}  {:>7}:1".format(label, s["ratio_display"], w=sw) for label, s in steps]
         out += ["", "Colour-vision deficiency of the state-* colours ({}). {}:".format(r["cvd"]["model"], r["cvd"]["distance"])]
         if t["cvd"]["pairs"]:
             names = max(len(" ".join(p["names"])) for p in t["cvd"]["pairs"])

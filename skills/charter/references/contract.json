@@ -22,10 +22,14 @@
   "color": {
     "required": ["ground", "ground-raised", "ink", "ink-muted", "line", "accent", "on-accent", "focus-ring",
                  "state-selected", "state-unavailable", "state-error", "state-success"],
-    "optional": ["accent-2", "on-accent-2", "ground-inverse", "ink-inverse"],
+    "optional": ["accent-2", "on-accent-2", "ground-inverse", "ink-inverse",
+                 "surface-1", "surface-2", "surface-3", "on-surface-1", "on-surface-2", "on-surface-3",
+                 "tone-1", "tone-2", "tone-3", "tone-4", "tone-5", "tone-6", "tone-7"],
     "text": ["ink", "ink-muted", "on-accent", "on-accent-2", "ink-inverse"],
     "focus": "focus-ring",
-    "grounds": ["ground", "ground-raised"]
+    "grounds": ["ground", "ground-raised"],
+    "surfaces": {"surface-1": "on-surface-1", "surface-2": "on-surface-2", "surface-3": "on-surface-3"},
+    "tones": ["tone-1", "tone-2", "tone-3", "tone-4", "tone-5", "tone-6", "tone-7"]
   },
   "type": {
     "families": ["display", "text"],

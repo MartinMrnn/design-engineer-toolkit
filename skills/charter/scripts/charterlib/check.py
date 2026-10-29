@@ -104,6 +104,18 @@ def _card(folder, group, page, links, contract):
     return problems
 
 
+def _surfaces(project, contract):
+    """The surface-n tokens the palette holds, in the contract's order; none when tokens.json cannot be read (check
+    says so in _tokens)."""
+    path = project / "tokens.json"
+    try:
+        entries = tk.as_list(tk.as_dict(tk.as_dict(read_json(path)).get("color")).get("tokens")) if path.exists() else []
+    except ValueError:
+        return []
+    names = {e.get("name") for e in entries if isinstance(e, dict)}
+    return [surface for surface in contract["color"].get("surfaces", {}) if surface in names]
+
+
 def _components(project, contract, sketch=False):
     components = project / "components"
     problems = []
@@ -114,6 +126,12 @@ def _components(project, contract, sketch=False):
         for cls in sorted(selector_classes(read_text(bundle))):
             if not cls.startswith(("ds-", "is-")):
                 problems.append("components/bundle.css: class .{} must start with ds- (states: is-)".format(cls))
+    if bundle.exists():
+        classes = selector_classes(read_text(bundle))
+        for surface in _surfaces(project, contract):
+            if "ds-" + surface not in classes:
+                problems.append("components/bundle.css: {} needs a class .ds-{} (background, text and focus outline colour)".format(
+                    surface, surface))
     for name in contract["components"]["sketch" if sketch else "names"]:
         folder = components / name
         problems += _card(folder, None, False, True, contract)

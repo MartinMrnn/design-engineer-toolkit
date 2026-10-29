@@ -45,11 +45,14 @@ The Design System type's grammar, narrowed:
 - Every token has a `usage` note saying where it is used.
 - Colours are `#rgb`, `#rrggbb`, or an alias `{other-colour}`. No named colours, `var()`, `rgb()` or `color-mix()`. One theme, `light`, unless `01-context.md` asks for a dark one; then each colour gives a value per theme, the light one first.
 - A text colour (`ink`, `ink-muted`, `on-accent`, `on-accent-2`, `ink-inverse`) names the grounds it reads on, as `token` names, in its usage note: "Body copy on `ground` and `ground-raised`." `check` measures each pair in every theme against 4.5:1, and `focus-ring` against `ground` and `ground-raised` at 3:1.
+- Surfaces and tones are optional, and a palette with none of them is valid:
+  - `surface-1` to `surface-3` are painted surfaces for sections, panels and bands (a hex, or an alias of a tone or the accent). Each needs its text colour, `on-surface-1` to `on-surface-3`, whose usage note names its surface, as `surface-2` in "Text and icons on `surface-2`." `check` measures it on its own surface in every theme against 4.5:1, and `colour.py palette` lists the same pair. `components/bundle.css` defines a class `.ds-surface-1` (and `-2`, `-3`) for each surface present, setting the background, the text colour and the focus outline colour (the `on-surface-n` colour: it reaches 4.5:1, so it clears the 3:1 the ring needs).
+  - `tone-1` to `tone-7` are one family at seven lightnesses, `tone-1` the lightest. All seven or none; their OKLCH lightness strictly decreases from `tone-1` to `tone-7` in every theme (nothing is asked of hue or chroma). Tones carry no text: text sits on a tone only through a surface that aliases it (`"surface-2": "{tone-3}"`), so a usage note that names a `tone-*` as a ground is reported.
 - `spacing` and `radius` are lengths: `px`, `rem`, `em`, `%` or `0`. Other families hold plain CSS values (`100svh`, `68ch`, `clamp(2.5rem, 1.6rem + 3vw, 4rem)`, `500ms`, `cubic-bezier(0.22, 1, 0.36, 1)`), without `var()` or `url()`.
 
 | Family | Names | Due |
 |---|---|---|
-| `color` | required: `ground`, `ground-raised`, `ink`, `ink-muted`, `line`, `accent`, `on-accent`, `focus-ring`, `state-selected`, `state-unavailable`, `state-error`, `state-success`; optional: `accent-2`, `on-accent-2`, `ground-inverse`, `ink-inverse` | C2 |
+| `color` | required: `ground`, `ground-raised`, `ink`, `ink-muted`, `line`, `accent`, `on-accent`, `focus-ring`, `state-selected`, `state-unavailable`, `state-error`, `state-success`; optional: `accent-2`, `on-accent-2`, `ground-inverse`, `ink-inverse`, `surface-1`, `surface-2`, `surface-3`, `on-surface-1`, `on-surface-2`, `on-surface-3`, `tone-1`, `tone-2`, `tone-3`, `tone-4`, `tone-5`, `tone-6`, `tone-7` | C2 |
 | `type.families` | `display`, `text`; optional `mono` | C2 |
 | `type.groups` | Display: `display-xl`, `display-l` · Headings: `h1`, `h2`, `h3` · Text: `body-l`, `body`, `body-s`, `caption` · UI: `label`, `button` | C2 |
 | `spacing` | `space-1`, `space-2`, `space-3`, `space-4`, `space-5`, `space-6`, `space-7`, `space-8` | C2 |

@@ -59,6 +59,7 @@ def resolve(name, theme, colours, first, depth=0):
 from . import use_colour_skill  # noqa: E402
 use_colour_skill()
 from colourlib import wcag  # noqa: E402
+from colourlib import convert  # noqa: E402
 
 luminance = wcag.relative_luminance
 contrast = wcag.ratio
@@ -123,13 +124,15 @@ def usage_grounds(colours, name):
 
 def required_pairs(colours, spec):
     """The contrast pairs the contract requires, in checking order: (foreground, ground, threshold key of wcag.THRESHOLDS).
-    Each contract text token present, over the grounds its usage note names (text, 4.5:1); then the focus ring over each
-    contract ground (non-text, 3:1). `colours` maps names to token entries. validate (via _colours) and colour.py palette
+    Each contract text token present, over the grounds its usage note names (text, 4.5:1); each `on-surface-n` over its
+    `surface-n` when both are present (text, 4.5:1); then the focus ring over each contract ground (non-text, 3:1). `colours` maps names to token entries. validate (via _colours) and colour.py palette
     both read the pairs here, so they always list the same ones."""
     pairs = []
     for name in spec["text"]:
         if name in colours:
             pairs += [(name, ground, "text-aa") for ground in usage_grounds(colours, name)]
+    # Each surface present is read through its own text colour (text, 4.5:1), whatever the usage note says.
+    pairs += [(on, surface, "text-aa") for surface, on in spec.get("surfaces", {}).items() if surface in colours and on in colours]
     pairs += [(spec["focus"], ground, "non-text-aa") for ground in spec["grounds"]]
     return pairs
 
@@ -149,6 +152,7 @@ def _colours(tokens, spec, seen):
     first = ids[0]
     problems += _names("color", entries, spec["required"], seen, spec["optional"])[1]
     colours = {e["name"]: e for e in entries if isinstance(e, dict) and isinstance(e.get("name"), str)}
+    problems += _structure(colours, spec)
     for name, entry in colours.items():
         value = entry.get("value")
         if isinstance(value, dict):
@@ -178,9 +182,67 @@ def _colours(tokens, spec, seen):
     for name in spec["text"]:
         if name in colours and not usage_grounds(colours, name):
             problems.append("tokens.json: the usage note of '{}' must name the grounds it reads on, as `token` names".format(name))
+    problems += _tone_notes(colours, spec)
     for fg, bg, key in required_pairs(colours, spec):
         for theme in ids:
             problems += _pair(fg, bg, theme, colours, first, wcag.THRESHOLDS[key].minimum)
+    problems += _tone_order(colours, spec, ids, first)
+    return problems
+
+
+def _structure(colours, spec):
+    """What the surface and tone names owe each other, by name only: an on-surface colour for every surface, and all
+    seven tones or none."""
+    problems = []
+    for surface, on in spec.get("surfaces", {}).items():
+        if surface in colours and on not in colours:
+            problems.append("tokens.json: '{}' is required when '{}' exists".format(on, surface))
+    tones = spec.get("tones", [])
+    missing = [t for t in tones if t not in colours]
+    if missing and len(missing) < len(tones):
+        problems.append("tokens.json: {} to {} go together; missing: {}".format(tones[0], tones[-1], ", ".join(missing)))
+    return problems
+
+
+def _tone_notes(colours, spec):
+    """The usage notes of the surface colours and of the text colours: an on-surface colour names its surface, and no
+    text colour names a tone as its ground (text sits on a tone only through a surface)."""
+    problems = []
+    for surface, on in spec.get("surfaces", {}).items():
+        if surface in colours and on in colours and surface not in TICKED.findall(str(colours[on].get("usage", ""))):
+            problems.append("tokens.json: the usage note of '{}' must name its surface, `{}`".format(on, surface))
+    tones = spec.get("tones", [])
+    texts = list(spec["text"]) + list(spec.get("surfaces", {}).values())
+    for name in texts:
+        if name in colours:
+            for tone in usage_grounds(colours, name):
+                if tone in tones:
+                    problems.append("tokens.json: the usage note of '{}' names `{}` as a ground: text sits on a tone only "
+                                    "through a surface (a `surface-n` aliasing the tone, and its `on-surface-n`)".format(name, tone))
+    return problems
+
+
+def lightness(hex_value):
+    """The OKLab lightness L (0 to 1) of a hex colour, the L of OKLCH."""
+    return convert.xyz_to_oklab(convert.srgb_to_xyz(wcag.parse_hex(hex_value)))[0]
+
+
+def _tone_order(colours, spec, ids, first):
+    """The tones, when all are present, go from the lightest (tone-1) to the darkest: OKLCH lightness strictly
+    decreasing, in every theme. Only the lightness is constrained, not hue or chroma."""
+    tones = spec.get("tones", [])
+    if not tones or any(t not in colours for t in tones):
+        return []
+    problems = []
+    for theme in ids:
+        values = [resolve(t, theme, colours, first) for t in tones]
+        for i in range(1, len(tones)):
+            if values[i - 1] and values[i]:
+                before, after = lightness(values[i - 1]), lightness(values[i])
+                if not after < before:
+                    problems.append("tokens.json: {} must be darker than {} (OKLCH lightness {:.3f} against {:.3f}) in theme '{}': "
+                                    "{} is the lightest tone, {} the darkest".format(
+                                        tones[i], tones[i - 1], after, before, theme, tones[0], tones[-1]))
     return problems
 
 
