@@ -12,13 +12,18 @@ Score each assessed criterion from 1 to 5. Use the anchors below; between two an
 - **3**: at least one strong choice clearly comes from the moodboard or the brief (a type treatment, a colour logic, a layout idea). The rest is competent but expected.
 - **5**: most choices trace back to the project. It has a point of view a visitor would remember, and it stays readable.
 
-## Consistency
+## Coherence
+- **1**: the parts say nothing together. The colours, the type, the composition and the treatment of content each follow their own logic, or an element that should carry the idea only decorates; or an accessibility fix replaced the idea's element by a generic default with no stated reason.
+- **3**: one idea is readable in the main manifestations (the opening, the type, the colour's distribution); some parts are neutral rather than part of it.
+- **5**: every manifestation reinforces the idea, in every situation reviewed (the opening, a dense section, an interaction, 390 px); remove one element and the identity weakens.
+
+## Conformity
 - **1**: contradicts the approved intent or direction (wrong palette, wrong mood, an "avoid" item used), or uses values outside the charter's tokens.
 - **3**: follows the direction with small drifts: a stray colour, an off-scale size, a restyled component.
 - **5**: every value comes from the tokens; the work feels made by one hand; nothing contradicts the charter's `07-visual-intent.md` or `13-rules.md`.
 
 ## Craft
-- **1**: visible errors. Misalignment, uneven spacing, body text under 4.5:1 contrast, orphan words in headlines, broken states, overflow.
+- **1**: visible errors. Misalignment, uneven spacing, orphan words in headlines, broken states, overflow. (A contrast failure is an accessibility fact, reported apart: below.)
 - **3**: clean at both widths. Minor rhythm or spacing issues. The main interactive elements have their states.
 - **5**: precise typographic hierarchy, steady rhythm, optical alignment, every state designed, details that reward a second look.
 
@@ -35,11 +40,14 @@ Read the user's taste file before scoring distinctiveness and craft.
 
 ## Colour
 - Judge colour inside the criteria above, never as a sixth one: against the colour intent of `01-context.md`, the project's context, the existing identity when there is one (as binding as the brief recorded), the coherence of the direction and the visible hierarchy.
-- A required WCAG pair under its threshold (`colour.py palette`, or `charter.py check`) is a craft defect: text under 4.5:1 is the anchor of craft 1. Any other number is an indicator: an OKLCH figure, a share of the Showcase (opening and next section), a CVD distance. Never lower a score for an indicator that is not a requirement; use it to question a claim or a choice.
+- A required WCAG pair under its threshold (`colour.py palette`, or `charter.py check`) goes in the accessibility block and rejects the work on its own; it is not folded into a score. Any other number is an indicator: an OKLCH figure, ΔL, a contrast ratio between two panels, a share of the Showcase (opening and next section), a CVD distance. Never lower a score for an indicator that is not a requirement; use it to question a claim or a choice.
 - Report any claim of "Why these colours" that the measures contradict, with the command and the figure.
-- Strategy, C2: score whether the composition puts the colour to work as the direction's `Strategy:` line says (a "surfaces" direction with colour only on buttons lowers distinctiveness and consistency), and whether the three strategies are distinct. The strategy and the surface, tone and accent shares are measures, and measures are evidence, not verdicts.
-- Strategy, C3 to E1: the chosen strategy applied consistently across the pages (consistency).
+- Idea, C2: score whether the composition puts the colour to work as the idea's distribution says (a "painted sections" idea with colour only on buttons lowers distinctiveness and coherence), and whether the three ideas are distinct. The strategy line and the surface, tone and accent shares are measures, and measures are evidence, not verdicts.
+- Distribution, C3 to E1: the chosen direction's distribution applied consistently across the pages (conformity).
 - Colour-vision deficiency, C3 to E1: when two state colours come close under a simulation, the finding is "check that this state has a non-colour cue". It is a usability finding about the cue, not a pass or fail on the distance.
+
+## Accessibility, apart
+Accessibility is not a criterion to score: it is a block of facts in the report, criterion by criterion (the critique skill, "Accessibility, apart from the scores"). A failing required criterion rejects the work whatever the scores. A conforming page is not for that reason a good one: the scores judge the design.
 
 ## Sketches at C2, completed components at C3
 - At C2 a branch is a sketch. Score what it holds (tokens, palette, type, shape, imagery, the home opening, Button and Card); never lower a score for the components or the long-form sections it leaves for after the choice.
