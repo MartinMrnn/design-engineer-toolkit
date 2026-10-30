@@ -5,7 +5,7 @@ description: The design studio's charter, the project's single reference kept as
 
 # The charter
 
-The charter is the project's single reference: the product (context, intent, story, positioning, voice and wording), the structure and its wireframes, the visual direction (tokens, components, rules), and the approved mockups and motion. It is a native Claude Design System Artifact, kept as local files in `design/charter/project/` and published by the lead at the end of every step. The user browses it on claude.ai; agents work on the local files.
+The charter is the project's single reference: the product (context, intent, story, positioning, voice and wording), the structure (the priority schema of every page with its copy, and any wireframe drawn for a functional need), the visual direction (tokens, components, rules), and the approved mockups and motion. It is a native Claude Design System Artifact, kept as local files in `design/charter/project/` and published by the lead at the end of every step. The user browses it on claude.ai; agents work on the local files.
 
 ## Rules for every agent
 - Read `design/charter/project/README.md` first, then the sections your step needs. Never read the Artifact page: the local files are the source.

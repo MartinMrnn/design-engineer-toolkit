@@ -108,7 +108,7 @@ How to read the match:
 - Exact ties go to the token listed first in `tokens.json`, so the result is reproducible.
 - `--theme` picks the theme whose colours are matched (the first by default).
 
-What it is for: on a Showcase capture, how much of the Showcase (opening and next section) each role really covers (the visible hierarchy) and how much the accent takes. On a moodboard capture, colours seen in the references, to read for their character, not to copy as tokens. For a reference website, read the interface colours from its computed styles rather than from pixels.
+What it is for: on a Showcase capture, how much of the Showcase (its three situations) each role really covers (the visible hierarchy) and how much the accent takes. On a moodboard capture, colours seen in the references, to read for their character, not to copy as tokens. For a reference website, read the interface colours from its computed styles rather than from pixels.
 
 ### Reading the surface and tone shares
 - With `--match`, the `surface-*` and `tone-*` tokens get their shares like any other token. Read their sum next to the accent share: it is how much of the capture the strategy's colour actually covers.

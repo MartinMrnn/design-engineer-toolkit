@@ -1,6 +1,6 @@
 # The charter's contract
 
-The charter is one Claude Design System Artifact per project. Its files live in `design/charter/project/`; a C2 branch's in `design/branches/<id>/project/`. This contract fixes every name, so that the three C2 directions can be compared line by line and the build never depends on which direction was chosen. `charter.py check --step <id>` enforces it; `contract.json` holds the same rules as data.
+The charter is one Claude Design System Artifact per project. Its files live in `design/charter/project/`; a C2 branch's in `design/branches/<id>/project/`. This contract fixes every name, so that the C2 directions can be compared line by line and the build never depends on which direction was chosen. `charter.py check --step <id>` enforces it; `contract.json` holds the same rules as data.
 
 ## What each step adds
 
@@ -10,7 +10,7 @@ The charter is one Claude Design System Artifact per project. Its files live in 
 | B1 | `02-intent.md`, `03-story.md`, `04-positioning.md`, `05-voice-and-wording.md` | ux |
 | C1 | `07-visual-intent.md` | art director |
 | B2 | `06-structure.md`, the priority schema with the copy; optional `Wireframe<Name>` cards, only where a functional need justifies one | ux |
-| C2 | `tokens.json` and `tokens.css`; `08-colour.md` to `14-sources.md` (`12-motion.md` holds the motion intent in one sentence); the rules of `README.md`; `components/bundle.css`; the base components; `Cover`; `Showcase` | the three art directors in their branches, then the merge |
+| C2 | `tokens.json` and `tokens.css`; `08-colour.md` to `14-sources.md` (`12-motion.md` holds the motion intent in one sentence); the rules of `README.md`; `components/bundle.css`; the base components; `Cover`; `Showcase` | the art directors of the kept specimens in their branches, then the merge |
 | C3 | a `Mockup<Page>` card per page in scope and for the 404 (`MockupNotFound`); every new component; `14-sources.md` updated | art director |
 | C4 | the `duration` and `easing` families; `12-motion.md` completed; the `Motion` card; `charter.py freeze` passes | art director |
 | D1, E1 | nothing: the build reads the charter | frontend developer |
@@ -110,7 +110,7 @@ Every `preview.html` starts with the type's marker on line 1, then a small compl
 | `Mockup<Page>` | `group="Pages" page width=1440 height=<page height>`; `mobile-height=<n>` as above | C3 |
 | `Motion` | `group="Pages" page width=1440 height=<page height>`; `mobile-height=<n>` as above | C4 |
 
-The `Showcase` is the home page's opening and the next section, composed for the direction's colour strategy: its height is its content's, not a fixed 900. Page cards get a 390 px copy, `<Name>Mobile`, written by `charter.py cards` (its line 2 says it is generated); the copy is 844 px high, or the card's `mobile-height`. Never edit a copy: edit its card and run `cards` again; `check` reports a copy that is out of date. A copy drawn by hand instead (no generated line) is kept. Page names are PascalCase: `Home`, `Coffees`, `NotFound` for the 404.
+The `Showcase` holds the three situations of the direction's specimen (the home page's opening, one dense section, one interaction with its states), composed for the direction's idea: its height is its content's, not a fixed 900. Page cards get a 390 px copy, `<Name>Mobile`, written by `charter.py cards` (its line 2 says it is generated); the copy is 844 px high, or the card's `mobile-height`. Never edit a copy: edit its card and run `cards` again; `check` reports a copy that is out of date. A copy drawn by hand instead (no generated line) is kept. Page names are PascalCase: `Home`, `Coffees`, `NotFound` for the 404.
 
 Local preview URL of a card: `<preview>/design/charter/project/components/<Name>/preview.html` (a branch: `<preview>/design/branches/<id>/project/components/<Name>/preview.html`).
 
