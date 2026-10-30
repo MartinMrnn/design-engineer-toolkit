@@ -15,12 +15,12 @@ Preview: http://127.0.0.1:<port>/
 Charter: design/charter/project/ (at C2, your branch: design/branches/<id>/project/)
 Inputs: <paths>
 Expected outputs: <paths>
-Constraints: <scope; at C2, the direction's idea card, design/ideas/<id>.md, from the `Ideas:` line of the C1 decision>
+Constraints: <scope; at C2, round 2, the direction's specimen, design/specimens/<id>/, with its idea.md>
 Decisions to respect: <the entries of design/decisions.md this step builds on, in the user's words; for an option step, the options already discarded>
 Done when: <the step's "Done when", copied from steps.md; you check the criteria about the critic, the publication and the user>
 ```
 
-At C2, the lead gives each art director one idea card, from the `Ideas:` line of the C1 entry in `design/decisions.md`: the first three, in that order. `Colour skill:` goes in the art director's and the critic's missions only; leave the line out of the UX designer's. The art director's skills are preloaded, so the line gives it the folder of `colour.py`; the critic reads only the colour skill's `references/measures.md`.
+At C2, round 1, one art director gets the four idea cards of the `Ideas:` line of the C1 entry in `design/decisions.md` (the specimen mission below); round 2, each art director gets its kept specimen and its card. `Colour skill:` goes in the art director's and the critic's missions only; leave the line out of the UX designer's. The art director's skills are preloaded, so the line gives it the folder of `colour.py`; the critic reads only the colour skill's `references/measures.md`.
 
 A mission starts a new agent for its step. Resume an agent only within its step: with the user's answers, for round 2, at C1 for the idea cards once B1 is approved, at C2 for the critic's phase 2, or, at C2, for the base instance to complete the direction in the merged charter.
 
@@ -74,8 +74,34 @@ Decisions to respect: <the proposal as the user approved it, word for word>
 Done when: 06-structure.md holds the change and nothing else changed; every section still traces to an intent; charter.py check --step B2 passes
 ```
 
+## Specimen mission (C2, round 1)
+One art director builds the four specimens: two per run, since its turn limit counts per run.
+
+```text
+Step: C2 · Specimens
+Mode: produce
+Skill directory: <plugin root>/skills/art-direction
+Charter skill: <plugin root>/skills/charter
+Colour skill: <plugin root>/skills/colour
+Project: <absolute path of the project folder>
+Conversation language: <from CLAUDE.md>
+Preview: http://127.0.0.1:<port>/
+Inputs: design/ideas/a.md to d.md, design/charter/project/ (06-structure.md for the situations and the copy, 07-visual-intent.md), design/inspiration/ and its captures, the taste file
+Expected outputs: design/specimens/a/ and b/ in this run; c/ and d/ when resumed
+Constraints: specimens a and b now, then report; the idea's text never inside index.html
+Decisions to respect: <the C1 and B2 entries of design/decisions.md, in the user's words>
+Done when: <the specimens part of the C2 "Done when", for the two specimens of this run>
+```
+
+To resume it for the other two:
+
+```text
+Mode: resume
+Now specimens c and d, the same way. Then report on the four.
+```
+
 ## Comparison mission (C2, "choose for me")
-Launch a new art director, never one of the three that made the directions.
+Launch a new art director, never one that made the specimens or the directions compared.
 
 ```text
 Step: C2 · Art directions · comparison
@@ -86,10 +112,10 @@ Colour skill: <plugin root>/skills/colour
 Project: <absolute path of the project folder>
 Conversation language: <from CLAUDE.md>
 Preview: http://127.0.0.1:<port>/
-Inputs: the three branches design/branches/a/project/, b/, c/ (their Showcase and component cards, with preview URLs), the board design/board/index.html, design/charter/project/01-context.md, design/charter/project/07-visual-intent.md, the critic's last C2 report (design/reviews/C2-directions-<round>.md), the taste file
+Inputs: round 1, the four specimens design/specimens/<id>/ (index.html with its preview URL, idea.md) and their board; round 2, the branches design/branches/<id>/project/ (their Showcase and component cards, with preview URLs) and the board design/board/index.html; design/charter/project/01-context.md, design/charter/project/07-visual-intent.md, the critic's last report of the round (design/reviews/C2-specimens-<round>.md or C2-directions-<round>.md), the taste file
 Expected outputs: none (a REPORT only)
-Constraints: you made none of these directions; build nothing and change no file; recommend only a direction the critic accepted
-Done when: the REPORT recommends one direction, or a mix and its base, with a justification linked to the brief, the intent and the critic's report
+Constraints: you made none of these; build nothing and change no file; recommend only what the critic accepted
+Done when: the REPORT recommends, round 1, the one or two specimens to keep, round 2, one direction, with a justification linked to the brief, the intent and the critic's report
 ```
 
 ## Fix mission (E1, frontend)
@@ -122,7 +148,7 @@ Project: <absolute path of the project folder>
 Conversation language: <from CLAUDE.md>
 Review: <each file with its preview URL>
 Report: design/reviews/<step>-<item>-1.md
-References: design/charter/project/ (README.md first, then the sections the step needs), design/branches/<id>/project/ (C2, the three branches), design/ux/research.md (B2)
+References: design/charter/project/ (README.md first, then the sections the step needs), design/specimens/ (C2, round 1), design/branches/<id>/project/ (C2, round 2, the branches), design/ux/research.md (B2)
 Check: design/reviews/<step>-<item>-check.txt (the output of charter.py check)
 Compare with (D1, E1): <the approved Mockup and Motion cards, as design/decisions.md records them>
 Deviations (D1, E1): design/deviations.md
@@ -137,10 +163,10 @@ At C2, phase 1 is blind: `Review:` gives the preview links, `References:` the br
 ```text
 Mode: resume
 Phase: with idea
-Your blind reading stays as written. The idea cards: design/ideas/<a>.md (branch a), design/ideas/<b>.md (branch b), design/ideas/<c>.md (branch c). Complete the report.
+Your blind reading stays as written. The idea cards: <for each specimen or branch, its id and design/ideas/<id>.md, or design/specimens/<id>/idea.md for a direction>. Complete the report.
 ```
 
-`<item>` names what is reviewed, so that no report overwrites another: `ideas` (C1), `structure` (B2), `directions` (C2), `home` then each other page or `pages` (C3), `motion` (C4), each page type (D1), `site` (E1).
+`<item>` names what is reviewed, so that no report overwrites another: `ideas` (C1), `structure` (B2), `specimens` then `directions` (C2), `home` then each other page or `pages` (C3), `motion` (C4), each page type (D1), `site` (E1).
 
 Never include the maker's report.
 

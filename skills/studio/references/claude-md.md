@@ -19,7 +19,9 @@ This folder is a design studio project. The deliverable is a high-fidelity stati
 - `design/decisions.md`: every approved decision, in order. It wins over anything else.
 - `design/inspiration/`: the user's moodboard and references
 - `design/ux/`: research notes and captures
-- `design/branches/`, `design/board/`: the three C2 directions and their comparison
+- `design/ideas/`: the idea cards of C1
+- `design/specimens/`: the C2 specimens, one per idea card, and their board
+- `design/branches/`, `design/board/`: the C2 directions and their comparison
 - `design/mockups/`, `design/motion/`: the C3 and C4 options; the chosen ones are cards in the charter
 - `design/deviations.md`: what `site/` could not build as approved, with the justification; the user approves or refuses each row
 - `design/reviews/`: the critic's reports, captures, check outputs and check scripts
