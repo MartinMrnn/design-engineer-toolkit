@@ -2,6 +2,8 @@
 
 One entry per approval, newest last. Approved decisions win over anything else in the project.
 
+Studio: v0.4
+
 <!-- Entry format:
 ## <step> · <date>
 - Decision: <what was chosen>

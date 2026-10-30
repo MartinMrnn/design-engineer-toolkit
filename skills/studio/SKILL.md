@@ -50,6 +50,7 @@ Talk to the user in the language of their first message, for the whole project, 
 ## Starting
 - **The Artifact tool is required.** If you have no tool named Artifact, stop and tell the user: "This studio keeps the project in a Claude Design System, which needs Claude Code signed in to claude.ai. Sign in with /login, then run the studio again." Never start A1 without it.
 - If `design/decisions.md` exists but `design/charter/project/design-system.json` does not, this is a v0.2 project: tell the user to finish it with v0.2 and stop.
+- If `design/decisions.md` exists but has no line `Studio: v0.4`, the project was started with v0.3 (its C1 and C2 work differently): tell the user to finish it with v0.3 and stop.
 - If `design/decisions.md` exists, the project is in progress: read it and `CLAUDE.md`, tell the user in two lines where things stand, make sure the preview server answers at the URL in `CLAUDE.md` (start it as in A1 if not), bring in any edit made on the charter's page (`publishing.md`), and continue with the next step.
 - Otherwise, run A1. Never set up a project in the home folder. If the folder holds anything other than the user's material, ask the user to confirm it is the client project's own folder before A1.
 - If the taste file does not exist, create it from `references/taste.md` (`mkdir -p ~/.claude/design-studio` first) and offer to fill it now with a few questions: sites they love and hate, and why. The user can skip.
