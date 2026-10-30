@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.4.0 · unreleased · ideas before parts
+
+Released only if the comparative test of `architecture/v0.4-creative-process.md` passes.
+
+- **A governing idea for every direction.** C1 reads the moodboard as relations and writes four idea cards: the idea, its manifestations in colour, type, composition, content and motion, what it refuses, why it fits, the accessibility it puts at risk. Directions differ by their ideas, no longer by an assigned colour strategy.
+- **Specimens, then directions.** C2 tests the four ideas as light specimens in three real situations (the opening, a dense section, an interaction), then deepens the one or two you keep into comparable sketches on one contract. A mix of families is no longer the default: a direction is one idea.
+- **C1 alongside B1.** The moodboard reading needs only the brief, so it runs with the product step; the idea cards follow B1.
+- **The UX guides, the art direction may enrich.** B2 writes a priority schema with the real copy instead of grey wireframes for every page; a wireframe is drawn only for a functional need. A structural change proposed by the art director is approved by you and written by the UX designer.
+- **Diagnosis by level.** Seven single-variable tests (blind reading, grey, blur, permutation, transposition, change of situation, removal), used only to answer a question. A new `views.js` takes the normal, grey and blurred views.
+- **A critic with a blind reading.** At C2 it writes what the page says before it reads the idea; it judges the idea and the execution apart, gives each problem its level, and scores Coherence and Conformity instead of Consistency.
+- **Accessibility as a design constraint.** Known from the first exploration, met by another way to carry the idea rather than a generic fix, reported as facts apart from the scores. `checks.js` now runs every axe-core rule of WCAG 2.0 to 2.2, levels A and AA (target size included), keeps every violation whatever its impact, and lists what axe cannot decide for review. The studio never calls a mockup compliant.
+- **Colour.** The strategies become a vocabulary the idea chooses; the appetite is a preference or a constraint; the lessons of the blind tests are heuristics with their measures; `palette` gives ΔL apart from the contrast ratio.
+- v0.4 does not resume a project started with v0.3; finish it with v0.3.
+
 ## 0.3.0 · unreleased · the charter
 
 - **One charter per project.** The project's single reference is a native Claude Design System on claude.ai, created at kickoff and enriched at every step: context, intent, story, positioning, voice and wording, structure and wireframes, tokens, components and rules, the approved mockups and motion. The lead publishes it after every step; you can browse, share and edit it.

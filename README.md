@@ -28,7 +28,7 @@
 
 A web design studio run by agents, for Claude Code. You bring the creative input. A small team of agents (a project lead, a UX designer, an art director, a frontend developer and an independent critic) takes you from a brief to a high-fidelity mockup, one approved step at a time.
 
-**One charter, from the brief to the mockups.** Everything the team decides lives in one place: a native Claude Design System on claude.ai, created at kickoff and enriched at every step. It holds the product (context, intent, story, positioning, voice and wording), the structure and its wireframes, the art direction (tokens, components, rules) and the approved mockups and motion. You can browse it, share it and edit it there; the mockup is built from it.
+**One charter, from the brief to the mockups.** Everything the team decides lives in one place: a native Claude Design System on claude.ai, created at kickoff and enriched at every step. It holds the product (context, intent, story, positioning, voice and wording), the structure (the priority of every page and its copy), the art direction (tokens, components, rules) and the approved mockups and motion. You can browse it, share it and edit it there; the mockup is built from it.
 
 **Design before you code.** Structure, content, art direction, layouts and motion are explored and chosen as lightweight HTML proposals before the final mockup is built.
 
@@ -40,8 +40,11 @@ A web design studio run by agents, for Claude Code. You bring the creative input
 - **Every agent asks its own questions.** Subagents cannot talk to you directly in Claude Code, so the lead relays their questions word for word and passes your answers back.
 - **You always get the link.** Every question about a page comes with its preview link, opened in the built-in browser in the desktop app, or to open in your own browser from the CLI.
 - **Your decisions carry forward.** The lead never asks again what you decided, and drops everything about the options you did not keep. Every presentation starts with the step you are at, out of nine, and the next one.
-- **Comparable proposals.** At C2, three art directors each build a sketch of a design system on the same contract (every token, the palette, the type and the home opening at final quality, Button and Card; the rest is completed for the direction you keep): the same token names, sections, components and copy. Only the design differs, and a published board compares them row by row. Then two or three layouts, and two or three motion personalities. You choose, mix, or say "choose for me".
-- **An independent critic.** Before you see a proposal, a critic that never saw the maker's reasoning scores it on the criteria that apply to the step and sends back what falls short.
+- **Ideas before parts.** A direction starts from a governing idea that ties colour, type, composition, the treatment of content and motion together, not from a palette picked on its own. At C1 the art director reads your moodboard as relations and writes four idea cards. At C2 it tests each one as a light specimen in three real situations of your site (the opening, a dense section, an interaction); you keep one or two, which are deepened into comparable sketches of a design system on one contract, side by side on a published board. Then two or three layouts, and two or three motion personalities. You choose, or say "choose for me".
+- **Diagnosis at the right level.** When a composition does not work, the studio finds where: the intent, the idea, the palette, the distribution of colour, or the context, with simple tests (a blind reading, grey and blurred views, swapping roles), used to answer a question, never to generate designs.
+- **The UX guides, the art direction may enrich.** The UX designer fixes what visitors must understand, do and in what priority, in text; the layout stays open to the art direction, which may propose a change of structure that you approve.
+- **An independent critic.** Before you see a proposal, a critic that never saw the maker's reasoning reads it blind, then against its idea, judges the idea and its execution apart, and sends back what falls short with the level at fault.
+- **Accessibility is a design constraint, not an art direction.** The WCAG 2.2 criteria the studio requires (levels A and AA) are known from the first exploration; a failing one is solved by another way to carry the idea, never by a silent generic fix. The critic reports accessibility as facts, apart from its scores, and never calls a page compliant.
 - **Acceptance criteria at every step.** A step ends when its criteria are met and you approved it.
 - **Agents know when to stop.** Turn limits, one self-check, two review rounds at most, then you decide.
 
@@ -71,9 +74,9 @@ To resume a project, run the same command in the same folder: the lead reads `de
 |---|---|---|---|---|
 | A1 Kickoff | Lead | The client, goals, pages, deadline, existing site, and any material you already have | The charter, started: context and brief | The brief |
 | B1 Product | UX designer | Competitors you know (optional) | Research notes, then intent, story, positioning and wording in the charter | The key messages, then the product sections |
-| B2 Structure and content | UX designer, critic | Real content to replace `[to provide]` (optional) | Sitemap, page structure, real copy and grey wireframes in the charter | Structure and copy |
-| C1 Moodboard reading | Art director | Moodboard, reference sites with what you like in each, counter-examples | The visual intent: what we keep, avoid, and 5 keywords | The reading |
-| C2 Directions | 3 art directors, critic | Your choice or mix | Three comparable sketches on one contract, side by side on a shared board; only the kept direction is completed and merged into the charter | A direction |
+| C1 Moodboard reading and ideas (alongside B1) | Art director, critic | Moodboard, reference sites with what you like in each, counter-examples | The visual intent, read as relations: what we keep, avoid, 5 keywords, the colours seen; then four idea cards | The reading |
+| B2 Structure and content | UX designer, critic | Real content to replace `[to provide]` (optional) | Sitemap, the priority of every page and its real copy in the charter; a grey wireframe only where a functional need calls for one | Structure and copy |
+| C2 Specimens, then directions | Art directors, critic | Your choices | Four specimens, one per idea, in three real situations; then the one or two you keep, as comparable sketches on one contract, side by side on a shared board; only the kept direction is completed and merged into the charter | One or two specimens, then a direction |
 | C3 Key mockups | Art director, critic | Your choices | 2–3 home layouts, then every page and the 404 page, in the charter | One layout per page |
 | C4 Motion | Art director, critic | Your choice | 2–3 animated prototypes; the chosen motion in the charter | A motion personality |
 | D1 Mockup build | Frontend developer, critic | What must be interactive | `site/`, built from the charter page by page, and any deviation that could not be avoided | Each page type and its deviations |
@@ -84,8 +87,9 @@ To resume a project, run the same command in the same folder: the lead reads `de
 The art director carries a colour method, `skills/colour/`: colour is chosen from your intent (three words for what the site should make people feel, asked at kickoff), the context and any visual identity you already have, given roles, argued in the charter's "Why these colours", and measured.
 - **Three kinds of knowledge**, each claim labelled: a standard (WCAG 2.2, CSS Color 4), an empirical finding (a published study, with its scope), or a design heuristic. A heuristic is a starting point, never a rule.
 - **`colour.py`**, a Python 3 script with no dependency: contrast against WCAG 2.2, conversion to OKLCH, lightness ramps, colour-vision-deficiency simulation, the dominant colours of a capture, and a `palette` report on a charter's tokens. It never scores a palette: the contrast pairs the contract requires pass or fail, and the rest informs. `charter.py check` shares its WCAG module.
-- **Colour strategies.** Colour is also a way of occupying the page: each direction chooses one of six strategies (signal, colour surfaces, flood and tone-on-tone, vivid pair on neutral, primaries on white or black, content carries the colour), guided by how present you want colour (discreet, present, dominant), asked at kickoff. The three C2 directions differ in strategy by default, the Showcase (the home page's opening and next section) is composed for it, and the contract has optional surfaces and tones to paint sections and build tone-on-tone sets.
-- **The C2 board** gains a "Colour, measured" row (OKLCH, text contrast, share of the Showcase (opening and next section)), headed by your three words.
+- **Colour strategies, as a vocabulary.** Colour is also a way of occupying the page: which colour dominates, where, in what proportion, next to what. Each idea decides that distribution, and six colour strategies name the common ones (signal, colour surfaces, flood and tone-on-tone, vivid pair on neutral, primaries on white or black, content carries the colour); none is assigned in advance. How present you want colour (discreet, present, dominant), asked at kickoff, is a preference, or a constraint when you say so. The contract has optional surfaces and tones to paint sections and build tone-on-tone sets.
+- **Measures stay information.** `palette` gives the WCAG contrast ratio and ΔL, the difference of OKLCH lightness, as two separate figures: they inform the diagnosis and set no aesthetic threshold.
+- **The C2 board** gains a "Colour, measured" row (OKLCH, text contrast, share of the Showcase), headed by your three words.
 - **Sources**: every source, its link and its licence is in `skills/colour/references/sources.md`. The method draws on the open `meodai/skill.color-expert` skill (CC BY 4.0), cited there, and no text of it is copied.
 - Competitors' colours are not analysed unless you ask.
 
@@ -95,7 +99,7 @@ Bring everything you already have at kickoff, in any form: client information, t
 
 ## Answers that always work
 
-- **"choose for me"**: the agent's recommendation is applied and recorded as such. At C2, where three art directors each defend their own direction, a fourth art director, who made none of them, compares the three and recommends one.
+- **"choose for me"**: the agent's recommendation is applied and recorded as such. At C2, an independent art director, who made none of the options, compares them and recommends: the one or two specimens to keep, then the direction.
 - **"feedback: …"**: a note on the studio itself (a step, an agent, a skill). It goes to `design/feedback.md`, so you can improve the studio later.
 
 ## Your taste file
@@ -137,17 +141,17 @@ Other skills or plugins that react to "build a website", or to any creative work
 }
 ```
 
-## Limits of v0.3
+## Limits of v0.4
 
-- Needs Claude Code signed in to claude.ai. v0.3 does not resume a project started with v0.2; finish it with v0.2.
-- Wireframes, mockups and motion are shown in the charter at 1440 px and 390 px; other widths are checked locally.
+- Needs Claude Code signed in to claude.ai. v0.4 does not resume a project started with v0.3; finish it with v0.3. v0.3 does not resume a project started with v0.2; finish it with v0.2.
+- Specimens, mockups and motion are shown at 1440 px and 390 px; other widths are checked locally.
 - Desktop (1440 px) and mobile (390 px) only, one mockup per project folder.
 - The local preview server does not serve `site/404.html` for missing pages; static hosts such as GitHub Pages or Netlify do.
 - No production work: frameworks, CMS, SEO, deployment.
 - No Figma or other external design tool.
 - The critic judges motion from frame sequences and screenshots, not in real time; you judge it in the browser.
-- The automated accessibility checks are a baseline (axe-core rules), not an audit.
-- The automated checks do not see text hidden by masks or clip-path, contrast over images or gradients, links to missing pages, or hover and focus states; the critic looks at those itself.
+- The automated accessibility checks run every axe-core rule tagged WCAG 2.0, 2.1 and 2.2 level A and AA (target size included); a pass covers those rules only and is not WCAG conformance. The critic checks by hand what they cannot see (colour as the only cue, text over images, focus, keyboard), and some criteria are not covered at all (`skills/colour/references/measures.md`). The studio never calls a mockup compliant.
+- The automated checks do not see text hidden by masks or clip-path, links to missing pages, or hover and focus states; the critic looks at those itself.
 
 ## License
 
