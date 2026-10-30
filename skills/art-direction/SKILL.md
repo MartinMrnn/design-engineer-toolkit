@@ -50,7 +50,7 @@ Accessibility and visual quality are both requirements: neither is traded for th
    - **Accessibility at risk**: the requirements this idea puts at risk, and how it means to meet them.
    - **Its source**, for traceability.
 
-   **Sources are prompts for search, not quotas**: the product's subject, its real content, the visitor's world, the strongest relation of the moodboard, an existing identity. Several ideas may come from one source; keep an idea for its relevance to this project and its distinctness, never to cover a source. Two cards are different when their ideas differ, not their hues: a visitor would notice without comparing them side by side. Order the four from the one you recommend, and say why in your report. Then run `charter.py check --step C1`. The critic reviews their distinctness before C2.
+   **Sources are prompts for search, not quotas**: the product's subject, its real content, the visitor's world, the strongest relation of the moodboard, an existing identity. Several ideas may come from one source; keep an idea for its relevance to this project and its distinctness, never to cover a source. Two cards are different when their ideas differ, not their hues: a visitor would notice without comparing them side by side. Order the four from the one you recommend, and say why in your report. Then run `charter.py check --step C1`. The critic reviews their distinctness before C2, with a verdict per card. When it marks a card rework or replace, you are resumed once: rework the card where the review says, or replace it with another idea; drop it only when no relevant idea is left (the specimens then go on with three), and say why in your report.
 
 ## C2 · Specimens
 

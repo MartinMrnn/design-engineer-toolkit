@@ -21,8 +21,8 @@ Write your report and your question in the `Conversation language:` of your miss
 
 ## Modes
 Your mission states the mode.
-- **produce**: review the files in the mission and write your report. At C2 this is phase 1, blind: write the blind reading of each direction into the report file, report "phase 1 written", and stop.
-- **resume**, phase 2 (C2): the lead gives you the idea cards. Keep your blind reading as written, read the cards, and complete the report.
+- **produce**: review the files in the mission and write your report. At C2 this is phase 1, blind: you have the preview links only; open nothing else in the project, write the blind reading of each specimen or direction into the report file, report "phase 1 written", and stop.
+- **resume**, phase 2 (C2): the lead gives you the idea cards, the references and the check. Keep your blind reading as written (the lead keeps a copy of it), read the rest, and complete the report.
 - **resume**, round 2: the maker fixed the problems you reported. Check each of them and anything the fixes broke, nothing else, and write the round 2 report to the path in the mission.
 - **resume**, an answer: the user answered "defect" to your "Intended or a defect?" question. Score that point as a defect, update the verdict, and rewrite the same report (read it first).
 

@@ -31,6 +31,13 @@ Mode: resume
 B1 is approved. Read design/charter/project/02-intent.md to 05-voice-and-wording.md, then write the four idea cards and the part Ideas of 07-visual-intent.md (art-direction skill, C1 step 7), and report.
 ```
 
+To resume the C1 art director when the critic marks a card rework or replace (round 2, once):
+
+```text
+Mode: resume
+Round 2 of the idea cards. Read the critic's review, design/reviews/C1-ideas-1.md: rework or replace each card it marks so, or drop one when no relevant idea is left (say why: the specimens go on with three). Update the part Ideas of 07-visual-intent.md, run charter.py check --step C1, then report.
+```
+
 To resume with the user's answers:
 
 ```text
@@ -158,13 +165,15 @@ Taste file: ~/.claude/design-studio/taste.md
 
 At C1, the critic's item is `ideas`: `Review:` lists the idea cards, with no preview link, and `References:` the charter's `01-context.md` to `05-voice-and-wording.md` and `07-visual-intent.md`.
 
-At C2, phase 1 is blind: `Review:` gives the preview links, `References:` the branches without `design/ideas/`, and nothing in the mission names or quotes an idea. When the critic reports "phase 1 written", resume it for phase 2:
+At C2, phase 1 is blind: the mission gives the preview links and nothing else to read. `Review:` lists, round 1, each `design/specimens/<id>/index.html`; round 2, each branch's `Showcase`, `Button` and `Card` cards, never the `Cover` nor a board. Leave out `References:`, `Check:` and `Taste file:`, and nothing in the mission names or quotes an idea or the brief. When the critic reports "phase 1 written", copy its report to `design/reviews/<step>-<item>-<round>-blind.md` (the lock: in the final report, the blind reading must match that copy), then resume it for phase 2 with what phase 1 left out:
 
 ```text
 Mode: resume
 Phase: with idea
-Your blind reading stays as written. The idea cards: <for each specimen or branch, its id and design/ideas/<id>.md, or design/specimens/<id>/idea.md for a direction>. Complete the report.
+Your blind reading stays as written. The idea cards: <for each specimen or branch, its id and design/specimens/<id>/idea.md (the card, completed with its distribution and any structural proposal)>. References: <as in the critic mission>. Check: <the check file>. Taste file: ~/.claude/design-studio/taste.md. Complete the report.
 ```
+
+After phase 2, compare the report's `Blind reading` lines with the copy; if they differ, tell the user, and treat the review as not blind.
 
 `<item>` names what is reviewed, so that no report overwrites another: `ideas` (C1), `structure` (B2), `specimens` then `directions` (C2), `home` then each other page or `pages` (C3), `motion` (C4), each page type (D1), `site` (E1).
 
