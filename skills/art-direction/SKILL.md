@@ -54,7 +54,7 @@ Accessibility and visual quality are both requirements: neither is traded for th
 
 ## C2 · Specimens
 
-You are the one art director of the first round. Your mission gives the four idea cards of the `Ideas:` line. A specimen tests an idea in real situations, cheaply: concrete enough to judge a composition, not only a mood or a palette. Build specimens `a` and `b`, report, and wait: the lead resumes you for `c` and `d` (your turn limit counts per run; the resume keeps what you have learnt).
+You are the one art director of the first round. Your mission gives the four idea cards of the `Ideas:` line and the critic's C1 review of them: where it says two cards repeat a manifestation, make the specimens differ there; where it names an accessibility risk a card missed, meet it. A specimen tests an idea in real situations, cheaply: concrete enough to judge a composition, not only a mood or a palette. Build specimens `a` and `b`, report, and wait: the lead resumes you for `c` and `d` (your turn limit counts per run; the resume keeps what you have learnt).
 
 For each specimen, in `design/specimens/<id>/`:
 1. **The palette and the type**, in `tokens.json`: only what the situations use (grounds, ink, accent and its `on-accent`, the focus ring, the surfaces or tones the idea needs, the states the interaction shows), with a usage note on each colour (a text colour names its grounds, as in the contract), and the two type families. Use the contract's names. Run `python3 "<colour skill directory>/scripts/colour.py" palette design/specimens/<id>/tokens.json` while you build: a partial palette is measured as it is. Write the same values as CSS custom properties in `tokens.css` (`:root { --ground: …; }`).

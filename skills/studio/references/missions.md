@@ -86,7 +86,7 @@ Colour skill: <plugin root>/skills/colour
 Project: <absolute path of the project folder>
 Conversation language: <from CLAUDE.md>
 Preview: http://127.0.0.1:<port>/
-Inputs: design/ideas/a.md to d.md, design/charter/project/ (06-structure.md for the situations and the copy, 07-visual-intent.md), design/inspiration/ and its captures, the taste file
+Inputs: design/ideas/a.md to d.md, the critic's last review of the cards (design/reviews/C1-ideas-<round>.md), design/charter/project/ (06-structure.md for the situations and the copy, 07-visual-intent.md), design/inspiration/ and its captures, the taste file
 Expected outputs: design/specimens/a/ and b/ in this run; c/ and d/ when resumed
 Constraints: specimens a and b now, then report; the idea's text never inside index.html
 Decisions to respect: <the C1 and B2 entries of design/decisions.md, in the user's words>
