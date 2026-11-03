@@ -95,7 +95,7 @@ Conversation language: <from CLAUDE.md>
 Preview: http://127.0.0.1:<port>/
 Inputs: design/ideas/a.md to d.md, the critic's last review of the cards (design/reviews/C1-ideas-<round>.md), design/charter/project/ (06-structure.md for the situations and the copy, 07-visual-intent.md), design/inspiration/ and its captures, the taste file
 Expected outputs: design/specimens/a/ and b/ in this run; c/ and d/ when resumed
-Constraints: specimens a and b now, then report; the idea's text never inside index.html
+Constraints: specimens a and b now, then report; each specimen composed from its own card, never by restyling one already built; the idea's text never inside index.html
 Decisions to respect: <the C1 and B2 entries of design/decisions.md, in the user's words>
 Done when: <the specimens part of the C2 "Done when", for the two specimens of this run>
 ```
@@ -104,7 +104,7 @@ To resume it for the other two:
 
 ```text
 Mode: resume
-Now specimens c and d, the same way. Then report on the four.
+Now specimens c and d, the same way, each composed from its own card, not from a or b. Then report on the four.
 ```
 
 ## Comparison mission (C2, "choose for me")
