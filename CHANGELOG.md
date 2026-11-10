@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.3.0 · unreleased · the charter
+## 0.3.0 · 2026-11-10 · the charter
 
 - **One charter per project.** The project's single reference is a native Claude Design System on claude.ai, created at kickoff and enriched at every step: context, intent, story, positioning, voice and wording, structure and wireframes, tokens, components and rules, the approved mockups and motion. The lead publishes it after every step; you can browse, share and edit it.
 - **Product first.** B1 becomes Product: after the research, the UX designer writes the intent, the story, the positioning with your key messages, and the voice and wording every page then follows.
