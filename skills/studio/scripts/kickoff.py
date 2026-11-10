@@ -6,8 +6,9 @@ Usage, from the project folder:
 
 It creates the project folders, installs the critic's scripts in
 design/reviews/scripts/ with their output folder filled in, and copies the
-starting templates. It can run again safely: it reinstalls the critic's
-scripts but never overwrites a template that already exists. It refuses to
+starting templates. The charter itself is created by the charter skill's
+`charter.py init`, once the client's name is known. It can run again safely: it
+reinstalls the critic's scripts but never overwrites a template that already exists. It refuses to
 run, and changes nothing, in the home folder or at the filesystem root.
 """
 import json
@@ -20,12 +21,12 @@ TOKEN = "'__OUT__'"
 SCRIPTS = ["capture.js", "checks.js"]
 FOLDERS = [
     "design/inspiration/captures",
-    "design/ux/wireframes",
     "design/ux/captures",
-    "design/directions",
+    "design/charter",
+    "design/branches",
+    "design/board",
     "design/mockups",
     "design/motion",
-    "design/kit",
     "design/reviews/scripts",
     "design/reviews/captures",
     "site",

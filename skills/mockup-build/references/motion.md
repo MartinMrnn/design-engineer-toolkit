@@ -10,7 +10,7 @@
 
 ```css
 @media (prefers-reduced-motion: no-preference) {
-  .js .reveal { opacity: 0; transform: translateY(16px); }
+  .js .reveal { opacity: 0; transform: translateY(var(--space-3)); }
   .js .reveal.is-in {
     opacity: 1;
     transform: none;
