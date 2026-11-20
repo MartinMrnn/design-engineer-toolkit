@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Good fixture</title>
+<link rel="icon" href="data:,">
+<style>
+  :root { --ink: #1a1a1a; --paper: #fafaf7; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font: 18px/1.5 system-ui, sans-serif; color: var(--ink); background: var(--paper); }
+  main { max-width: 64rem; margin: 0 auto; padding: 0 1.5rem; }
+  section { min-height: 90vh; padding: 4rem 0; }
+  img { max-width: 100%; height: auto; display: block; }
+  a { color: #0b4f8a; }
+  @media (prefers-reduced-motion: no-preference) {
+    .reveal { animation: rise 600ms ease-out both; }
+    @keyframes rise { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+  }
+</style>
+</head>
+<body>
+<main>
+  <section>
+    <h1 class="reveal">A clean page</h1>
+    <p class="reveal">Readable text with enough contrast, no overflow and working links.</p>
+    <a href="good.html">Back to the top</a>
+  </section>
+  <section>
+    <h2>A picture</h2>
+    <img src="pixel.svg" alt="A grey rectangle" width="320" height="200">
+  </section>
+  <section>
+    <h2>The end</h2>
+    <p>Nothing hidden, nothing broken.</p>
+  </section>
+</main>
+</body>
+</html>

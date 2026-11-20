@@ -1,0 +1,11 @@
+{
+  "name": "design-studio",
+  "version": "0.3.0",
+  "private": true,
+  "description": "Development checks for the design-studio Claude Code plugin.",
+  "license": "MIT",
+  "type": "module",
+  "devDependencies": {
+    "playwright": "1.64.0"
+  }
+}

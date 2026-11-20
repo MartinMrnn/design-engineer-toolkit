@@ -1,10 +1,10 @@
 {
   "name": "design-studio",
   "version": "0.3.0",
-  "description": "A web design studio run by agents around one charter, a native Claude Design System: product, UX, art direction, mockups and an independent critic. Design before you code; the deliverable is a high-fidelity static mockup.",
+  "description": "A film crew for the web. You direct: you bring the vision and the references; expert skills and two neutral agents (a critic and a researcher) turn them into the complete front surface of a web product, a validated mockup first, then the build.",
   "author": { "name": "Martin Morin", "url": "https://github.com/MartinMrnn" },
   "homepage": "https://github.com/MartinMrnn/design-engineer-toolkit",
   "repository": "https://github.com/MartinMrnn/design-engineer-toolkit",
   "license": "MIT",
-  "keywords": ["design", "web-design", "art-direction", "ux", "mockup", "agents", "design-system"]
+  "keywords": ["design", "web-design", "design-engineering", "ux", "ui", "mockup", "accessibility", "motion"]
 }

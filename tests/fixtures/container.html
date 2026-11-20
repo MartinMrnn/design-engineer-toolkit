@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Container scroll fixture</title>
+<link rel="icon" href="data:,">
+<style>
+  html, body { margin: 0; height: 100%; overflow: hidden; font: 18px/1.5 system-ui, sans-serif; color: #1a1a1a; background: #fff; }
+  /* The window never scrolls: the page scrolls inside main, section by section. */
+  main { height: 100%; overflow-y: auto; scroll-snap-type: y mandatory; }
+  section { height: 100%; padding: 2rem; box-sizing: border-box; scroll-snap-align: start; }
+  section:nth-child(even) { background: #eee; }
+</style>
+</head>
+<body>
+<main>
+  <section><h1>Section one</h1></section>
+  <section><h2>Section two</h2></section>
+  <section><h2>Section three</h2></section>
+  <section><h2>Section four</h2></section>
+  <section><h2>Section five</h2></section>
+</main>
+</body>
+</html>

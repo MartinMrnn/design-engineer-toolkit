@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bad fixture</title>
+<link rel="icon" href="data:,">
+<style>
+  body { margin: 0; font: 16px/1.5 system-ui, sans-serif; background: #fff; color: #111; }
+  .wide { width: 900px; height: 40px; background: #333; }
+  .faint { color: #c8c8c8; }
+  /* Hidden until an animation reveals it, and the animation only runs with motion:
+     with reduced motion the text never shows up. */
+  .reveal { opacity: 0; }
+  @media (prefers-reduced-motion: no-preference) { .reveal { animation: in 300ms forwards; } }
+  @keyframes in { to { opacity: 1; } }
+</style>
+</head>
+<body>
+<main>
+  <h1>A broken page</h1>
+  <div class="wide"></div>
+  <p class="faint">This grey text is too faint to read.</p>
+  <img src="missing.png" alt="Missing picture">
+  <a href="#">Empty link</a>
+  <p class="reveal">This paragraph never shows up.</p>
+</main>
+<script>console.error('fixture error');</script>
+</body>
+</html>

@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Long page fixture</title>
+<link rel="icon" href="data:,">
+<style>
+  body { margin: 0; font: 18px/1.5 system-ui, sans-serif; color: #1a1a1a; background: #fff; }
+  section { min-height: 100vh; padding: 2rem; box-sizing: border-box; border-bottom: 1px solid #ccc; }
+</style>
+</head>
+<body>
+<main id="sections"></main>
+<footer><p>The very end of the page</p></footer>
+<script>
+  // Twenty screens: more than twelve frames at the usual step.
+  const main = document.getElementById('sections');
+  for (let i = 1; i <= 20; i++) main.insertAdjacentHTML('beforeend', `<section><h2>Section ${i}</h2></section>`);
+</script>
+</body>
+</html>

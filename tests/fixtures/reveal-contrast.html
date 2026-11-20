@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reveal contrast fixture</title>
+<link rel="icon" href="data:,">
+<script>document.documentElement.classList.add('js');</script>
+<style>
+  body { margin: 0; font: 18px/1.5 system-ui, sans-serif; color: #1a1a1a; background: #f5f1ea; }
+  main { max-width: 64rem; margin: 0 auto; padding: 0 1.5rem; }
+  section { min-height: 100vh; padding: 4rem 0; }
+  .faint { color: #c9c4bc; }
+  @media (prefers-reduced-motion: no-preference) {
+    .js .reveal { opacity: 0; }
+    .js .reveal.is-in { opacity: 1; transition: opacity 500ms; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <section><h1>Fine on the first screen</h1></section>
+  <section><p class="reveal faint">Too faint to read, and still waiting to be revealed when the page loads.</p></section>
+</main>
+<script>
+  const io = new IntersectionObserver((entries) => {
+    for (const entry of entries) if (entry.isIntersecting) entry.target.classList.add('is-in');
+  });
+  document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
+</script>
+</body>
+</html>

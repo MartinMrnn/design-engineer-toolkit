@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hidden patterns fixture</title>
+<link rel="icon" href="data:,">
+<style>
+  body { margin: 0; font: 18px/1.5 system-ui, sans-serif; color: #1a1a1a; background: #fff; }
+  main { padding: 2rem; }
+  /* A script ignores reduced motion: these stay as they were before their reveal. */
+  .word { display: inline-block; opacity: 0; }
+  /* Hidden on purpose. */
+  .menu { opacity: 0; pointer-events: none; }
+  .closed { visibility: hidden; }
+</style>
+</head>
+<body>
+<main>
+  <h1><span class="word">Split</span> <span class="word">heading</span></h1>
+  <p style="visibility: hidden; opacity: 0">Waiting for autoAlpha</p>
+  <ul class="menu"><li><a href="hidden-patterns.html">Dropdown item</a></li></ul>
+  <p class="closed">Closed panel</p>
+  <dialog><p>Closed dialog</p></dialog>
+  <p>Always visible</p>
+</main>
+</body>
+</html>
