@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lazy images fixture</title>
+<link rel="icon" href="data:,">
+<style>
+  body { margin: 0; font: 18px/1.5 system-ui, sans-serif; color: #1a1a1a; background: #fff; }
+  main { padding: 2rem; }
+  .spacer { height: 4000px; }
+  img { display: block; max-width: 100%; height: auto; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Images far below the first screen</h1>
+  <div class="spacer"></div>
+  <img loading="lazy" src="pixel.svg" alt="A grey rectangle that loads" width="320" height="200">
+  <img loading="lazy" src="missing-lazy.png" alt="A picture that does not exist" width="320" height="200">
+</main>
+</body>
+</html>

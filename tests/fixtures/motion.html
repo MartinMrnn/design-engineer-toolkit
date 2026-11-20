@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Motion fixture</title>
+<!-- No icon declared on purpose: the browser's own /favicon.ico request must not count as an error. -->
+<script>document.documentElement.classList.add('js');</script>
+<style>
+  body { margin: 0; font: 18px/1.5 system-ui, sans-serif; color: #1a1a1a; background: #fafaf7; }
+  main { max-width: 64rem; margin: 0 auto; padding: 0 1.5rem; }
+  section { min-height: 100vh; padding: 4rem 0; }
+  /* A staggered intro that is still fading in when the checks start. */
+  @media (prefers-reduced-motion: no-preference) {
+    .intro span { display: inline-block; opacity: 0; animation: rise 1000ms ease-out forwards; }
+    .intro span:nth-child(2) { animation-delay: 1200ms; }
+    .intro span:nth-child(3) { animation-delay: 2400ms; }
+    @keyframes rise { to { opacity: 1; } }
+    .js .reveal { opacity: 0; transform: translateY(16px); }
+    .js .reveal.is-in { opacity: 1; transform: none; transition: opacity 500ms, transform 500ms; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <section>
+    <h1 class="intro"><span>Slow</span> <span>staggered</span> <span>intro</span></h1>
+    <p>Every piece of text here has enough contrast once it has arrived.</p>
+  </section>
+  <section>
+    <h2 class="reveal">Revealed when scrolled to</h2>
+    <p class="reveal">Readable text that waits below the first screen.</p>
+    <a href="motion.html">Back to the top</a>
+  </section>
+</main>
+<script>
+  // Read once at load, as a built page does.
+  window.reduceAtLoad = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const io = new IntersectionObserver((entries) => {
+    for (const entry of entries) {
+      if (entry.isIntersecting) { entry.target.classList.add('is-in'); io.unobserve(entry.target); }
+    }
+  });
+  document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
+</script>
+</body>
+</html>
