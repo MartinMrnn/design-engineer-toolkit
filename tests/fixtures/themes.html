@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Themes fixture</title>
+<link rel="icon" href="data:,">
+<style>
+  body { margin: 0; font: 18px/1.5 system-ui, sans-serif; color: #111; background: #fff; }
+  main { padding: 2rem; }
+  /* Readable in light, too faint at night. */
+  @media (prefers-color-scheme: dark) {
+    body { color: #eee; background: #111; }
+    .night { color: #333; }
+  }
+  /* Too faint on sepia only. */
+  [data-theme="sepia"] body { background: #f4ecd8; }
+  [data-theme="sepia"] .sepia { color: #d8cdb4; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Themes</h1>
+  <p class="night">Faint at night.</p>
+  <p class="sepia">Faint on sepia.</p>
+</main>
+</body>
+</html>

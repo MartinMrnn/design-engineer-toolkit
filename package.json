@@ -5,6 +5,9 @@
   "description": "Development checks for the design-studio Claude Code plugin.",
   "license": "MIT",
   "type": "module",
+  "scripts": {
+    "test": "node --test 'tests/*.test.mjs'"
+  },
   "devDependencies": {
     "playwright": "1.64.0"
   }
