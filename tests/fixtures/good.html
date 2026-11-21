@@ -5,14 +5,19 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Good fixture</title>
 <link rel="icon" href="data:,">
+<link rel="stylesheet" href="tokens.css">
 <style>
-  :root { --ink: #1a1a1a; --paper: #fafaf7; }
   * { box-sizing: border-box; }
   body { margin: 0; font: 18px/1.5 system-ui, sans-serif; color: var(--ink); background: var(--paper); }
-  main { max-width: 64rem; margin: 0 auto; padding: 0 1.5rem; }
-  section { min-height: 90vh; padding: 4rem 0; }
+  main { max-width: 64rem; margin: 0 auto; padding: 0 var(--space-3); }
+  section { min-height: 90vh; padding: var(--space-4) 0; }
   img { max-width: 100%; height: auto; display: block; }
-  a { color: #0b4f8a; }
+  a { color: var(--link); }
+  label { display: block; margin-bottom: var(--space-1); }
+  input, button { font: inherit; max-width: 100%; color: var(--ink); background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius); padding: var(--space-1) var(--space-2); }
+  button { margin-top: var(--space-2); transition: background-color 200ms; }
+  button:hover { background: var(--line); }
+  a:focus-visible, input:focus-visible, button:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; }
   @media (prefers-reduced-motion: no-preference) {
     .reveal { animation: rise 600ms ease-out both; }
     @keyframes rise { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
@@ -25,6 +30,12 @@
     <h1 class="reveal">A clean page</h1>
     <p class="reveal">Readable text with enough contrast, no overflow and working links.</p>
     <a href="good.html">Back to the top</a>
+  </section>
+  <section>
+    <h2>A form</h2>
+    <label for="email">Email</label>
+    <input id="email" type="email" autocomplete="email">
+    <div><button type="button">Subscribe</button></div>
   </section>
   <section>
     <h2>A picture</h2>

@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Missteps fixture</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="tokens.css">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; font: 18px/1.5 system-ui, sans-serif; color: var(--ink); background: var(--paper); }
+  section { padding: var(--space-3); }
+  a { color: var(--link); }
+  /* overlap: the menu sits on the logo. */
+  .bar { display: flex; position: relative; }
+  .menu { position: absolute; left: 0; top: 0; }
+  /* text-overflow: a word wider than its box. */
+  .tag { display: inline-block; width: 80px; white-space: nowrap; }
+  /* input-size: iOS zooms into this field. */
+  .small { font-size: 12px; }
+  /* keyboard: looks clickable, cannot be focused. */
+  .card { cursor: pointer; }
+  /* focus-visible: the focus ring is removed and nothing replaces it. */
+  .bare { font: inherit; padding: var(--space-1) var(--space-2); }
+  .bare:focus { outline: none; }
+  /* axe target-size: two 16 px targets side by side. */
+  .tiny { display: inline-block; width: 16px; height: 16px; font-size: 12px; line-height: 16px; }
+  /* reduced-motion: it keeps moving whatever the visitor asked. */
+  .spinner { width: 2rem; height: 2rem; background: var(--line); animation: slide 2s linear infinite; }
+  @keyframes slide { to { transform: translateX(4rem); } }
+  /* transition-duration: a hover that takes 600 ms. */
+  .slow { transition: color 600ms; }
+  .slow:hover { color: var(--ink); }
+  /* token: a colour written by hand. */
+  .hard { color: #b00020; }
+</style>
+</head>
+<body>
+<header class="bar"><span class="logo">Studio Logo</span><a class="menu" href="#menu">Menu</a></header>
+<main>
+  <section><div class="tag">Reservations</div></section>
+  <section><label for="q">Search</label> <input id="q" class="small" type="search"></section>
+  <section><div class="card" onclick="location.hash = 'card'">Open the card</div></section>
+  <section><a href="#more" tabindex="-1">Hidden from the keyboard</a></section>
+  <section><button class="bare" type="button">No focus ring</button></section>
+  <section><p><a class="tiny" href="#a">a</a><a class="tiny" href="#b">b</a></p></section>
+  <section><p>Lorem ipsum dolor sit amet.</p><p>Phone: [à fournir]</p></section>
+  <section><div class="spinner" aria-hidden="true"></div></section>
+  <section><a class="slow" href="#slow">Slow hover</a></section>
+  <section><p class="hard">Hard-coded colour</p></section>
+</main>
+</body>
+</html>
