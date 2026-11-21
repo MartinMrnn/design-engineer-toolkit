@@ -1,0 +1,15 @@
+/* The fixtures' design tokens: light by default, dark with the system. */
+:root {
+  --ink: #1a1a1a;
+  --paper: #fafaf7;
+  --link: #0b4f8a;
+  --line: #767670;
+  --space-1: 0.5rem;
+  --space-2: 1rem;
+  --space-3: 1.5rem;
+  --space-4: 4rem;
+  --radius: 6px;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --ink: #f2f2ee; --paper: #161616; --link: #8cc4ff; --line: #8a8a84; }
+}
