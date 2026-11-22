@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cabinet Lemaire · Avocate en droit du travail à Bordeaux</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="../tokens.css">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; font: 18px/1.5 system-ui, sans-serif; color: var(--ink); background: var(--paper); }
+  .hero { padding: var(--space-4) var(--space-3); background: linear-gradient(160deg, var(--hero-from), var(--hero-to)); color: var(--on-accent); }
+  .hero h1 { margin: 0 0 var(--space-2); font-size: 2.5rem; line-height: 1.1; }
+  .hero p { margin: 0 0 var(--space-3); max-width: 36rem; }
+  .cta { display: inline-block; padding: var(--space-1) var(--space-2); border-radius: var(--radius); background: var(--link); color: var(--on-accent); text-decoration: none; transition: background-color 200ms; }
+  .cta:hover { background: var(--ink); }
+  a:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; }
+  section, footer { padding: var(--space-4) var(--space-3); }
+  ul { padding-left: var(--space-3); }
+  footer { border-top: 1px solid var(--line); }
+  footer p { margin: 0 0 var(--space-1); }
+  @media (prefers-reduced-motion: no-preference) {
+    .reveal { animation: rise 600ms ease-out both; }
+    @keyframes rise { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+  }
+</style>
+</head>
+<body>
+<header class="hero">
+  <h1 class="reveal">Votre avocate à Bordeaux</h1>
+  <p class="reveal">Licenciement, harcèlement, rupture conventionnelle : je défends les salariés face à leur employeur.</p>
+  <a class="cta" href="contact.html">Prendre rendez-vous</a>
+</header>
+<main>
+  <section>
+    <h2>Domaines</h2>
+    <ul>
+      <li>Licenciement</li>
+      <li>Harcèlement au travail</li>
+      <li>Rupture conventionnelle</li>
+    </ul>
+  </section>
+</main>
+<footer>
+  <p>Cabinet Lemaire · 12 rue Vital-Carles, 33000 Bordeaux</p>
+  <p>Tél. 05 36 49 12 34</p>
+</footer>
+</body>
+</html>

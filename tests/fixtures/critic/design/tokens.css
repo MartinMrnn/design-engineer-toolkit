@@ -1,0 +1,15 @@
+/* Cabinet Lemaire (fictitious): the chosen direction's tokens, one light theme. */
+:root {
+  --ink: #1d2433;
+  --paper: #fbfaf7;
+  --link: #1f4e8c;
+  --on-accent: #ffffff;
+  --hero-from: #fdf3e1;
+  --hero-to: #e9eef6;
+  --line: #6b7280;
+  --space-1: 0.5rem;
+  --space-2: 1rem;
+  --space-3: 1.5rem;
+  --space-4: 4rem;
+  --radius: 6px;
+}
