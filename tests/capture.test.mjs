@@ -4,7 +4,6 @@ import { readFile, stat } from 'node:fs/promises';
 import { join } from 'node:path';
 import { ROOT, serve, runScript, read } from './harness.mjs';
 
-const OUT = join(ROOT, 'tests/.out');
 let server;
 
 before(async () => {
@@ -13,20 +12,21 @@ before(async () => {
 
 after(() => server.close());
 
-const capture = (page) => runScript('capture.js', `${server.url}/${page}`, { out: OUT });
+const capture = (page) => runScript('capture.js', `${server.url}/${page}`);
 
 test('capture.js fits the MCP sandbox', async () => {
   const source = await read('capture.js');
   assert.doesNotMatch(source, /\bprocess\.|\brequire\(|^\s*import\s/m, 'Node globals are not available in the MCP sandbox');
-  assert.match(source, /^\s*const OUT = '__OUT__';$/m, "whoever installs it replaces the exact literal '__OUT__'");
+  assert.doesNotMatch(source, /__OUT__/, 'nothing to fill in at install');
+  assert.match(source, /^\s*const OUT = '\.playwright-mcp\/critic';$/m, 'sheets go next to the Playwright MCP files of the project');
   assert.match(source.trim().replace(/^(\/\/.*\n)+/, ''), /^async \(page\) =>/);
 });
 
 test('capture.js writes a desktop and a mobile contact sheet', async () => {
   const report = await capture('good.html');
   assert.equal(report.files.length, 2);
-  assert.match(report.files[0], /good-desktop\.png$/);
-  assert.match(report.files[1], /good-mobile\.png$/);
+  assert.equal(report.files[0], '.playwright-mcp/critic/good-desktop.png');
+  assert.equal(report.files[1], '.playwright-mcp/critic/good-mobile.png');
   for (const file of report.files) {
     const bytes = await readFile(file);
     assert.equal(bytes.subarray(1, 4).toString(), 'PNG');

@@ -1,13 +1,14 @@
-// capture.js · desktop and mobile contact sheets of the page currently open, for the critic.
-// Usage: open the page with browser_navigate, then call browser_run_code_unsafe
-// with { "filename": "design/reviews/scripts/capture.js" }. The studio copies this
-// file into each project at kickoff and fills in the output folder.
+// capture.js · desktop and mobile contact sheets of the page currently open, for the critic (design-studio v1).
+// Usage: open the page with browser_navigate, then call browser_run_code_unsafe with
+// { "filename": "<path to>/capture.js" }. It writes two PNGs to .playwright-mcp/critic/, relative to the
+// folder the Playwright MCP server runs in (the project's, where it keeps its own files), and returns
+// { url, files, sheets }: read the files.
 //
 // It scrolls with the mouse wheel, the window or the container the page scrolls in, and spaces
 // the frames so that the whole page fits in MAX_FRAMES. Each sheet's header says how far apart the
 // frames are and whether the end of the page was reached; the return value says the same.
 async (page) => {
-  const OUT = '__OUT__';
+  const OUT = '.playwright-mcp/critic';
   const VIEWPORTS = {
     desktop: { width: 1440, height: 900, columns: 3 },
     mobile: { width: 390, height: 844, columns: 6 },

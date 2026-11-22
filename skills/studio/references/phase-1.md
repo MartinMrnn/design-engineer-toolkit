@@ -21,7 +21,7 @@ Intent, real goal, needs, stack, scope (pages, interactions, level of experience
    done
    ```
    Milestone names are in the conversation's language; keep the `<n> · ` prefix, the studio finds the phase by it.
-3. Write `CLAUDE.md` from `references/claude-md.md` (if one exists, ask before changing it), `design/decisions.md` from `references/decisions.md` with the approved briefing as its first entry, and a `.gitignore` (`.DS_Store`, `node_modules/`).
+3. Write `CLAUDE.md` from `references/claude-md.md` (if one exists, ask before changing it), `design/decisions.md` from `references/decisions.md` with the approved briefing as its first entry, and a `.gitignore` (`.DS_Store`, `node_modules/`, `.playwright-mcp/`: the browser's files and the critic's contact sheets).
 4. Commit "Set up the project" and `git push -u origin main`.
 5. Create the phase's issues in milestone 1.
 

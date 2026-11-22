@@ -2,4 +2,3 @@ node_modules/
 .playwright-mcp/
 .DS_Store
 docs/superpowers/
-tests/.out/
