@@ -8,7 +8,8 @@ import { basename, dirname, join, relative, resolve, sep } from 'node:path';
 const EXEMPT = new Set(['board.md', 'links.md']);
 const WRAPPERS = new Set(['sudo', 'command', 'env', 'nohup', 'time', 'exec', '{', '!', 'then', 'do', 'else']);
 const REMOVERS = new Set(['rm', 'unlink', 'shred', 'truncate', 'tee']);
-const NO_PROMPT = new Set(['bypassPermissions', 'dontAsk']);
+// auto is here because its classifier can answer an `ask` in the user's place (seen in a live run).
+const NO_PROMPT = new Set(['auto', 'bypassPermissions', 'dontAsk']);
 const USER_FILE = "design-studio: this is one of the user's files in design/inspiration/. It is never edited, moved or deleted (only board.md and links.md may change). Tell the user; do not work around this.";
 
 const answer = (permissionDecision, permissionDecisionReason) => console.log(JSON.stringify({
@@ -247,7 +248,7 @@ const decide = ({ tool_name: tool, tool_input: input, cwd = process.cwd(), permi
     return path && userFilesAt(resolve(cwd, path)).length ? ['deny', USER_FILE] : null;
   }
   const found = inspect(input.command, cwd);
-  if (found?.[0] === 'ask' && NO_PROMPT.has(mode)) return ['deny', `${found[1]} This mode cannot ask for it: tell the user, and do not work around this.`];
+  if (found?.[0] === 'ask' && NO_PROMPT.has(mode)) return ['deny', `${found[1]} This mode cannot ask the user: tell them, they can run the command themselves. Do not work around this.`];
   return found;
 };
 

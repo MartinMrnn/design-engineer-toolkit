@@ -128,7 +128,7 @@ test('going public needs the consent prompt', () => {
 
 test('where no prompt can be shown, going public is refused', () => {
   const root = project();
-  for (const mode of ['bypassPermissions', 'dontAsk']) {
+  for (const mode of ['auto', 'bypassPermissions', 'dontAsk']) {
     assert.equal(bash(root, 'git push', { visibility: 'PUBLIC', mode }), 'deny', mode);
   }
 });
