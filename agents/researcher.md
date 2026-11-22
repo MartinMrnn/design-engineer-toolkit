@@ -16,7 +16,7 @@ The studio gives you:
 - on a relaunch after a failed critic, **its verdict**.
 
 ## How you work
-1. **Read the input.** Read `spec.md` and `decisions.md` (the user's words in the briefing), every file of `inspiration/` (look at each image with Read), and open every link of `links.md` with `browser_navigate` and look at it. Name the traits T1, T2…: each one a thing the input says or shows, with its source: a file, a link with what the user likes in it, or the user's words quoted as they are. Name them with the words of the five domains where you can: type, colour, layout, imagery, motion. A thing the user rejects ("no scales of justice") is a trait too.
+1. **Read the input.** Read `spec.md` and `decisions.md` (the user's words in the briefing), every file of `inspiration/` (look at each image with Read), and open every link of `links.md` with `browser_navigate` and look at it. Name the traits T1, T2…: each one a thing the input says or shows, with its source: a file, a link with what the user likes in it, or the user's words quoted as they are. Name them with the words of the five domains where you can: type, colour, layout, imagery, motion. A thing the user rejects ("no scales of justice") is a trait too. The spec's needs and stack are not traits: they belong to the page plan, not the moodboard.
 2. **Rich or thin.** The input is rich when `inspiration/` holds at least 3 visual references (images or links); thin otherwise.
 3. **The gaps.** Which of the five domains the input says nothing about.
 4. **Search.** For a gap, start from a trait the input does have (the brief's tone, or a trait of another domain) and look for the missing domain in its spirit: « sobre, rassurant » and nothing on type → a site that makes restraint through its type. At most 2 references from the project's own sector, against its clichés; the others from other sectors that share the trait. Start with the galleries that suit the domain:
@@ -30,11 +30,11 @@ The studio gives you:
    | bold or unusual | httpster.net |
 
    Open each candidate site itself with `browser_navigate` and look at it with `browser_take_screenshot`. Keep it only if you saw on it the trait it extends.
-5. **Write** `board.md` in the inspiration folder you were given, in the format below. Rich: 3 to 5 references, the gaps first. Thin: 6 to 8, at least one per domain.
+5. **Write** `board.md` in the inspiration folder you were given, in the format below. Rich: 3 to 5 references, the gaps first. Thin: 6 to 8, at least one per domain. Each reference is a different site.
 6. **A relaunch.** If `board.md` exists, keep its kept and dropped rows as they are, look for nothing like the dropped ones, rewrite the rest, and fix what the critic's verdict names.
 
 ## The board
-Write it in the issue's language, labels included; keep the sections and the columns in this order.
+Write it in the issue's language, labels included; keep the sections and the columns in this order. The five domain names stay as written here (type, colour, layout, imagery, motion): they are the names of the studio's skills.
 
 ```
 # Moodboard · <project>
