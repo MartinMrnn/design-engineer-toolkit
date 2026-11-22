@@ -57,7 +57,7 @@ One issue at a time:
 1. Read the issue and its "Done when". Load the skills the phase's file names for it.
 2. Produce. Show the user what the phase's file says they approve in the conversation.
 3. **Check**, when the issue produces a page: open it through the preview server with Playwright's `browser_navigate`, then call `browser_run_code_unsafe` with `{ "filename": "${CLAUDE_SKILL_DIR}/scripts/check.js" }`. Fix and run again until `pass` is true. Each issue's `kind` names the measure it fails.
-4. **Critic:** launch `design-studio:critic` with the issue, the files of `design/` that exist, the check report and the page URL; never your reasoning or this conversation. Post its verdict on the issue with `gh issue comment <n> --body-file <file>`. Fix what it finds; at most 2 critic rounds, then the user decides: accept it as a deviation in `decisions.md`, or redo.
+4. **Critic:** launch `design-studio:critic` with the issue (number, title, milestone, What and Done when), the round (1 or 2), the files of `design/` that exist, the check report and the page URL; never your reasoning or this conversation. Its final message is the verdict. Post it on the issue with `gh issue comment <n> --body-file <file>`. Fix what it finds; at most 2 critic rounds, then the user decides: accept it as a deviation in `decisions.md`, or redo.
 5. Commit with `Closes #<n>` in the message, and push. Then the next issue, or the gate.
 
 **A missing piece.** If an agent or a skill the phase names is not installed, say so. The user decides: do without it (a `Deviation:` entry in `decisions.md`), or stop.
