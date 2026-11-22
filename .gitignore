@@ -2,3 +2,4 @@ node_modules/
 .playwright-mcp/
 .DS_Store
 docs/superpowers/
+tests/fixtures/researcher/design/inspiration/board.md
