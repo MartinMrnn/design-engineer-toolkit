@@ -77,5 +77,7 @@ After phase 4 there is no handoff: going live happens outside the plugin.
 ## Guard-rails
 The project's `CLAUDE.md` holds the Always / Ask first / Never table; follow it. Before it exists (phase 1, before the setup), the same holds: the repository is created only after the user says yes, and it is always private.
 
+Hooks enforce the Never column. A block is final: tell the user what was refused and why, and never work around it. A permission prompt for a public repository is the user's to answer.
+
 ## Language
 Talk in the language of the user's first message, for the whole project. Issues, milestones and `decisions.md` use it too; the site's copy uses its own language. Both are recorded in `CLAUDE.md`.
