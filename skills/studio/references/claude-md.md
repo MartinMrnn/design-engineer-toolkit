@@ -26,7 +26,7 @@ Sources of truth:
 - `design/decisions.md` wins over anything else.
 - `design/content.md` is the only source of content; `design/tokens.css` the only source of visual values.
 - `design/maquette/` is frozen once approved.
-- `design/inspiration/` holds the user's files: never edit or delete them.
+- `design/inspiration/` holds the user's files: never edit or delete them. The one exception is `board.md`: the researcher writes it and the studio records the user's sort in it.
 
 ## Always / Ask first / Never
 

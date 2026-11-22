@@ -3,7 +3,7 @@
 The user decides: **one direction, or a mix**.
 
 ## Briefing covers
-The path (who arrives where, and what they must do), the content (what each page says, with which real facts), the atmosphere (what the moodboard asks for). Read `design/spec.md` and `design/inspiration/` first.
+The path (who arrives where, and what they must do), the content (what each page says, with which real facts), the atmosphere (what the moodboard asks for). Read `design/spec.md` and `design/inspiration/board.md` first; open one of the user's images only when a trait needs a closer look.
 
 ## Issues
 UX and UI are one phase, in this order:
@@ -15,7 +15,7 @@ UX and UI are one phase, in this order:
 Before the first preview, copy `references/launch.json` to `.claude/launch.json` (desktop app: start `studio-preview`; elsewhere run its command in the background) and write the preview URL in `CLAUDE.md`. If port 4321 is taken, pick another in both files.
 
 ## Reads / writes
-Reads `design/spec.md`, `design/inspiration/`. Writes `design/content.md`, `design/directions/`, `design/tokens.css`.
+Reads `design/spec.md`, `design/inspiration/board.md` (the user's images only for a closer look). Writes `design/content.md`, `design/directions/`, `design/tokens.css`.
 
 ## Skills
 `/design-studio:ux` for the page plan; `/design-studio:type`, `colour`, `layout`, `imagery` for the directions.

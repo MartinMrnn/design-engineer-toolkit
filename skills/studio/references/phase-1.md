@@ -27,7 +27,7 @@ Intent, real goal, needs, stack, scope (pages, interactions, level of experience
 
 ## Issues
 1. **The spec** · What: `design/spec.md` from `references/spec.md`, filled from the briefing. Done when: every section is filled; every dependency has its need (C8); every unknown fact is listed as `[à fournir]`.
-2. **The moodboard** · What: the researcher (`design-studio:researcher`) completes the user's inspiration into `design/inspiration/board.md`. Done when: every reference names the trait of the user's input it extends (C9); the user's files are untouched.
+2. **The moodboard** · What: launch the researcher (`design-studio:researcher`) with the issue and the files (`design/spec.md`, `design/decisions.md`, the folder `design/inspiration/`); it writes `design/inspiration/board.md`. Show the board in the conversation: the user keeps or drops each reference; write their answer in its Sort column (kept, or dropped with their reason, in the board's language). If the critic fails it, launch the researcher again with the verdict. Done when: every reference names the trait of the user's input it extends (C9); none is left "to sort"; the user's files are untouched.
 
 ## Reads / writes
 Reads the user's input. Writes `CLAUDE.md`, `design/spec.md`, `design/inspiration/`, `design/decisions.md`, the repository and its 4 milestones.
@@ -36,4 +36,4 @@ Reads the user's input. Writes `CLAUDE.md`, `design/spec.md`, `design/inspiratio
 Every board reference anchored to a trait of the input; the stack justified by a need.
 
 ## Gate
-Present the vision in a few lines: the real goal, the scope, the stack, the three strongest traits of the moodboard. The user approves it or sends it back.
+Present the vision in a few lines: the real goal, the scope, the stack, the three strongest traits of the moodboard, from `board.md`. The user approves it or sends it back.
