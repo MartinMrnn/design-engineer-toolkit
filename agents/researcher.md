@@ -34,7 +34,7 @@ The studio gives you:
 6. **A relaunch.** If `board.md` exists, keep its kept and dropped rows as they are, look for nothing like the dropped ones, rewrite the rest, and fix what the critic's verdict names.
 
 ## The board
-Write it in the issue's language, labels included; keep the sections and the columns in this order. The five domain names stay as written here (type, colour, layout, imagery, motion): they are the names of the studio's skills.
+Write it in the issue's language: translate the title, the headings and the column labels; keep the sections and the columns in this order. Only the five domain names stay as written here (type, colour, layout, imagery, motion): they are the names of the studio's skills.
 
 ```
 # Moodboard · <project>
