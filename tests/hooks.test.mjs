@@ -112,23 +112,23 @@ test('ordinary shell commands pass', () => {
   ]) assert.equal(bash(root, command), 'pass', command);
 });
 
-test('going public needs the consent prompt', () => {
+test('going public is refused', () => {
   const root = project();
   for (const command of ['git push', 'git push -u origin main', 'git -C . push']) {
-    assert.equal(bash(root, command, { visibility: 'PUBLIC' }), 'ask', command);
+    assert.equal(bash(root, command, { visibility: 'PUBLIC' }), 'deny', command);
   }
-  assert.equal(bash(root, 'git push', { visibility: 'FAIL' }), 'ask', 'unknown visibility');
+  assert.equal(bash(root, 'git push', { visibility: 'FAIL' }), 'deny', 'unknown visibility');
   for (const command of [
     'gh repo create site --public --source .',
     'gh repo edit --visibility public --accept-visibility-change-consequences',
     'gh api -X PATCH repos/acme/site -f private=false',
     'gh api -X PATCH repos/acme/site -f visibility=public',
-  ]) assert.equal(bash(root, command), 'ask', command);
+  ]) assert.equal(bash(root, command), 'deny', command);
 });
 
-test('where no prompt can be shown, going public is refused', () => {
+test('going public is refused in every permission mode', () => {
   const root = project();
-  for (const mode of ['auto', 'bypassPermissions', 'dontAsk']) {
+  for (const mode of ['default', 'acceptEdits', 'auto', 'bypassPermissions', 'dontAsk']) {
     assert.equal(bash(root, 'git push', { visibility: 'PUBLIC', mode }), 'deny', mode);
   }
 });
@@ -146,7 +146,6 @@ test('a push is refused while src/ holds placeholder text', () => {
   for (const text of ['<p>Lorem ipsum</p>', '<p>[à fournir]</p>', '<p>[À fournir : téléphone]</p>']) {
     assert.equal(bash(project({ 'src/index.html': text }), 'git push -u origin main'), 'deny', text);
   }
-  assert.equal(bash(project({ 'src/index.html': 'lorem' }), 'git push', { visibility: 'PUBLIC' }), 'deny', 'deny beats ask');
 });
 
 test('placeholder text in design/ does not stop a push', () => {

@@ -8,12 +8,12 @@ import { basename, dirname, join, relative, resolve, sep } from 'node:path';
 const EXEMPT = new Set(['board.md', 'links.md']);
 const WRAPPERS = new Set(['sudo', 'command', 'env', 'nohup', 'time', 'exec', '{', '!', 'then', 'do', 'else']);
 const REMOVERS = new Set(['rm', 'unlink', 'shred', 'truncate', 'tee']);
-// auto is here because its classifier can answer an `ask` in the user's place (seen in a live run).
-const NO_PROMPT = new Set(['auto', 'bypassPermissions', 'dontAsk']);
+// Always deny, never `ask`: in a live run an `ask` let a public repository be created with no prompt.
+const USER_ONLY = 'Only the user can do this: give them the command to run themselves. Do not work around this.';
 const USER_FILE = "design-studio: this is one of the user's files in design/inspiration/. It is never edited, moved or deleted (only board.md and links.md may change). Tell the user; do not work around this.";
 
-const answer = (permissionDecision, permissionDecisionReason) => console.log(JSON.stringify({
-  hookSpecificOutput: { hookEventName: 'PreToolUse', permissionDecision, permissionDecisionReason },
+const deny = (permissionDecisionReason) => console.log(JSON.stringify({
+  hookSpecificOutput: { hookEventName: 'PreToolUse', permissionDecision: 'deny', permissionDecisionReason },
 }));
 const run = (file, args) => execFileSync(file, args, { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'], timeout: 8000 }).trim();
 
@@ -213,9 +213,8 @@ const publishes = (args) => {
 
 const inspect = (command, cwd) => {
   let base = cwd;
-  let ask = null;
   for (const { words, outputs } of parse(command)) {
-    if (outputs.some((file) => hits(file, base))) return ['deny', USER_FILE];
+    if (outputs.some((file) => hits(file, base))) return USER_FILE;
     while (WRAPPERS.has(words[0]) || /^\w+=/.test(words[0] ?? '')) words.shift();
     if (!words.length) continue;
     const cmd = basename(words[0]);
@@ -224,40 +223,38 @@ const inspect = (command, cwd) => {
       if (args[0] !== '-') base = resolve(base, expand(args[0] ?? homedir()));
     } else if (cmd === 'git') {
       const git = gitParts(args, base);
-      if (gitDestroys(git)) return ['deny', USER_FILE];
+      if (gitDestroys(git)) return USER_FILE;
       const root = git.sub === 'push' && projectOf(git.dir);
       if (root) {
         const lines = placeholders(root);
-        if (lines.length) return ['deny', `design-studio: src/ still holds placeholder text, so it cannot ship:\n${lines.slice(0, 5).join('\n')}\nAsk the user for the real content.`];
+        if (lines.length) return `design-studio: src/ still holds placeholder text, so it cannot ship:\n${lines.slice(0, 5).join('\n')}\nAsk the user for the real content.`;
         const remote = remoteOf(git.rest, git.dir);
         const seen = visibility(remote, git.dir);
-        if (!['PRIVATE', 'INTERNAL'].includes(seen)) ask = `design-studio: the remote "${remote}" is ${seen === 'PUBLIC' ? 'public' : 'of unknown visibility'}. Pushing to it needs your consent.`;
+        if (!['PRIVATE', 'INTERNAL'].includes(seen)) return `design-studio: the remote "${remote}" is ${seen === 'PUBLIC' ? 'public' : 'of unknown visibility'}. ${USER_ONLY}`;
       }
     } else if (cmd === 'gh') {
-      if (publishes(args) && projectOf(base)) ask = 'design-studio: this makes a repository public or changes its visibility. It needs your consent.';
+      if (publishes(args) && projectOf(base)) return `design-studio: this makes a repository public or changes its visibility. ${USER_ONLY}`;
     } else if (destroys(cmd, args, base)) {
-      return ['deny', USER_FILE];
+      return USER_FILE;
     }
   }
-  return ask && ['ask', ask];
+  return null;
 };
 
-const decide = ({ tool_name: tool, tool_input: input, cwd = process.cwd(), permission_mode: mode }) => {
+const decide = ({ tool_name: tool, tool_input: input, cwd = process.cwd() }) => {
   if (tool !== 'Bash') {
     const path = input.file_path ?? input.notebook_path;
-    return path && userFilesAt(resolve(cwd, path)).length ? ['deny', USER_FILE] : null;
+    return path && userFilesAt(resolve(cwd, path)).length ? USER_FILE : null;
   }
-  const found = inspect(input.command, cwd);
-  if (found?.[0] === 'ask' && NO_PROMPT.has(mode)) return ['deny', `${found[1]} This mode cannot ask the user: tell them, they can run the command themselves. Do not work around this.`];
-  return found;
+  return inspect(input.command, cwd);
 };
 
 let call = {};
 try {
   call = JSON.parse(readFileSync(0, 'utf8'));
-  const found = decide(call);
-  if (found) answer(...found);
+  const reason = decide(call);
+  if (reason) deny(reason);
 } catch (error) {
   const at = call.tool_input?.file_path ?? call.tool_input?.notebook_path ?? '.';
-  if (projectOf(resolve(call.cwd ?? process.cwd(), at))) answer('deny', `design-studio: the guard failed, so the action is blocked: ${error.message}`);
+  if (projectOf(resolve(call.cwd ?? process.cwd(), at))) deny(`design-studio: the guard failed, so the action is blocked: ${error.message}`);
 }
