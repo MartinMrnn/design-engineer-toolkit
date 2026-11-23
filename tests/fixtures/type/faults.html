@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Faulty type fixture</title>
+<style>
+  @font-face { font-family: "Face"; src: local("Arial"), local("Liberation Sans"), local("DejaVu Sans"); font-weight: 100 900; }
+  @font-face { font-family: "Regular"; src: local("Arial"), local("Liberation Sans"), local("DejaVu Sans"); font-weight: 400; }
+  body { margin: 0; font-family: "Face", sans-serif; font-size: 16px; line-height: 1.6; }
+  main { max-width: 1000px; margin: 0 auto; padding: 1rem; }
+  h1 { font-size: clamp(1rem, 6vw, 6rem); line-height: 1.1; font-weight: 400; }
+  strong { font-family: "Regular", sans-serif; font-weight: 700; }
+  .tag { height: 1.25rem; line-height: 1.2; overflow: hidden; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Titre</h1>
+  <div class="tag">Une étiquette</div>
+  <p class="wide">Ce paragraphe s'étire sur une colonne beaucoup trop large pour une lecture confortable, si bien que chaque ligne contient bien plus de caractères que la plage visée. L'œil doit parcourir une très longue distance avant de revenir au début de la ligne suivante, et il perd facilement sa place dans le texte. Cette phrase ajoute encore assez de mots pour obtenir plusieurs lignes complètes dans la mesure.</p>
+  <p><strong>Un faux gras</strong></p>
+</main>
+</body>
+</html>

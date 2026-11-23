@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Clean type fixture</title>
+<style>
+  @font-face { font-family: "Face"; src: local("Arial"), local("Liberation Sans"), local("DejaVu Sans"); font-weight: 100 900; }
+  body { margin: 0; font-family: "Face", sans-serif; font-size: 1rem; line-height: 1.6; }
+  main { max-width: 34rem; margin: 0 auto; padding: 1rem; }
+  h1 { font-size: clamp(2rem, 1.5rem + 2vw, 3.5rem); line-height: 1.1; font-weight: 600; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Un titre court</h1>
+  <p>Ce paragraphe tient dans une colonne de lecture confortable, avec assez de mots pour occuper plusieurs lignes complètes. Il sert à mesurer le nombre réel de caractères par ligne, sans compter la dernière ligne, qui reste souvent plus courte que les autres lignes du même paragraphe.</p>
+</main>
+</body>
+</html>
