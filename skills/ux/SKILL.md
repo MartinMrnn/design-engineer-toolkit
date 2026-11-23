@@ -11,10 +11,10 @@ Decide how a product works for the person using it, before anything is drawn: wh
 Structure, content and behaviour. **Never appearance**: no colour, type, shadow, border, decorative motion or CSS. `layout` owns visual grouping, `components` builds what is decided here, `motion` animates it.
 
 ## Two entries
-- **A brief** gives a narrative plan: in `design/content.md` inside a design-studio project, in the conversation otherwise.
+- **A brief** gives a narrative plan: in `design/content.md` inside a design-studio project (a folder with `design/decisions.md`), in the conversation otherwise.
 - **A page or site** gives an audit, in the conversation. Never edit what you audit.
 
-Work from what the brief and the user give you. A fact you do not have is written `[à fournir : what]`, never guessed.
+Work from what the brief and the user give you. A choice they state wins over a heuristic, never over a standard. A fact you do not have is written `[à fournir : what]`, never guessed.
 
 ## Three kinds of knowledge
 
@@ -24,7 +24,7 @@ Work from what the brief and the user give you. A fact you do not have is writte
 | **Empirical finding** | A published result, true for its participants and conditions | Evidence for a choice, never a guarantee |
 | **Heuristic** | A practitioners' rule of thumb | A starting point. Leave it when the project justifies it, and say why |
 
-`Checked by` names the `check.js` measure, or the phases in which the critic verifies the rule. **`blocking`** is the studio's bar: the work does not ship while the rule is broken. It does not turn a heuristic into a proven law.
+`Checked by` names the `check.js` measure, or the phases in which the critic verifies the rule. **`blocking`** is the studio's bar: the work does not ship while the rule is broken. It does not turn a heuristic into a proven law. Used alone, without `check.js` or the critic, check these rules by hand and list what you could not verify.
 
 ## The six decisions
 Take them in order: each one constrains the next.
@@ -34,7 +34,7 @@ Who arrives, from where, with what question, and which single action counts? Wri
 
 | Rule | Why | Kind | Source | Checked by |
 |---|---|---|---|---|
-| `goal-1` · Every page states who arrives, with what question, and the one action that counts | without a goal, nothing can be judged necessary or missing | heuristic | Studio | critic phase 2 · blocking |
+| `goal-1` · For every page, the plan or brief states who arrives, with what question, and the one action that counts | without a goal, nothing can be judged necessary or missing | heuristic | Studio | critic phase 2 · blocking |
 | `goal-2` · A page serves one to three intents, in the visitor's words | a page written for everyone answers no one | heuristic | Studio | critic phase 2 |
 
 ### 2 · Path
@@ -60,11 +60,11 @@ Real content in the site's language. Read `references/words.md` before writing c
 
 | Rule | Why | Kind | Source | Checked by |
 |---|---|---|---|---|
-| `words-1` · Never invent a fact; write `[à fournir : what]` | an invented fact in a client's mouth is a liability, a visible gap is honest | heuristic | Studio | critic phases 2, 3, 4 · blocking |
+| `words-1` · Never invent a fact, even one that is plausible for the trade; write `[à fournir : what]` | an invented fact in a client's mouth is a liability, a visible gap is honest | heuristic | Studio | critic phases 2, 3, 4 · blocking |
 | `words-2` · A button names the action and its result | people should know what happens before they press | heuristic | Vercel, Studio | critic phases 2, 4 |
 
 ### 5 · Behaviour
-What responds and when, what can be undone, what is forgiven, what works from the keyboard. Read `references/behaviour.md` when the page has forms or interactions.
+What responds and when, what can be undone, what is forgiven, what works from the keyboard. Read `references/behaviour.md` when the page has more than plain links.
 
 | Rule | Why | Kind | Source | Checked by |
 |---|---|---|---|---|
@@ -85,6 +85,10 @@ Ideal, empty, loading, error, success and limit. Read `references/states.md` for
 Goal: a parent going through a separation books a first meeting.
 Arrives from: search, a referral.
 Main action: Prendre un premier rendez-vous
+Intents: « Peut-on m'aider ? », « Combien ça coûte ? »
+Paths: main, Accueil → Contact; secondary, Accueil → Honoraires → Contact.
+Objections: « Ça va me coûter trop cher », answered by the fees section.
+Priority: first the specialty and the action, then the steps, last the address.
 
 1. « Ce cabinet traite-t-il mon cas ? »
    → Droit de la famille à Lyon, du premier rendez-vous au jugement.
@@ -94,10 +98,11 @@ Main action: Prendre un premier rendez-vous
    Leads to: « Combien ça coûte ? »
 
 Behaviour: the form keeps what was typed after an error.
-States: sent, send error, slot unavailable.
+States: sent → says what happens next; send error → keeps the text, offers a retry.
+To provide: each `[à fournir]` of the page, and what it blocks.
 ```
 
-The questions and the copy are in the site's language. **An app screen** lists states instead of sections:
+Keep these labels and write their values in the site's language. What all pages share (navigation, 404) goes first, in a `## Whole site` block. A missing fact that blocks the main path stays marked and listed, never filled: the plan can be approved, the page cannot ship until the fact is given. **An app screen** lists states instead of sections:
 
 ```markdown
 ## Invoices
@@ -110,27 +115,34 @@ Way out: the main navigation.
 ```
 
 ## The audit
+Read the references that match what the page contains. If the project has a brief or an approved plan, compare the page with them first. Write in the language of the conversation.
 
 ```markdown
 ## Audit · <page>
 ### Goal
-1. <blocking|to fix|suggestion> · <the defect> · evidence: <quote or selector> · rule: `<id>`
+1. <blocking|to fix|suggestion> · <the defect> · evidence: <quote or selector> · rule: `<id>`, or the file and section it departs from
 ### Path
 ### Thread
 ### Words
 ### Behaviour
 ### States
+### Outside this skill
+<defects seen that belong elsewhere, such as contrast, and which skill owns them>
 ### Not seen
 <what could not be checked from what you were given>
 ```
 
-A broken `blocking` rule is **blocking**, another broken rule is **to fix**, an improvement no rule demands is a **suggestion**. Quote the evidence. Name what you could not see.
+- **Blocking:** a broken `blocking` rule, a WCAG A or AA failure even outside this skill, or a need of the brief left unmet.
+- **To fix:** another broken rule, or a departure from the approved content.
+- **Suggestion:** an improvement no rule demands, with `rule: none`.
+- A defect that breaks several rules cites them all and keeps the highest severity. A section with no defect says `none`.
+- A choice stated in the brief or in `decisions.md` is not a defect, even against a heuristic: note it. When approved content itself breaks a rule, report it at its severity and say that the fix needs whoever approved it.
 
 ## References
 - `references/showcase.md`: building the thread of a showcase, trust, navigation. For sites that persuade.
 - `references/app.md`: the task as a flow of states, repeated use. For SaaS and internal tools.
 - `references/words.md`: real content and micro-copy, broken → fixed. Before writing copy.
-- `references/behaviour.md`: feedback, undo, forms, keyboard, decision trees. When the page has interactions.
-- `references/states.md`: the six states and the worst data. When a page shows data or takes input.
+- `references/behaviour.md`: feedback, undo, forms, keyboard, decision trees. When the page has more than plain links.
+- `references/states.md`: the six states and the worst data. Before writing the `States` line.
 - `references/laws.md`: the laws of UX, what each really says and how it gets misused. When a law is invoked or disputed.
 - `references/sources.md`: every source and its licence. Not needed during a project.

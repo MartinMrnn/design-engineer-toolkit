@@ -3,9 +3,9 @@
 Content is the interface. It is written first, in the site's language, and it decides the structure rather than filling it.
 
 ## Write from facts
-**The competitor test.** Read every headline and action and ask: could a competitor publish this unchanged? If so, rewrite it with something only this client can say: a fact, a place, a method, a number, a name.
+**The competitor test.** Read every headline and action and ask: could a competitor publish this unchanged? If so, rewrite it with something only this client can say: a fact, a place, a method, a number, a name. Without that fact, write the most precise line the brief allows and mark what is missing beside it.
 
-**Never invent** names, figures, prices, dates, addresses, awards, reviews, quotes, team members or client logos. Without the fact, write `[à fournir : what]`.
+**Never invent** names, figures, prices, dates, addresses, awards, reviews, quotes, team members or client logos. Without the fact, write `[à fournir : what]`. What is usually true of a trade (a legal protection, a typical duration, a standard service) is still a claim about this client until they confirm it.
 
 ## Voice
 - The words customers use, not the trade's internal vocabulary or marketing language.

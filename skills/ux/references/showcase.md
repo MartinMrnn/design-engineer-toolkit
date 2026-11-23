@@ -52,13 +52,13 @@ The same page as a thread:
 | `goal-3` · Name the visitor's objections and answer each where it arises | an unanswered doubt stops the path at that exact point | heuristic | Studio | critic phase 2 |
 | `goal-4` · Put the proof next to the claim it supports | a claim whose evidence sits elsewhere reads as marketing | heuristic | Studio | critic phase 2 |
 | `path-3` · Start from the visitor's questions, never from a list of section types | a template decides the page before the visitor is considered | heuristic | Studio | critic phase 2 |
-| `path-4` · The main action appears once the visitor can decide, and stays reachable | asked too early it is ignored, lost later it costs the visit | heuristic | Studio | critic phases 2, 4 |
+| `path-4` · The main action is offered from the first screen, returns where the visitor can decide, and stays reachable | some arrive decided, others need the argument first | heuristic | Studio | critic phases 2, 4 |
 | `path-5` · Navigation names what the visitor seeks, not how the business is organised | people look for their problem, not for the firm's structure | heuristic | Nielsen, Studio | critic phase 2 |
 | `path-6` · Keep navigation conventions; break one only for a stated reason | people arrive with habits formed on other sites | heuristic | Laws of UX, Nielsen | critic phases 2, 4 |
-| `path-7` · The 404 offers a way back and the main action | a dead end loses a visitor who was already interested | heuristic | Studio | critic phase 4 |
+| `path-7` · The 404, a state of every site, offers a way back and the main action | a dead end loses a visitor who was already interested | heuristic | Studio | critic phase 4 |
 | `thread-5` · The first screen says what this is, for whom and what to do next | it is the only screen every visitor sees | heuristic | Studio | critic phase 2 |
 | `thread-6` · A template section stays only if it answers a question; otherwise merge or remove it | habit is not a reason for a section to exist | heuristic | Studio | critic phase 2 |
-| `thread-7` · Two sections never answer the same question | repetition slows the path and blurs what each part is for | heuristic | Studio | critic phase 2 |
+| `thread-7` · Two sections of a page never answer the same question | repetition slows the path and blurs what each part is for | heuristic | Studio | critic phase 2 |
 | `thread-8` · Order sections by what the visitor must believe before acting, opening and closing on what matters most | the order is the argument, and first and last positions are remembered best | heuristic | Studio, Laws of UX | critic phase 2 |
 | `thread-9` · Each section ends on what makes the next one wanted | the hand-over is what turns blocks into a thread | heuristic | Studio | critic phase 2 |
 | `thread-10` · A section entered directly still makes sense alone | search results, shared links and fast scrolling land mid-page | heuristic | Studio | critic phase 2 |
