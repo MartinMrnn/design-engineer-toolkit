@@ -22,6 +22,8 @@ What each colour measure is for, what it is not, and how to read `colour.py`'s o
 
 A FAIL is a defect, but it does not stop the script: it exits 0 so that every failure shows at once. Part 4 is a diagnosis, not a verdict. `palette` assumes normal-size text and does not know what sits over an image. A pair it cannot see, such as text on a gradient, stays with the critic.
 
+For SC 1.4.11, `palette` measures only `--ring`. Whether `--input` or a button's fill is needed to identify a control depends on the page, so measure those with `contrast <colour> <ground> --non-text` when they are. A focus ring is judged against what touches it: with no offset, also measure it against the control's fill; with an offset, it sits on the ground.
+
 ## APCA: not built
 - APCA is a contrast model from the WCAG 3 working drafts. It takes polarity and text size into account. **Standard**: it is not part of WCAG 2.2, whose ratio stays the requirement.
 - Its reference code, apca-w3, is not under an open-source licence: its rights are reserved, commercial use needs a signed licence, and the name is a trademark. That rules out shipping a port in this MIT plugin.
@@ -36,6 +38,7 @@ A FAIL is a defect, but it does not stop the script: it exits 0 so that every fa
 ## Never colour alone
 - **Standard**: SC 1.4.1 Use of Color, level A: colour is never the only visual means of conveying information, indicating an action, prompting a response or distinguishing an element.
 - A state or a link carries a word, an icon, a shape, an underline or a weight as well. A pair can be far apart in every simulation and still fail 1.4.1.
+- **Heuristic**: a hover that only changes the colour of a control already identified by its shape or label is not reported as a 1.4.1 failure. Note it as a suggestion.
 
 ## The greyscale test
 **Heuristic.** Look at the page in greyscale, for example with a `filter: grayscale(1)` on `html` in the browser's tools. If the main action and the hierarchy disappear, they depended on hue alone.

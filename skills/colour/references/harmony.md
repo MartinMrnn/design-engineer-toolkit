@@ -13,7 +13,7 @@ Pairs of strongly contrasting hues were generally judged neither preferable nor 
 
 **Scope:** colour pairs in a lab, not whole pages. Evidence for a choice, never a guarantee.
 
-**What we take from it:** close hues for the large surfaces, a clear lightness difference between them, and an opposed hue only for the small element that must stand out.
+**What we take from it:** close hues for the large surfaces, a clear lightness difference between them, and an opposed hue only for the small element that must stand out. When the opposed hue is what the sector overuses, or the inspirations point elsewhere, they win: leave `harmony-2` and say why in the palette entry. A close hue can still stand out through chroma and lightness.
 
 ## The wheel schemes
 `colour.py harmony <colour>` computes them in OKLCH at the same lightness and the same share of maximum chroma, so the candidates have comparable weight. Move their lightness afterwards to fit their role.

@@ -24,7 +24,7 @@ Work from what the brief and the user give you. A choice they state wins over a 
 | **Empirical finding** | A published result, true for its participants and conditions | Evidence for a choice, never a guarantee |
 | **Heuristic** | A practitioners' rule of thumb | A starting point. Leave it when the project justifies it, and say why |
 
-`Checked by` names a `check.js` measure, a `colour.py` command, or the phases in which the critic verifies the rule. **`blocking`** is the studio's bar: the work does not ship while the rule is broken. It does not turn a heuristic into a proven law. Used alone, check these rules by hand and list what you could not verify.
+`Checked by` names a `check.js` measure (`script …`), a `colour.py` command (`colour …`), or the phases in which the critic verifies the rule. **`blocking`** is the studio's bar: the work does not ship while the rule is broken. It does not turn a heuristic into a proven law. Used alone, check these rules by hand and list what you could not verify.
 
 ## The six decisions
 Take them in order: each one constrains the next.
@@ -56,7 +56,7 @@ These points come from 17 home pages measured once. They are never quotas.
 | `strategy-2` · Leaving a strategy's reference point takes a stated reason | a departure should be a decision, not a drift | heuristic | Studio | critic phase 2 |
 
 ### 3 · Gesture
-By default, a restrained base and **one** memorable colour decision: a ground the sector never uses, a very rare accent, a tinted neutral. One gesture avoids the generic look without shouting.
+By default, a restrained base and **one** memorable colour decision: a ground the sector never uses, a very rare accent, a tinted neutral. One gesture avoids the generic look without shouting. Common defaults to question: Tailwind's indigo and greys, shadcn's neutral, Bootstrap's blue.
 
 | Rule | Why | Kind | Source | Checked by |
 |---|---|---|---|---|
@@ -92,7 +92,7 @@ Measure before showing. Read `references/measures.md`.
 | `proof-2` · The parts of controls and graphics needed to understand them meet 3:1 against adjacent colours | a control that cannot be seen cannot be used | standard (WCAG 1.4.11) | W3C | colour palette + critic phases 2, 4 · blocking |
 | `proof-3` · Colour is never the only visual means of conveying information, an action or a state | some people cannot tell those colours apart | standard (WCAG 1.4.1) | W3C | critic phases 2, 4 · blocking |
 | `proof-4` · The hierarchy survives in greyscale | if it depends on hue alone, it is weaker than it looks | heuristic | Studio | critic phase 2 |
-| `proof-5` · States stay distinct under colour-vision deficiency | an error and a success must not merge | heuristic | Machado 2009, Birch 2012 | colour cvd + critic phase 2 |
+| `proof-5` · States stay distinct from each other and from the accent under colour-vision deficiency | an error must not merge with a success or an action | heuristic | Machado 2009, Birch 2012 | colour cvd + critic phase 2 |
 
 ## The palette entry
 
@@ -102,9 +102,10 @@ Material: what the subject, images and ground ask for.
 Overused in the sector: navy and gold (never an example).
 Strategy: Signal.
 Gesture: a warm paper ground where the sector uses white.
-Harmony: ink and ground at hue 80, accent opposed at hue 255.
+Harmony: ink and ground at hue 75, accent at hue 40; the opposed hue would be the sector's navy.
+Roles: `--primary` on the booking action only; errors in `--destructive` with an icon.
 Theme: light, because the site is read in long sessions.
-Proof: `colour.py palette` passes; greyscale hierarchy holds.
+Proof: `colour.py palette` passes; greyscale checked on the page, or `not yet` before there is one.
 ```
 
 ## The audit
@@ -118,10 +119,12 @@ Proof: `colour.py palette` passes; greyscale hierarchy holds.
 <what could not be checked, such as text over images>
 ```
 
-**Blocking:** a broken `blocking` rule or a WCAG A or AA failure. **To fix:** another broken rule. **Suggestion:** an improvement no rule demands, with `rule: none`. A choice stated in the brief or in `decisions.md` is not a defect against a heuristic: note it.
+**Blocking:** a broken `blocking` rule or a WCAG A or AA failure. **To fix:** another broken rule, with no stated reason. **Suggestion:** an improvement no rule demands, with `rule: none`. A defect that breaks several rules cites them all, keeps the highest severity and sits under that rule's heading. A heading with no defect says `none`. A choice stated in the brief or in `decisions.md` is not a defect against a heuristic: note it.
+
+An existing page need not use shadcn names: `roles-1` and `roles-4` judge only palettes made with this skill, and its pairs are measured with `contrast`. Without a palette entry, `strategy-1` and `gesture-1` go under `Not seen`, and a framework default is a suggestion.
 
 ## Commands
-`python3 <this skill's folder>/scripts/colour.py <command>`. Add `--json` for unrounded values. Errors print as `colour: …` and exit 1.
+`python3 -B <this skill's folder>/scripts/colour.py <command>`. Add `--json` for unrounded values. Errors print as `colour: …` and exit 1.
 
 | Command | What it gives |
 |---|---|

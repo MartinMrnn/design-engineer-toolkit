@@ -38,7 +38,7 @@ Keep an sRGB value as the base. Add a wider one only as an enhancement:
 `palette` measures the base value, which every screen can show. Check the P3 value by eye, and with `contrast` on its hex if it is close to a threshold.
 
 ## Gradients
-OKLCH hue is circular, so a gradient between two distant hues can detour through colours neither end contains. Interpolate in Oklab for a direct path:
+By default, CSS interpolates a gradient of legacy colours such as hex in sRGB, which can pass through muddy midtones. OKLCH hue is circular, so a gradient in `oklch` between two distant hues can detour through colours neither end contains. Interpolate in Oklab for a direct, even path:
 
 ```css
 background: linear-gradient(in oklab, oklch(0.8 0.1 80), oklch(0.5 0.15 260));
@@ -49,5 +49,5 @@ Use `in oklch` only when travelling around the wheel is the intended effect. Tex
 | Rule | Why | Kind | Source | Checked by |
 |---|---|---|---|---|
 | `harmony-9` · Build scales in OKLCH, at constant hue, with chroma as a share of the maximum | steps then look even and the hue does not drift | heuristic | Krehel OKLCH, Ottosson 2020 | critic phase 2 |
-| `harmony-10` · Interpolate gradients in Oklab unless the detour is intended | a polar path can pass through colours neither end contains | heuristic | Krehel OKLCH, CSS Color 4 | critic phases 2, 4 |
+| `harmony-10` · Interpolate gradients in Oklab unless the detour is intended | sRGB can pass through muddy midtones, and a polar path through colours neither end contains | heuristic | Krehel OKLCH, CSS Color 4 | critic phases 2, 4 |
 | `harmony-11` · Keep an sRGB base value; P3 is only an enhancement | every screen must show a correct colour | heuristic | Krehel OKLCH | critic phase 2 |

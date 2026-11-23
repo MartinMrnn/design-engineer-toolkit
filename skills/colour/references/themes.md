@@ -21,15 +21,15 @@ Only the roles the project needs exist. Add a project role with the same pattern
 ```css
 :root {
   --background: oklch(0.975 0.012 85);
-  --foreground: oklch(0.24 0.02 60);
+  --foreground: oklch(0.24 0.02 85);
   --card: oklch(0.99 0.006 85);
   --card-foreground: var(--foreground);
   --primary: oklch(0.42 0.11 255);
   --primary-foreground: oklch(0.985 0.005 85);
   --muted: oklch(0.93 0.014 85);
-  --muted-foreground: oklch(0.46 0.02 70);
+  --muted-foreground: oklch(0.46 0.02 85);
   --border: oklch(0.87 0.016 85);
-  --ring: var(--primary);
+  --ring: var(--foreground);
 }
 ```
 
@@ -47,7 +47,7 @@ A scale from 50 to 900 says nothing about use. Radix Colors gives each of its 12
 Radix states its text guarantee in APCA, which is not the studio's standard. Always measure the pairs in WCAG 2.2 with `palette`.
 
 ## One theme
-Choose the theme that serves the site best, light or dark, and do it well. Say why in the palette entry. A second theme is made only when the brief or the user asks for it.
+Choose the theme that serves the site best, light or dark, and do it well. Decide from the material and the inspirations first, then from how the site is read. When they pull apart, follow the material. Say why in the palette entry. A second theme is made only when the brief or the user asks for it.
 
 ## Building a second theme
 Rebuild it by roles, never by inverting values.
