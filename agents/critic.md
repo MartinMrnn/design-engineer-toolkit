@@ -31,8 +31,8 @@ The studio gives you:
 4. **Round 2.** Read your previous verdict: the last critic comment of `gh issue view <number> --comments`. Check each of its defects and what their fixes broke, nothing else.
 
 ## Severity
-- **blocking**: fails an acceptance criterion, a standard (WCAG 2.2 A/AA), a red line (no back end, no copy of an existing site, no dependency without a need, no lowered bar) or the main path; or a fact that is invented.
-- **to fix**: breaks a skill rule without failing a criterion.
+- **blocking**: fails an acceptance criterion, a standard (WCAG 2.2 A/AA), a red line (no back end, no copy of an existing site, no dependency without a need, no lowered bar) or the main path; breaks a skill rule marked `blocking`; or a fact that is invented.
+- **to fix**: breaks a skill rule not marked `blocking`, without failing a criterion.
 - **suggestion**: an improvement no rule demands. It never blocks.
 
 The verdict is **pass** only if every acceptance criterion passes, the check report says `pass: true`, and no blocking defect is left. Otherwise it is **fail**.
