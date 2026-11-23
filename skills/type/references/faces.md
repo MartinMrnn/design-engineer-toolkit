@@ -1,0 +1,65 @@
+# Faces: finding one without the reflex
+
+This file holds **no list of recommended fonts**, on purpose: any such list becomes the next default and ages. It holds a method and places to search.
+
+## The method
+
+1. **Describe the form.** Not adjectives tied to a cliché ("luxury", "tech") but what the letters should do: wide or condensed, high or low contrast, sharp or soft terminals, large or small x-height, geometric, humanist, grotesque, slab, flared, monospaced, how far from neutral. Derive it from the level, the brief and the inspirations.
+2. **Name what is overused**, in general and in the sector. See below.
+3. **Search the sources** below for that form, on the web, today. Do not start from a name you remember. If a name comes to mind first, treat it as suspect and check it against step 2.
+4. **Keep 3 to 5 candidates** that truly differ. Three versions of the same grotesque are one candidate.
+5. **Read each licence on the font's own page.** Note the licence and its link. No page read, no candidate.
+6. **Build the board** from `assets/board.html`, with the real headline, real text and real figures, then run `type.js`.
+7. **Remove** what fails: a missing accent, a missing weight, a face that did not load.
+8. **Show the user the 2 or 3 left** on a capture, and let them choose. Say what you see, and say that your eye on letterforms is limited. The user's eye decides.
+
+Without the real headline, ask for it or mark it `[à fournir : le titre]`: a face judged on a pangram tells little. Without web access, say so and stop at the described form rather than filling the gap from memory.
+
+## Where to search
+Licences as read on 2026-11-24. They can change, and most vary per font: **the font's own page is what counts**.
+
+| Source | What it is | Licence as read |
+|---|---|---|
+| Fontshare | Free fonts from the Indian Type Foundry | Free for commercial use. ITF Free Font License for its own fonts, SIL OFL for the open ones |
+| Collletttivo | Open-source foundry | SIL OFL for all its fonts |
+| The League of Moveable Type | Open-source foundry | Open Font License |
+| Open Foundry | Curated showcase of open-source fonts | Varies per font; follow its link to each project |
+| Uncut | Curated catalogue of contemporary fonts | Announced free for commercial use; each font belongs to its creator, so check each one |
+| Velvetyne | French libre foundry | Could not be read on its site; read the licence shipped with each font |
+| Fontsource | Open fonts packaged for self-hosting | Shown on each font's page |
+| Google Fonts | Large directory | SIL OFL for most, Apache for some. Its most used families are the overused ones |
+| Bunny Fonts | Privacy-minded host compatible with Google Fonts | Varies per font, shown on its page |
+
+**Radical** headlines are more often found at the small foundries than in the large directories.
+
+## Paid faces
+Free for web use by default. A paid face enters only if the brief asks for it or the client already holds a licence. Then note who holds it and for what use. Never use a trial or a personal-use licence on a client's site.
+
+## Overused faces
+Never proposed by default (`face-1`):
+
+- **By use on the web:** Roboto (about 10 to 10.7 % of pages), Poppins (5.8 to 6.0), Open Sans (5.0 to 5.6), Montserrat (3.3 to 3.9), from the Web Almanac 2025.
+- **By reflex in generated interfaces:** Inter, which is only 1.4 to 1.5 % of the web but the usual default of tech sites and AI tools.
+- **By cliché:** a face picked for an adjective, such as Playfair Display for "luxury".
+- **In the sector:** what your quick look at competitors found.
+
+They are not bad faces. Inter is excellent, and several of the best design engineers use it or a derivative. The fault is choosing it **by reflex**. One stays if:
+
+- the brand already imposes it;
+- or a reason specific to this project is written, such as `Inter: a dense tool, with tabular figures and many small sizes`.
+
+"It is clean" or "it is safe" is not a reason.
+
+## Reading the board
+`type.js` gives, per candidate:
+
+| Measure | What it tells |
+|---|---|
+| `xHeight` | Share of the em taken by lowercase. A high value reads larger and suits small sizes |
+| `capHeight` | Height of capitals, to compare with `xHeight` |
+| `avgWidth` | How wide the text runs. It changes the characters per line |
+| `weights` | The weights declared. `100 900` means a variable range |
+| `missing` | Characters of the language it lacks. Anything here removes the candidate, unless the text never uses them |
+| `loaded` | `false` means the file failed. Fix it or remove the candidate |
+
+These numbers remove bad candidates. They never pick the good one.

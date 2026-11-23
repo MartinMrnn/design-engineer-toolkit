@@ -171,7 +171,7 @@ async (page) => {
     const fluid = new Map();
     names.forEach((name, i) => {
       const [a, b, c] = [at[1000][i], at[1100][i], at[1200][i]];
-      if (!((a < b && b < c) || (a > b && b > c)) || fluid.has(name)) return;
+      if (!(at[320][i] > 0 && at[1440][i] > 0) || !((a < b && b < c) || (a > b && b > c)) || fluid.has(name)) return;
       fluid.set(name, { at: name, min: at[320][i], max: at[1440][i], ratio: +(at[1440][i] / at[320][i]).toFixed(2) });
     });
 
@@ -180,7 +180,8 @@ async (page) => {
     for (const width of WIDTHS) {
       const zoomed = await sizesAt(Math.round(width / 5));
       names.forEach((name, i) => {
-        if (failed.has(name) || 5 * zoomed[i] + 0.5 >= 2 * at[width][i]) return;
+        // A page that re-renders on resize detaches elements: their size is NaN and proves nothing.
+        if (failed.has(name) || !(zoomed[i] > 0 && at[width][i] > 0) || 5 * zoomed[i] + 0.5 >= 2 * at[width][i]) return;
         failed.add(name);
         if (failed.size <= MAX_PER_KIND) issues.push({ kind: 'resize', at: name, rule: 'WCAG 1.4.4', detail: `${at[width][i]}px at ${width} px reaches ${+(5 * zoomed[i]).toFixed(1)}px at 500 % zoom, under the ${2 * at[width][i]}px needed` });
       });
@@ -193,6 +194,7 @@ async (page) => {
       const found = await page.evaluate(() => {
         const over = (el) => {
           const s = getComputedStyle(el);
+          if (s.textOverflow === 'ellipsis' || s.webkitLineClamp !== 'none') return false; // truncated on purpose
           const hides = (value) => value === 'hidden' || value === 'clip';
           return (hides(s.overflowX) && el.scrollWidth > el.clientWidth + 1) || (hides(s.overflowY) && el.scrollHeight > el.clientHeight + 1);
         };

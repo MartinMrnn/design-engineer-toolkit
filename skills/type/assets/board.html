@@ -1,0 +1,48 @@
+<!doctype html>
+<!-- Type board. Copy it, keep 3 to 5 candidates, use the real headline and text, then run type.js on it.
+     data-chars holds the characters the project's language needs. -->
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Type board</title>
+<style>
+  /* One @font-face per file of each candidate. A second face for the text goes in --text-face. */
+  @font-face { font-family: "Candidate A"; src: url("fonts/a.woff2") format("woff2"); font-weight: 100 900; font-display: swap; }
+  @font-face { font-family: "Candidate B"; src: url("fonts/b.woff2") format("woff2"); font-weight: 100 900; font-display: swap; }
+  @font-face { font-family: "Candidate C"; src: url("fonts/c.woff2") format("woff2"); font-weight: 100 900; font-display: swap; }
+
+  :root { --ground: #fff; --ink: #111; --quiet: #666; }
+  body { margin: 0; background: var(--ground); color: var(--ink); -webkit-font-smoothing: antialiased; }
+  section { padding: clamp(2rem, 5vw, 4rem) clamp(1rem, 5vw, 4rem); border-bottom: 1px solid color-mix(in srgb, var(--ink) 15%, transparent); }
+  .name { margin: 0 0 1.5rem; font: 0.8125rem/1.4 ui-monospace, monospace; color: var(--quiet); }
+  h1 { margin: 0 0 1rem; font-size: clamp(2.5rem, 1.333rem + 5.185vw, 6rem); line-height: 1; text-wrap: balance; }
+  h2 { margin: 0 0 1rem; font-size: clamp(1.5rem, 1.25rem + 1vw, 2.25rem); line-height: 1.15; }
+  .text { max-width: 34rem; margin: 0 0 1rem; font-family: var(--text-face, inherit); font-size: 1rem; line-height: 1.65; text-wrap: pretty; }
+  .figures { margin: 0; font-family: var(--text-face, inherit); font-variant-numeric: tabular-nums; }
+</style>
+</head>
+<body data-chars="àâæçéèêëîïôœùûüÿÀÂÆÇÉÈÊËÎÏÔŒÙÛÜŸ«»’…–—">
+  <section data-candidate="Candidate A" style="font-family: 'Candidate A'">
+    <p class="name">Candidate A · foundry · licence</p>
+    <h1>[à fournir : le vrai titre]</h1>
+    <h2>[à fournir : un vrai intertitre]</h2>
+    <p class="text">[à fournir : un vrai paragraphe du projet, assez long pour occuper plusieurs lignes]</p>
+    <p class="figures">0123456789 · 12,50 € · 2026</p>
+  </section>
+  <section data-candidate="Candidate B" style="font-family: 'Candidate B'">
+    <p class="name">Candidate B · foundry · licence</p>
+    <h1>[à fournir : le vrai titre]</h1>
+    <h2>[à fournir : un vrai intertitre]</h2>
+    <p class="text">[à fournir : un vrai paragraphe du projet, assez long pour occuper plusieurs lignes]</p>
+    <p class="figures">0123456789 · 12,50 € · 2026</p>
+  </section>
+  <section data-candidate="Candidate C" style="font-family: 'Candidate C'">
+    <p class="name">Candidate C · foundry · licence</p>
+    <h1>[à fournir : le vrai titre]</h1>
+    <h2>[à fournir : un vrai intertitre]</h2>
+    <p class="text">[à fournir : un vrai paragraphe du projet, assez long pour occuper plusieurs lignes]</p>
+    <p class="figures">0123456789 · 12,50 € · 2026</p>
+  </section>
+</body>
+</html>
