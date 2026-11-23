@@ -162,3 +162,77 @@ test('harmony refuses a grey and points to ramp', () => {
   }
   assert.equal(run('harmony', 'nope').status, 1);
 });
+
+const read = (file) => readFileSync(join(DIR, file), 'utf8');
+const files = () => ['SKILL.md', ...REFS.map((name) => `references/${name}.md`)];
+const cells = (line) => line.trim().slice(1, -1).split('|').map((cell) => cell.trim());
+const rules = () => files().flatMap((file) => {
+  const lines = read(file).split('\n');
+  return lines.flatMap((line, i) => {
+    if (line.trim() !== '| Rule | Why | Kind | Source | Checked by |') return [];
+    const rows = [];
+    for (let j = i + 2; lines[j]?.startsWith('|'); j++) rows.push({ at: `${file}:${j + 1}`, cells: cells(lines[j]) });
+    return rows;
+  });
+});
+const idOf = (row) => row.cells[0].match(/^`([a-z]+-\d+)` · \S/)?.[1];
+const keys = () => [...read('references/sources.md').matchAll(/^- \*\*(.+?)\*\*/gm)].map((m) => m[1]);
+const measures = () => new Set([...readFileSync(join(ROOT, 'skills/studio/scripts/check.js'), 'utf8').split('\nasync')[0].matchAll(/\(([a-z-]+)\)/g)].map((m) => m[1]));
+
+test('SKILL.md is the colour skill, short, and names every reference', () => {
+  const skill = read('SKILL.md');
+  assert.match(skill, /^---\nname: colour\n/);
+  const lines = skill.trimEnd().split('\n').length;
+  assert.ok(lines <= 150, `SKILL.md has ${lines} lines`);
+  for (const name of REFS) {
+    assert.ok(existsSync(join(DIR, `references/${name}.md`)), `${name}.md is missing`);
+    assert.ok(skill.includes(`references/${name}.md`), `SKILL.md does not name ${name}.md`);
+  }
+  assert.deepEqual(readdirSync(join(DIR, 'references')).sort(), REFS.map((name) => `${name}.md`).sort());
+});
+
+test('every colour rule follows the format', () => {
+  const all = rules();
+  assert.ok(all.length >= 20, `${all.length} rules`);
+  const sources = new Set(keys());
+  const known = measures();
+  const seen = new Set();
+  const kind = /^(standard \(WCAG \d\.\d+\.\d+(, \d\.\d+\.\d+)*\)|empirical finding|heuristic)$/;
+  const one = 'script [a-z-]+|colour (?:palette|cvd|contrast|harmony|dominant)|critic phases? [234](?:, [234])*';
+  const check = new RegExp(`^(?:${one})(?: \\+ (?:${one}))*(?: · blocking)?$`);
+  for (const row of all) {
+    assert.equal(row.cells.length, 5, `${row.at}: ${row.cells.length} columns`);
+    const [, why, type, source, checked] = row.cells;
+    const id = idOf(row);
+    assert.match(id ?? '', /^(material|strategy|gesture|harmony|roles|proof)-\d+$/, `${row.at}: bad id`);
+    assert.ok(!seen.has(id), `${row.at}: ${id} is used twice`);
+    seen.add(id);
+    assert.ok(why.length > 0, `${row.at}: no why`);
+    assert.match(type, kind, `${row.at}: bad kind`);
+    for (const key of source.split(', ')) assert.ok(sources.has(key), `${row.at}: source "${key}" is not in sources.md`);
+    assert.match(checked, check, `${row.at}: bad check`);
+    for (const m of checked.matchAll(/script ([a-z-]+)/g)) assert.ok(known.has(m[1]), `${row.at}: no measure "${m[1]}"`);
+    if (type.startsWith('standard')) assert.ok(checked.endsWith(' · blocking'), `${row.at}: a standard must block`);
+  }
+});
+
+test('the colour blocking core is exactly the agreed rules, plus the standards', () => {
+  const blocking = rules().filter((row) => row.cells[4].endsWith(' · blocking') && !row.cells[2].startsWith('standard')).map(idOf).sort();
+  assert.deepEqual(blocking, ['gesture-1', 'material-1', 'strategy-1']);
+  const standards = rules().filter((row) => row.cells[2].startsWith('standard')).map(idOf);
+  for (const id of ['proof-1', 'proof-2', 'proof-3']) assert.ok(standards.includes(id), `${id} is not a standard`);
+});
+
+test('every colour source states its licence and is credited', () => {
+  const lines = read('references/sources.md').split('\n').filter((line) => line.startsWith('- **'));
+  assert.ok(lines.length >= 15, `${lines.length} sources`);
+  for (const line of lines) assert.match(line, /Licence: \S/, line);
+  const credits = new Set(readFileSync(join(ROOT, 'CREDITS.md'), 'utf8').split('\n').filter((line) => line.startsWith('|')).map((line) => cells(line)[0]));
+  for (const key of keys()) assert.ok(credits.has(key), `CREDITS.md has no row "${key}"`);
+});
+
+test('nothing is left of the v0.3 colour skill', () => {
+  for (const file of files()) {
+    assert.doesNotMatch(read(file), /charter|tokens\.json|01-context|08-colour|art director|\bA1\b|\bB2\b/i, file);
+  }
+});
