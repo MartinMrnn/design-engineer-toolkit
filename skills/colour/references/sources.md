@@ -2,34 +2,40 @@
 
 Every source this skill and `colour.py` rest on, with its link and its licence or status.
 
-**What was copied: nothing.** No third-party reference text from meodai/skill.color-expert's `references/` folder or from any paper was copied into this skill. The texts here are written in our own words, and they cite and link their sources. The script uses only published constants (matrices, white points, thresholds) with their citation, and its tests use reference values from the sources below.
+**What was copied: nothing.** Every text here is written in our own words. The script uses only published constants (matrices, white points, thresholds), with their citation. Where a licence forbids adaptation or none could be found, only the principle is cited.
+
+**How licences were checked, on 2026-11-23.** Software licences were read from each repository. Publishers' pages refused automated reading, so the licences of papers come from their Crossref record (`api.crossref.org/works/<DOI>`), and from the article itself where stated. A text-and-data-mining link in a record is not an open licence, so those papers are treated as all rights reserved.
 
 ## Standards
-- **WCAG 2.2**, W3C Recommendation: SC 1.4.1 Use of Color, 1.4.3 Contrast (Minimum), 1.4.6 Contrast (Enhanced), 1.4.11 Non-text Contrast; the definitions of relative luminance, contrast ratio and large-scale text. https://www.w3.org/TR/WCAG22/ · W3C Document License.
-- **Understanding WCAG 2.2, SC 1.4.3 Contrast (Minimum)**, W3C, informative: thresholds are compared unrounded; what large-scale text means in CSS pixels. https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html · W3C Document License.
-- **CSS Color Module Level 4**, W3C: `oklab()`, `oklch()`, `lab()` and `lch()` on D50, the Bradford adaptation, deltaEOK, gamut mapping. https://www.w3.org/TR/css-color-4/ · W3C Document License.
-- **CSS Color 4 sample code**, `css-color-4/conversions.js` (with `utilities.js`, `multiply-matrices.js`, `deltaEOK.js`) and the specification's gamut-mapping pseudocode, in https://github.com/w3c/csswg-drafts at commit `700ba7b5e6ea39623b68a2a0575c2bb89c640d54`. Its published constants are used in `colour.py`, with their citation. It was run locally, outside the plugin, to produce the conversion and gamut-mapping tests' reference values; its code was not copied. W3C Software and Document License.
+- **W3C** · WCAG 2.2, W3C Recommendation of 12 December 2024, SC 1.4.1, 1.4.3, 1.4.6, 1.4.11, and Understanding SC 1.4.3 · https://www.w3.org/TR/WCAG22/ · Licence: W3C Document License (2023). Criteria are cited by number and stated in our own words.
+- **CSS Color 4** · CSS Color Module Level 4 and its sample code, at csswg-drafts commit `700ba7b5e6ea39623b68a2a0575c2bb89c640d54` · https://www.w3.org/TR/css-color-4/ · Licence: W3C Software and Document License. Published constants are used in `colour.py`; the code was not copied.
 
 ## Colour science
-- **B. Ottosson, "A perceptual color space for image processing"** (OKLab), 2020. https://bottosson.github.io/posts/oklab/ · The post's code is public domain, or MIT. Its published matrices and its table of example XYZ and OKLab pairs are used for the conversion and its tests.
-- **G. M. Machado, M. M. Oliveira & L. A. F. Fernandes, "A physiologically-based model for simulation of color vision deficiency"**, *IEEE Transactions on Visualization and Computer Graphics* 15(6), 2009, 1291–1298. DOI 10.1109/TVCG.2009.113. The severity 1.0 matrices are taken from the authors' page, https://www.inf.ufrgs.br/~oliveira/pubs_files/CVD_Simulation/CVD_Simulation.html, with their citation.
+- **Ottosson 2020** · B. Ottosson, "A perceptual color space for image processing" · https://bottosson.github.io/posts/oklab/ · Licence: the post's code is public domain or MIT; no statement for its text. Its published matrices are used.
+- **Machado 2009** · G. M. Machado, M. M. Oliveira & L. A. F. Fernandes, "A physiologically-based model for simulation of color vision deficiency", *IEEE TVCG* 15(6), 1291–1298. DOI 10.1109/TVCG.2009.113 · Licence: IEEE, all rights reserved. Severity 1.0 matrices are used with their citation, from https://www.inf.ufrgs.br/~oliveira/pubs_files/CVD_Simulation/CVD_Simulation.html.
+- **Birch 2012** · J. Birch, "Worldwide prevalence of red-green color deficiency", *JOSA A* 29(3), 313. DOI 10.1364/JOSAA.29.000313 · Licence: Optica Open Access licence, as its Crossref record states. Figure cited only.
+- **Corney 2009** · D. Corney, J.-D. Haynes, G. Rees & R. B. Lotto, "The Brightness of Colour", *PLoS ONE* 4(3), e5091. DOI 10.1371/journal.pone.0005091 · Licence: CC BY 4.0. Finding cited only.
+- **Hayashi 2012** · Hayashi, Kawai & Sakata, "Individual Differences in Chromostereopsis under Natural Viewing Conditions", *i-Perception*, October 2012. DOI 10.1068/if617 · Licence: none in its Crossref record, cited only.
 
-## APCA (nothing used)
-- **Myndex, apca-w3** and its `LICENSE.md`: https://github.com/Myndex/apca-w3. Read only to decide whether a port could ship in this MIT plugin. Its rights are reserved, its grant covers web content only, commercial use needs a signed licence, ports must stay unchanged, and APCA is a trademark: so nothing from it is used. The official calculator is linked for a manual check: https://apcacontrast.com.
+## Studies on harmony, emotion and choice
+- **Schloss & Palmer 2011** · K. B. Schloss & S. E. Palmer, "Aesthetic response to color combinations: preference, harmony, and similarity", *Attention, Perception, & Psychophysics* 73, 551–571. DOI 10.3758/s13414-010-0027-0 · Licence: Creative Commons Attribution Noncommercial, as the article states. Findings cited in our own words.
+- **Palmer & Schloss 2010** · S. E. Palmer & K. B. Schloss, "An ecological valence theory of human color preference", *PNAS* 107(19), 8877–8882. DOI 10.1073/pnas.0906172107 · Licence: none in its Crossref record, cited only.
+- **Wilms & Oberfeld 2018** · L. Wilms & D. Oberfeld, "Color and emotion: effects of hue, saturation, and brightness", *Psychological Research* 82(5), 896–914. DOI 10.1007/s00426-017-0880-8 · Licence: Springer text-and-data-mining link only in its Crossref record, cited only.
+- **Jonauskaite 2020** · D. Jonauskaite et al., "Universal patterns in color-emotion associations are further shaped by linguistic and geographic proximity", *Psychological Science* 31(10), 1245–1260. DOI 10.1177/0956797620948810 · Licence: SAGE text-and-data-mining link only in its Crossref record, cited only.
+- **Ou 2004** · L.-C. Ou, M. R. Luo, A. Woodcock & A. Wright, "A study of colour emotion and colour preference", Parts I to III, *Color Research & Application* 29(3), 232–240; 29(4), 292–298; 29(5), 381–389. DOIs 10.1002/col.20010, 10.1002/col.20024, 10.1002/col.20047 · Licence: Wiley terms and conditions, cited only. No equation is included.
+- **Hick 1952** · W. E. Hick, "On the rate of gain of information", *Quarterly Journal of Experimental Psychology* 4(1), 11–26. DOI 10.1080/17470215208416600 · Licence: published paper, cited only.
+- **Albers 1963** · J. Albers, *Interaction of Color*, Yale University Press · Licence: all rights reserved, principle cited. No text or plate reproduced.
 
-## Studies on colour and emotion
-Summarised in `meaning.md` in our own words; no text copied.
-- **L. Wilms & D. Oberfeld, "Color and emotion: effects of hue, saturation, and brightness"**, *Psychological Research* 82(5), 2018, 896–914. DOI 10.1007/s00426-017-0880-8.
-- **D. Jonauskaite et al., "Universal patterns in color-emotion associations are further shaped by linguistic and geographic proximity"**, *Psychological Science* 31(10), 2020, 1245–1260. DOI 10.1177/0956797620948810.
-- **S. E. Palmer & K. B. Schloss, "An ecological valence theory of human color preference"**, *PNAS* 107(19), 2010, 8877–8882. DOI 10.1073/pnas.0906172107.
-- **L.-C. Ou, M. R. Luo, A. Woodcock & A. Wright, "A study of colour emotion and colour preference"**, *Color Research & Application* 29, 2004:
-  - Part I, Colour emotions for single colours, 29(3), 232–240. DOI 10.1002/col.20010.
-  - Part II, Colour emotions for two-colour combinations, 29(4), 292–298. DOI 10.1002/col.20024.
-  - Part III, Colour preference modeling, 29(5), 381–389. DOI 10.1002/col.20047.
-  - Status: findings used in words only. The equations and coefficients are not included in this version; they would be added only after a verification on the printed pages of the author-deposited full texts, with each equation's page and number recorded here.
+## Design engineers and systems
+- **Krehel OKLCH** · Jakub Krehel, OKLCH guide and `oklch-skill` · https://jakub.kr/components/oklch-colors and https://github.com/jakubkrehel/oklch-skill · Licence: MIT for the skill; no statement on the guide, so principles only. Informed scales, gamut and gradients.
+- **Linear** · "How we redesigned the Linear UI" (2024) and "Behind the latest design refresh" (2026) · https://linear.app/blog/how-we-redesigned-the-linear-ui and https://linear.app/now/behind-the-latest-design-refresh · Licence: none found, principles only. Informed neutrals, restraint and themes in LCH.
+- **shadcn** · shadcn/ui theming · https://ui.shadcn.com/docs/theming and https://github.com/shadcn-ui/ui · Licence: MIT. The token names are used.
+- **Radix Colors** · Modulz, "Understanding the scale" · https://www.radix-ui.com/colors/docs/palette-composition/understanding-the-scale and https://github.com/radix-ui/colors · Licence: MIT. Informed scales whose steps have a job.
+- **next-themes** · Paco Coursey · https://github.com/pacocoursey/next-themes · Licence: MIT. Referenced for themes without a flash.
+- **meodai** · skill.color-expert · https://github.com/meodai/skill.color-expert · Licence: CC BY 4.0 for its original texts; its `references/` are largely extracts of third-party works that keep their authors' rights. It informed the approach; no passage was adapted.
 
-## Design practice
-- **J. Albers, *Interaction of Color***, Yale University Press, 1963. Cited for its demonstrations that a colour changes with its neighbours; no text or plate reproduced.
+## Read, nothing used
+- **APCA** · Myndex, apca-w3 · https://github.com/Myndex/apca-w3 · Licence: rights reserved, web content only, commercial use needs a signed licence, and APCA is a trademark. Nothing from it is used.
 
-## Approach
-- **meodai, skill.color-expert**: https://github.com/meodai/skill.color-expert. Its original texts (`SKILL.md`, `references/INDEX.md`) are licensed CC BY 4.0; its `references/` files are largely transcripts and extracts of third-party works, which keep their authors' rights. It informed this skill's approach: reasoning in OKLCH rather than HSL, verifying contrast on every text and background pair, and stating where tidy colour rules break. No passage of it was adapted or copied here, so no CC BY 4.0 material is redistributed; it is credited as a reference.
+## The project
+- **Studio** · this project: the maintainer's colour skill draft, the v0.3 colour skill, the measure of 17 home pages of 2026-11-23, and the rules this skill states itself · https://github.com/MartinMrnn/design-engineer-toolkit · Licence: MIT.

@@ -1,6 +1,6 @@
 """dominant: the colours seen in a PNG capture, by share of pixels (spec 6.6).
 
-This measures an image. It is not a measure of a design system: for the design's own colours, `palette` on tokens.json is
+This measures an image. It is not a measure of a design system: for the design's own colours, `palette` on tokens.css is
 the source of truth. Everything here is deterministic: the same image and options give the same output, byte for byte.
 
 How it works, in order:
@@ -317,7 +317,7 @@ def load(path, crop, excludes, over_hex):
 
 def token_colours(resolved):
     """[{names, hex, lab}]: the tokens of one theme, tokens that resolve to the same colour merged (all their names),
-    in the order of each colour's first token in tokens.json."""
+    in the order of each colour's first token in tokens.css."""
     colours, by_hex = [], {}
     for name, hex_value in resolved:
         if hex_value in by_hex:
@@ -410,7 +410,7 @@ def accents(hist, grid, k, labs, total):
 
 
 def analyse(path, k=DEFAULT_K, over="#ffffff", crop=None, excludes=(), tokens=None, theme=None, distance=DEFAULT_DISTANCE):
-    """The whole result as a dict. `tokens` is the path of a tokens.json for --match."""
+    """The whole result as a dict. `tokens` is the path of a tokens.css for --match."""
     from . import tokenfile
     resolved = None
     if tokens is not None:

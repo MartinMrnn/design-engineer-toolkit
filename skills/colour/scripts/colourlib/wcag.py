@@ -1,4 +1,4 @@
-"""WCAG 2.2 contrast: the one implementation that colour.py and charter.py both use.
+"""WCAG 2.2 contrast: the one implementation used by every colour.py command.
 
 Sources, all from the WCAG 2.2 text (W3C Recommendation):
 - Definitions "relative luminance" and "contrast ratio".
