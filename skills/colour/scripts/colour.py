@@ -2,7 +2,7 @@
 """colour.py · colour measures for the design studio: WCAG 2.2 contrast, conversions (OKLab, OKLCH, CIELAB), lightness ramps,
 colour-vision-deficiency simulation, the colours seen in a PNG capture.
 
-Standard library only. Errors print as `colour: <message>` on stderr and exit 1, like charter.py.
+Standard library only. Errors print as `colour: <message>` on stderr and exit 1.
 """
 import argparse
 import json
@@ -12,7 +12,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from colourlib import convert, cvd, dominant, gamut, palette, tokenfile, wcag  # noqa: E402
+from colourlib import convert, cvd, dominant, gamut, harmony, palette, tokenfile, wcag  # noqa: E402
 
 
 def fail(message):
@@ -362,7 +362,7 @@ def add_dominant(sub):
     p.add_argument("--crop", type=rect_arg("--crop"), metavar="x,y,w,h", help="analyse only this region")
     p.add_argument("--exclude", type=rect_arg("--exclude"), action="append", default=[], metavar="x,y,w,h",
                    help="leave this region out (repeatable); counted apart from the analysed pixels")
-    p.add_argument("--match", metavar="tokens.json", help="assign every pixel to the nearest colour token within --max-distance, "
+    p.add_argument("--match", metavar="tokens.css", help="assign every pixel to the nearest colour token within --max-distance, "
                                                           "else to an unassigned category")
     p.add_argument("--max-distance", type=distance_arg, metavar="d", help="with --match: the largest OKLab distance at which a "
                    "pixel is assigned to a token (default: {:g}, a design heuristic)".format(dominant.DEFAULT_DISTANCE))
@@ -386,15 +386,33 @@ def cmd_palette(args):
 
 
 def add_palette(sub):
-    p = sub.add_parser("palette", help="the charter's palette in one report: OKLCH, required contrast pairs, CVD distances of the state colours",
-                       description="Reads a charter's tokens.json (the charter's own code resolves aliases and themes) and reports, "
-                                   "per theme: the OKLCH of every colour token; the WCAG 2.2 ratio and pass or fail of every pair "
-                                   "the contract requires (as `charter.py check`); the CVD distances of the state-* colours, "
-                                   "closest first, without a verdict. Emotion indicators are not available in this version.")
-    p.add_argument("tokens", metavar="tokens.json", help="a charter's tokens.json")
+    p = sub.add_parser("palette", help="the palette of a tokens.css: OKLCH, contrast of its pairs, CVD distances of its states",
+                       description="Reads a tokens.css and reports, per theme: the OKLCH of every colour token; the WCAG 2.2 "
+                                   "ratio and pass or fail of the pairs the shadcn token names declare; the CVD distances of "
+                                   "--destructive, --success, --warning and --info, closest first, without a verdict; and "
+                                   "what could not be measured.")
+    p.add_argument("tokens", metavar="tokens.css", help="a CSS file of custom properties")
     p.add_argument("--theme", metavar="name", help="report this theme only (default: every theme)")
     p.add_argument("--json", action="store_true", help="print JSON, with the unrounded values")
     p.set_defaults(func=cmd_palette)
+
+
+# ---- harmony ------------------------------------------------------------------------------------------------------
+
+def cmd_harmony(args):
+    try:
+        result = harmony.build(args.colour)
+    except ValueError as e:
+        fail(str(e))
+    print(json.dumps(result, indent=2) if args.json else harmony.report(result))
+
+
+def add_harmony(sub):
+    p = sub.add_parser("harmony", help="analogous, complementary, split-complementary and triadic hues, in OKLCH",
+                       description="Hue candidates at the colour's lightness and share of the maximum sRGB chroma. " + harmony.NOTE)
+    p.add_argument("colour", help="#rgb, #rrggbb, oklch(L C H), oklab(L a b), lch(L C H) or lab(L a b)")
+    p.add_argument("--json", action="store_true", help="print JSON, with the unrounded values")
+    p.set_defaults(func=cmd_harmony)
 
 
 def main():
@@ -406,6 +424,7 @@ def main():
     add_cvd(sub)
     add_dominant(sub)
     add_palette(sub)
+    add_harmony(sub)
     args = parser.parse_args()
     args.func(args)
 
