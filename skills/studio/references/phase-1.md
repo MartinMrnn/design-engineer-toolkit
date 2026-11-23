@@ -12,7 +12,8 @@ Intent, real goal, needs, stack, scope (pages, interactions, level of experience
 
 ## Setup, after the user's "ok"
 1. **Ask first:** "I create the private repository `<account>/<name>` with the 4 phase milestones?" Propose a short kebab-case name.
-2. Create it:
+2. Write `design/decisions.md` from `references/decisions.md`, with the approved briefing as its first entry. It comes first: the guard-rail hooks act only in a folder that has it.
+3. Create it:
    ```bash
    git init -b main        # if the folder is not a repository yet
    gh repo create <name> --private --source . --remote origin
@@ -21,9 +22,9 @@ Intent, real goal, needs, stack, scope (pages, interactions, level of experience
    done
    ```
    Milestone names are in the conversation's language; keep the `<n> · ` prefix, the studio finds the phase by it.
-3. Write `CLAUDE.md` from `references/claude-md.md` (if one exists, ask before changing it), `design/decisions.md` from `references/decisions.md` with the approved briefing as its first entry, and a `.gitignore` (`.DS_Store`, `node_modules/`, `.playwright-mcp/`: the browser's files and the critic's contact sheets).
-4. Commit "Set up the project" and `git push -u origin main`.
-5. Create the phase's issues in milestone 1.
+4. Write `CLAUDE.md` from `references/claude-md.md` (if one exists, ask before changing it) and a `.gitignore` (`.DS_Store`, `node_modules/`, `.playwright-mcp/`: the browser's files and the critic's contact sheets).
+5. Commit "Set up the project" and `git push -u origin main`.
+6. Create the phase's issues in milestone 1.
 
 ## Issues
 1. **The spec** · What: `design/spec.md` from `references/spec.md`, filled from the briefing. Done when: every section is filled; every dependency has its need (C8); every unknown fact is listed as `[à fournir]`.

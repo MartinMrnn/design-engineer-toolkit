@@ -1,0 +1,17 @@
+{
+  "description": "Blocks the Never actions inside a design-studio project.",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Write|Edit|NotebookEdit|Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/never.mjs\"",
+            "timeout": 30
+          }
+        ]
+      }
+    ]
+  }
+}
