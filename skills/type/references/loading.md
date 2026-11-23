@@ -1,7 +1,7 @@
 # Loading: fonts that arrive well
 
 ## Host them yourself
-Self-host in **WOFF2**. It needs no third-party request, the files stay under the project's control, and nothing about the visitor is sent to a font service. Keep the licence file next to the fonts when the licence asks for it.
+Self-host in **WOFF2**, when the licence lets you handle the files (see `faces.md`). It needs no third-party request, the files stay under the project's control, and nothing about the visitor is sent to a font service. Keep the licence file next to the fonts when the licence asks for it.
 
 ```
 public/fonts/
@@ -31,7 +31,7 @@ If the project already uses a font host and the brief does not change it, keep i
 ## Load only what is used
 - List the weights and styles the roles use. Load those, and nothing else.
 - One or two weights: static files can be smaller. Several weights, or an optical axis: a variable font usually wins.
-- Subset to the project's languages when the licence allows it. Keep the accents, typographic punctuation and figures. Check with the board afterwards.
+- Subset to the project's languages **only if the licence allows it**: the OFL does, the ITF FFL does not (see `faces.md`). Keep the accents, typographic punctuation and figures. Check with the board afterwards.
 
 ## No faux styles
 If a family has no bold or italic, the browser fakes one and distorts the letters. `type.js` lists them in `fauxBold`.

@@ -30,6 +30,9 @@ test('board reports each candidate, its metrics and what it cannot set', async (
   assert.equal(by.Ascii.missing, 'éç');
   assert.equal(by.Gone.loaded, false);
   assert.equal(by.Gone.xHeight, null);
+  assert.ok(by.Full.display.xHeight > 0.4 && by.Full.display.avgWidth > 0.3, 'measured again at display size');
+  assert.equal(by.Full.fauxBold, false);
+  assert.equal(by.Ascii.fauxBold, true, 'the bold h2 has no bold face');
 });
 
 test('audit passes a clean page and describes its type', async () => {
@@ -44,6 +47,8 @@ test('audit passes a clean page and describes its type', async () => {
   assert.equal(report.measure.n, 1);
   assert.ok(report.measure.median >= 60 && report.measure.median <= 85, `measure ${report.measure.median}`);
   assert.deepEqual(report.measure.outside, []);
+  assert.equal(report.measure.phone.n, 1);
+  assert.ok(report.measure.phone.median < report.measure.median, 'a phone holds fewer characters');
   assert.deepEqual(report.fauxBold, []);
   assert.equal(report.fluid.length, 1);
   assert.ok(report.fluid[0].ratio <= 2.5);
@@ -65,6 +70,14 @@ test('audit catches the type faults, and only the standards fail the report', as
   assert.equal(report.fauxBold.length, 1);
   assert.match(report.fauxBold[0], /^strong/);
   assert.ok(report.fluid.some((f) => f.ratio > 2.5));
+});
+
+test('a headline that leaves the screen on its way to 200 % fails 1.4.4', async () => {
+  const report = await type('overflow.html');
+  assert.equal(report.pass, false);
+  const issue = report.issues.find((i) => i.kind === 'resize');
+  assert.match(issue.at, /^h1/);
+  assert.match(issue.detail, /leaves the screen/);
 });
 
 const text = (file) => readFileSync(join(DIR, file), 'utf8');

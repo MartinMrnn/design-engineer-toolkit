@@ -59,8 +59,8 @@ Describe the form you need, search, read the licence, set the candidates on the 
 |---|---|---|---|---|
 | `face-1` · An overused face is never proposed by default; it stays only if the brand imposes it or a project reason is written | the most frequent faces are what makes sites look alike | heuristic | Web Almanac 2025, Studio | critic phase 2 · blocking |
 | `face-2` · Candidates come from a live search of foundries, from the form the brief calls for, never from memory | memory returns the most frequent and most dated faces | heuristic | Studio | critic phase 2 |
-| `face-3` · Every candidate's licence is read on its own page and allows web use; a paid face enters only if the brief asks or the client holds the licence | a font used without its licence is a legal risk for the client | heuristic | Studio | critic phase 2 · blocking |
-| `face-4` · Three to five candidates are set on the real headline and text; the user chooses among the two or three left | an agent does not judge letterforms reliably, and an eye does | heuristic | Studio | type board + critic phase 2 |
+| `face-3` · Every candidate's licence is read on its own page and allows this project's use: the client's site, who handles the files, any subsetting; a paid face enters only if the brief asks or the client holds the licence | a font used without its licence is a legal risk for the client | heuristic | Studio | critic phase 2 · blocking |
+| `face-4` · Three to five candidates, each a headline face with its text partner, are set on the real text; the user chooses among at most three | an agent does not judge letterforms reliably, and an eye does | heuristic | Studio | type board + critic phase 2 |
 | `face-5` · The face covers the project's language and the weights used | a missing accent falls back to another face in the middle of a word | heuristic | Studio | type board |
 
 ### 3 · Pairing
@@ -91,7 +91,7 @@ The details of reading. Read `references/setting.md`.
 
 | Rule | Why | Kind | Source | Checked by |
 |---|---|---|---|---|
-| `setting-1` · Reading text holds 60 to 85 real characters per line; leaving this range takes a written reason | readers judge long lines hardest and very short lines are read slower | heuristic | Dyson & Kipping 1998, Studio | type audit + critic phases 2, 4 |
+| `setting-1` · On a wide screen, reading text holds 60 to 85 real characters per line; leaving this range takes a written reason | readers judge long lines hardest and very short lines are read slower | heuristic | Dyson & Kipping 1998, Studio | type audit + critic phases 2, 4 |
 | `setting-2` · Reading text aligns to the start; only short blocks are centred | a steady edge lets the eye find the next line | heuristic | Krehel typography | critic phases 2, 4 |
 | `setting-3` · `balance` on titles, `pretty` on paragraphs | it avoids uneven titles and a lone last word | heuristic | Krehel, Salaja | critic phase 4 |
 | `setting-4` · Numbers that change use tabular figures | digits of different widths make the layout shift | heuristic | Freiberg, Krehel typography, Salaja | critic phase 4 |
@@ -118,7 +118,7 @@ Measure before showing. Read `references/loading.md` and `references/measures.md
 Level: radical, because the colour takes a strong risk.
 Gesture: a very wide headline, almost a logo.
 Overused in the sector: thin luxury serifs (never an example).
-Candidates: 3 to 5, each with its foundry and licence. Chosen by the user: <face>.
+Candidates: 3 to 5, each with its text partner, foundry and licence. Chosen by the user: <face>.
 Pairing: <face> for titles, <face> for text, and why they fit.
 Roles: display, title, heading, body, small.
 Proof: `type.js` audit passes, or `not yet` before there is a page.
@@ -137,7 +137,7 @@ Proof: `type.js` audit passes, or `not yet` before there is a page.
 **Blocking:** a broken `blocking` rule or a WCAG A or AA failure. **To fix:** another broken rule, with no stated reason. **Suggestion:** an improvement no rule demands, with `rule: none`. A defect that breaks several rules cites them all and keeps the highest severity. A heading with no defect says `none`. Without a type entry, `voice-1`, `face-2`, `face-3` and `face-4` go under `Not seen`, and an overused face is a suggestion.
 
 ## Commands
-Open the page, then call `browser_run_code_unsafe` with `{ "filename": "<this skill's folder>/scripts/type.js" }`. A page with `[data-candidate]`, made from `assets/board.html`, gets a **board**: metrics, weights and missing characters per candidate. Any other page gets an **audit**: faces, sizes, weights, leading, characters per line, fluid sizes, faux styles, and WCAG 1.4.4 and 1.4.12, the only two that set `pass` to false.
+Open the page, then call `browser_run_code_unsafe` with `{ "filename": "<this skill's folder>/scripts/type.js" }`, or pass the file's content as `code` if the path is refused. A page with `[data-candidate]`, made from `assets/board.html`, gets a **board**: metrics, weights and missing characters per candidate. Any other page gets an **audit**: faces, sizes, weights, leading, characters per line, fluid sizes, faux styles, and WCAG 1.4.4 and 1.4.12, the only two that set `pass` to false.
 
 ## References
 - `references/voice.md`: levels, gestures, matching the direction. For decision 1.

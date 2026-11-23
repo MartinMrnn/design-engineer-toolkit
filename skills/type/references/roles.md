@@ -6,7 +6,7 @@ Four to six, named by use, each with its size, leading, weight and tracking. The
 | Role | Size | Leading | Weight | Tracking |
 |---|---|---|---|---|
 | `display` | fluid, by the level | 0.95 to 1.1 | by the face | -0.01 to -0.04em |
-| `title` | 1.75 to 3rem | 1.1 to 1.2 | 500 to 600 | -0.01 to -0.02em |
+| `title` | 1.75 to 3rem | 1.1 to 1.2 | 500 to 600, or the display weight when radical | -0.01 to -0.02em |
 | `heading` | 1.125 to 1.5rem | 1.25 to 1.35 | 500 to 600 | 0 to -0.01em |
 | `body` | 1 to 1.125rem | 1.5 to 1.75 | 400 | 0 |
 | `small` | 0.8125 to 0.875rem | 1.4 to 1.5 | 400 to 500 | 0 |
@@ -56,6 +56,7 @@ Browser zoom enlarges `rem` and `px`, not `vw`. A fluid title can therefore stop
 - 96 px at most needs at least 40 px on small screens (ratio 2.4).
 - 120 px needs 48 px. This favours short, massive radical headlines.
 - Above 2.5, it is not automatically a failure, but `type.js` must pass at every width.
+- A high minimum has its own risk: **the longest word must still fit**. A word that leaves the screen at zoom fails 1.4.4 even if its size is right. Shorten the headline, lower the size, or allow `overflow-wrap: break-word`.
 
 | Broken | Fixed |
 |---|---|

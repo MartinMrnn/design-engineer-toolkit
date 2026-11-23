@@ -1,7 +1,9 @@
 # Setting: the details of reading
 
 ## Measure
-**60 to 85 real characters per line** for reading text, spaces included. Leaving this range takes a written reason.
+**60 to 85 real characters per line** for reading text on a wide screen, spaces included. Leaving this range takes a written reason.
+
+On a phone, the screen decides: at 390 px, 16 to 18 px text holds about 40 to 55 characters. Keep the text size and normal margins, and never shrink the text to reach 60. `type.js` reports this line in `measure.phone`, with no verdict.
 
 Why not the classic 45 to 75:
 
@@ -54,6 +56,8 @@ A truncated text needs a way back to the whole text.
 | `10 km`, `12 %` | a non-breaking space before the unit |
 
 In French, a narrow non-breaking space (`&#8239;`) goes before `;`, `!` and `?`, and a non-breaking space before `:`. Code keeps straight quotes. Set `lang` on the page so that the browser hyphenates and quotes correctly.
+
+In a title, tie a short word (`à`, `de`, `le`, `et`) to the next one with a non-breaking space, so it is not left alone at the end of a line.
 
 Store text in natural case and set capitals with `text-transform`.
 

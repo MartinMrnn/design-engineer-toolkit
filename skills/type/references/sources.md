@@ -32,12 +32,12 @@ Every source this skill and `type.js` rest on, with its link and its licence or 
 ## Where to search for faces
 Places to look, with no text used. The licence of each font is read on its own page during a project.
 
-- **Fontshare** · Indian Type Foundry · https://www.fontshare.com/faq · Licence: ITF Free Font License or SIL OFL, per font.
+- **Fontshare** · Indian Type Foundry · https://www.fontshare.com/licenses/itf-ffl · Licence: ITF Free Font License 2.0 (17 Aug 2026) or SIL OFL, per font.
 - **Collletttivo** · open-source foundry · https://www.collletttivo.it/licensing · Licence: SIL OFL.
 - **The League of Moveable Type** · open-source foundry · https://www.theleagueofmoveabletype.com/ · Licence: Open Font License.
 - **Open Foundry** · showcase of open-source fonts · https://open-foundry.com/about · Licence: varies per font.
 - **Uncut** · catalogue of contemporary fonts · https://uncut.wtf/legal/ · Licence: announced free for commercial use, each font belongs to its creator.
-- **Velvetyne** · French libre foundry · https://velvetyne.fr/ · Licence: could not be read on its site on 2026-11-24; read the file shipped with each font.
+- **Velvetyne** · French libre foundry · https://velvetyne.fr/ · Licence: could not be read, its site showed only a notice on 2026-11-24.
 - **Fontsource** · open fonts for self-hosting · https://fontsource.org/ · Licence: shown per font.
 - **Google Fonts** · font directory · https://developers.google.com/fonts/faq · Licence: SIL OFL for most, Apache for some.
 - **Bunny Fonts** · font host · https://fonts.bunny.net/about · Licence: varies per font.

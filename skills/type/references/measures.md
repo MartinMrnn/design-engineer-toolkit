@@ -30,7 +30,7 @@ What stands out:
 
 | Criterion | Level | What it asks | Checked by |
 |---|---|---|---|
-| 1.4.4 Resize Text | AA | Text resizes to 200 % without assistive technology, with no loss of content or function; captions and images of text are excepted | `type.js`, then the critic |
+| 1.4.4 Resize Text | AA | Text resizes to 200 % without assistive technology, with no loss of content or function; captions and images of text are excepted | `type.js` (size reached, text still on screen), then the critic |
 | 1.4.12 Text Spacing | AA | Nothing is lost when line height is 1.5, paragraph spacing 2, letter spacing 0.12 and word spacing 0.16 times the font size | `type.js`, then the critic |
 | 1.4.5 Images of Text | AA | Real text is used, except logotypes and where a presentation is essential | the critic |
 | 1.4.3 Contrast | AA | Owned by `colour` | `check.js` |
@@ -46,7 +46,7 @@ A headline that is "almost a logo" stays **real text**. Only the actual logotype
 | `faces` | Share of the characters per face. An unexpected one means a fallback or a stray font |
 | `sizes` | Sizes carrying at least 0.5 % of the text. More than the roles means a drift (`roles-1`) |
 | `weights`, `leading` | Compare with the roles |
-| `measure` | Real characters per line of long text. `outside` lists what leaves 60 to 85 |
+| `measure` | Real characters per line of long text at 1440 px. `outside` lists what leaves 60 to 85. `phone` gives the same at 390 px, with no verdict |
 | `followsRoot` | `false`: the main text ignores the browser's font size (`roles-3`) |
 | `fluid` | Fluid texts with their size at 320 and 1440 px. A `ratio` above 2.5 deserves a look |
 | `fauxBold` | Bold or italic with no real face (`proof-6`) |
@@ -54,5 +54,6 @@ A headline that is "almost a logo" stays **real text**. Only the actual logotype
 ## What the script does not see
 - Whether a face is beautiful or fits: that is the user's eye and the critic.
 - Text inside images, menus or dialogs once opened.
-- Loss of content at 200 % other than the text's size: `check.js` covers reflow, the critic the rest.
+- Loss of content at zoom other than text leaving the screen: `check.js` covers reflow, the critic the rest.
+- Text at a larger browser font size. Zoom is what 1.4.4 is tested with here.
 - Text deliberately truncated with an ellipsis or a line clamp is not reported under 1.4.12. Check that it has a way back.

@@ -1,13 +1,14 @@
 // type.js · what the type of the open page really is (design-studio v1, skill `type`).
 // Usage: open the page with browser_navigate, then call browser_run_code_unsafe with
 // { "filename": "<path to>/type.js" }. The page decides the mode:
-// - board, when it has [data-candidate="Name"] (from assets/board.html): for each candidate, whether it
-//   loaded, x-height, cap height, average width (all per em), weights declared, and the characters of
-//   <body data-chars="…"> it lacks (French by default). No verdict: the user chooses by eye.
+// - board, when it has [data-candidate="Name"] (from assets/board.html): for each candidate, whether its
+//   faces loaded, x-height, cap height and average width per em (its text face at 16 px, its headline
+//   face at 96 px in `display`, each in the weight it is set in), weights declared, faux bold, and the
+//   characters of <body data-chars="…"> it lacks (French by default). No verdict: the user chooses by eye.
 // - audit, on any other page: faces, sizes, weights, leading, real characters per line of long text,
 //   whether text follows the root font size, fluid sizes, faux bold or italic. Only two standards set
-//   pass to false: text must reach 200 % at the browser's 500 % zoom (WCAG 1.4.4), and the WCAG
-//   text-spacing values must clip nothing (WCAG 1.4.12).
+//   pass to false: text must reach 200 % by the browser's 500 % zoom without leaving the screen
+//   (WCAG 1.4.4), and the WCAG text-spacing values must clip nothing (WCAG 1.4.12).
 // It does not see: text in images, menus or dialogs once opened, or whether a face is beautiful.
 async (page) => {
   const WIDTHS = [1440, 1024, 768, 390, 320];
@@ -18,29 +19,48 @@ async (page) => {
 
   if (await page.evaluate(() => Boolean(document.querySelector('[data-candidate]')))) {
     const candidates = await page.evaluate(async () => {
-      const FRENCH = 'àâæçéèêëîïôœùûüÿÀÂÆÇÉÈÊËÎÏÔŒÙÛÜŸ«»’…–—';
+      const FRENCH = 'àâæçéèêëîïôœùûüÿÀÂÆÇÉÈÊËÎÏÔŒÙÛÜŸ«»’…–—€\u00a0\u202f';
       const chars = [...(document.body.dataset.chars || FRENCH)];
       const ctx = document.createElement('canvas').getContext('2d');
       const clean = (name) => name.replace(/["']/g, '').trim();
       const weightOf = (w) => w.replace('normal', '400').replace('bold', '700');
       const out = [];
+      const familyOf = (node) => clean(getComputedStyle(node).fontFamily.split(',')[0]);
+      const facesOf = (family) => [...document.fonts].filter((f) => clean(f.family) === family);
+      const heaviest = (f) => parseInt(weightOf(f.weight).split(' ').pop(), 10);
+      const show = (c) => (/\s/.test(c) ? `U+${c.codePointAt(0).toString(16).toUpperCase().padStart(4, '0')}` : c);
+      // An optical axis redraws the letters with the size, and a weight changes them too.
+      const metrics = (node, size) => {
+        ctx.font = `${getComputedStyle(node).fontWeight} ${size}px "${familyOf(node)}", serif`;
+        return {
+          xHeight: +(ctx.measureText('x').actualBoundingBoxAscent / size).toFixed(3),
+          capHeight: +(ctx.measureText('H').actualBoundingBoxAscent / size).toFixed(3),
+          avgWidth: +(ctx.measureText('abcdefghijklmnopqrstuvwxyz').width / (26 * size)).toFixed(3),
+        };
+      };
       for (const el of document.querySelectorAll('[data-candidate]')) {
-        const family = clean(getComputedStyle(el).fontFamily.split(',')[0]);
-        await document.fonts.load(`400 40px "${family}"`, `Hx${chars.join('')}`).catch(() => {});
-        const faces = [...document.fonts].filter((f) => clean(f.family) === family && f.status !== 'error');
-        const entry = { name: el.dataset.candidate, loaded: faces.some((f) => f.status === 'loaded'), xHeight: null, capHeight: null, avgWidth: null, weights: [], missing: null };
+        // What the candidate really sets: each face and weight, except its printed label.
+        const nodes = [...el.querySelectorAll('*')].filter((n) => !n.matches('.name') && n.textContent.trim());
+        const pairs = [...new Map(nodes.map((n) => {
+          const pair = { family: familyOf(n), weight: getComputedStyle(n).fontWeight };
+          return [`${pair.family}|${pair.weight}`, pair];
+        })).values()].filter(({ family }) => facesOf(family).length);
+        for (const { family, weight } of pairs) await document.fonts.load(`${weight} 40px "${family}"`, `Hx${chars.join('')}`).catch(() => {});
+        const families = [...new Set(pairs.map((p) => p.family))];
+        const entry = { name: el.dataset.candidate, loaded: families.length > 0 && families.every((f) => facesOf(f).some((x) => x.status === 'loaded')), xHeight: null, capHeight: null, avgWidth: null, display: null, weights: [], missing: null, fauxBold: false };
         if (entry.loaded) {
-          ctx.font = `400 100px "${family}", serif`;
-          entry.xHeight = +(ctx.measureText('x').actualBoundingBoxAscent / 100).toFixed(3);
-          entry.capHeight = +(ctx.measureText('H').actualBoundingBoxAscent / 100).toFixed(3);
-          entry.avgWidth = +(ctx.measureText('abcdefghijklmnopqrstuvwxyz').width / 2600).toFixed(3);
-          entry.weights = [...new Set(faces.map((f) => weightOf(f.weight)))].sort((a, b) => parseInt(a, 10) - parseInt(b, 10));
+          const text = el.querySelector('.text') || el.querySelector('p:not(.name)') || el;
+          const head = el.querySelector('h1') || el.querySelector('h2') || el;
+          Object.assign(entry, metrics(text, 16));
+          entry.display = metrics(head, 96);
+          entry.weights = [...new Set(facesOf(familyOf(head)).filter((f) => f.status !== 'error').map((f) => weightOf(f.weight)))].sort((a, b) => parseInt(a, 10) - parseInt(b, 10));
           // A glyph the face lacks falls through to the generic, so its width changes with the generic.
-          const width = (c, generic) => {
-            ctx.font = `400 100px "${family}", ${generic}`;
+          const width = (c, { family, weight }, generic) => {
+            ctx.font = `${weight} 100px "${family}", ${generic}`;
             return ctx.measureText(c).width;
           };
-          entry.missing = chars.filter((c) => Math.abs(width(c, 'monospace') - width(c, 'serif')) > 0.01).join('');
+          entry.missing = chars.filter((c) => pairs.some((p) => Math.abs(width(c, p, 'monospace') - width(c, p, 'serif')) > 0.01)).map(show).join('');
+          entry.fauxBold = pairs.some(({ family, weight }) => Number(weight) >= 600 && facesOf(family).every((f) => heaviest(f) < 600));
         }
         out.push(entry);
       }
@@ -68,11 +88,25 @@ async (page) => {
         const chars = walker.currentNode.textContent.replace(/\s+/g, ' ').trim().length;
         if (!chars || !el || el.closest('script,style,noscript,svg,pre,code,template')) continue;
         const box = el.getBoundingClientRect();
-        if (!box.width || !box.height || !el.checkVisibility({ opacityProperty: true, visibilityProperty: true })) continue;
+        // A box of 1 px is text for screen readers only.
+        if (box.width <= 1 || box.height <= 1 || !el.checkVisibility({ opacityProperty: true, visibilityProperty: true })) continue;
         counts.set(el, (counts.get(el) || 0) + chars);
       }
       const els = [...counts.keys()];
       window.__type = { els, describe };
+      // Text past the viewport's edges; a scroller or a clipping box is judged by check.js instead.
+      window.__type.off = () => els.flatMap((el, i) => {
+        if (!el.isConnected || !el.checkVisibility({ opacityProperty: true, visibilityProperty: true })) return [];
+        for (let p = el.parentElement; p && p !== document.body; p = p.parentElement) {
+          if (getComputedStyle(p).overflowX !== 'visible') return [];
+        }
+        const range = document.createRange();
+        const texts = [...el.childNodes].filter((node) => node.nodeType === Node.TEXT_NODE && node.textContent.trim());
+        return texts.some((node) => {
+          range.selectNode(node);
+          return [...range.getClientRects()].some((r) => r.width && (r.right > innerWidth + 1 || r.left < -1));
+        }) ? [i] : [];
+      });
       const total = [...counts.values()].reduce((a, b) => a + b, 0) || 1;
       const clean = (name) => name.replace(/["']/g, '').trim();
       const declared = [...document.fonts].filter((f) => f.status !== 'error');
@@ -126,22 +160,25 @@ async (page) => {
         }
         return lines;
       };
-      const per = [];
-      for (const el of document.querySelectorAll('p, li, blockquote, dd')) {
-        if (el.textContent.trim().length < 120 || !el.checkVisibility() || el.querySelector('p, li, blockquote, dd')) continue;
-        const lines = linesOf(el);
-        if (lines.length < 3) continue;
-        const full = lines.slice(0, -1).sort((a, b) => a - b);
-        per.push({ at: describe(el), chars: full[Math.floor(full.length / 2)] });
-      }
-      const ordered = per.map((p) => p.chars).sort((a, b) => a - b);
-      const measure = per.length ? {
-        n: per.length,
-        min: ordered[0],
-        median: ordered[Math.floor(ordered.length / 2)],
-        max: ordered[ordered.length - 1],
-        outside: [...new Set(per.filter((p) => p.chars < 60 || p.chars > 85).map((p) => p.at))],
-      } : null;
+      window.__type.measure = () => {
+        const per = [];
+        for (const el of document.querySelectorAll('p, li, blockquote, dd')) {
+          if (el.textContent.trim().length < 120 || !el.checkVisibility() || el.querySelector('p, li, blockquote, dd')) continue;
+          const lines = linesOf(el);
+          if (lines.length < 3) continue;
+          const full = lines.slice(0, -1).sort((a, b) => a - b);
+          per.push({ at: describe(el), chars: full[Math.floor(full.length / 2)] });
+        }
+        const ordered = per.map((p) => p.chars).sort((a, b) => a - b);
+        return per.length ? {
+          n: per.length,
+          min: ordered[0],
+          median: ordered[Math.floor(ordered.length / 2)],
+          max: ordered[ordered.length - 1],
+          outside: [...new Set(per.filter((p) => p.chars < 60 || p.chars > 85).map((p) => p.at))],
+        } : null;
+      };
+      const measure = window.__type.measure();
 
       const main = [...counts].sort((a, b) => b[1] - a[1])[0]?.[0];
       const before = main ? parseFloat(style(main).fontSize) : 0;
@@ -165,6 +202,13 @@ async (page) => {
     const names = await page.evaluate(() => window.__type.els.map((el) => window.__type.describe(el)));
     const issues = [];
 
+    // The 60 to 85 range is for wide screens; a phone's line is reported with no verdict.
+    if (report.measure) {
+      await page.setViewportSize({ width: 390, height: 900 });
+      const phone = await page.evaluate(() => window.__type.measure());
+      report.measure.phone = phone && { n: phone.n, min: phone.min, median: phone.median, max: phone.max };
+    }
+
     // Fluid: the size keeps changing across three widths with no layout breakpoint between them.
     const at = {};
     for (const width of [...WIDTHS, 1000, 1100, 1200]) at[width] = await sizesAt(width);
@@ -175,16 +219,35 @@ async (page) => {
       fluid.set(name, { at: name, min: at[320][i], max: at[1440][i], ratio: +(at[1440][i] / at[320][i]).toFixed(2) });
     });
 
-    // WCAG 1.4.4: at 500 % zoom the CSS viewport is a fifth as wide, and every CSS pixel is drawn five times larger.
+    // WCAG 1.4.4: at a zoom of z the CSS viewport is W / z and every CSS pixel is drawn z times larger.
+    // Text must reach 200 % at some zoom up to the browser's 500 %, and still be on screen when it does.
+    // On phone widths only the size is judged: 200 % leaves under 200 CSS pixels, below what reflow asks.
     const failed = new Set();
+    const flag = (name, detail) => {
+      if (failed.has(name)) return;
+      failed.add(name);
+      if (failed.size <= MAX_PER_KIND) issues.push({ kind: 'resize', at: name, rule: 'WCAG 1.4.4', detail });
+    };
+    const offAt = (width) => (width >= 768 ? page.evaluate(() => window.__type.off()) : []);
     for (const width of WIDTHS) {
-      const zoomed = await sizesAt(Math.round(width / 5));
-      names.forEach((name, i) => {
-        // A page that re-renders on resize detaches elements: their size is NaN and proves nothing.
-        if (failed.has(name) || !(zoomed[i] > 0 && at[width][i] > 0) || 5 * zoomed[i] + 0.5 >= 2 * at[width][i]) return;
-        failed.add(name);
-        if (failed.size <= MAX_PER_KIND) issues.push({ kind: 'resize', at: name, rule: 'WCAG 1.4.4', detail: `${at[width][i]}px at ${width} px reaches ${+(5 * zoomed[i]).toFixed(1)}px at 500 % zoom, under the ${2 * at[width][i]}px needed` });
-      });
+      await page.setViewportSize({ width, height: 900 });
+      const wasOff = new Set(await offAt(width));
+      const open = new Set(names.map((_, i) => i).filter((i) => at[width][i] > 0));
+      let zoomed = [];
+      for (const zoom of [2, 2.5, 3, 4, 5]) {
+        if (!open.size) break;
+        zoomed = await sizesAt(Math.round(width / zoom));
+        const off = new Set(await offAt(width));
+        for (const i of [...open]) {
+          // A page that re-renders on resize detaches elements: their size is NaN and proves nothing.
+          if (!(zoomed[i] > 0)) open.delete(i);
+          else if (zoom * zoomed[i] + 0.5 >= 2 * at[width][i]) {
+            open.delete(i);
+            if (off.has(i) && !wasOff.has(i)) flag(names[i], `leaves the screen at ${zoom * 100} % zoom from ${width} px, where it reaches 200 %`);
+          }
+        }
+      }
+      for (const i of open) flag(names[i], `${at[width][i]}px at ${width} px reaches ${+(5 * zoomed[i]).toFixed(1)}px at 500 % zoom, under the ${2 * at[width][i]}px needed`);
     }
 
     // WCAG 1.4.12: only what the spacing newly clips counts; a box already truncating is not its fault.

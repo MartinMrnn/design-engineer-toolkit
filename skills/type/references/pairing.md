@@ -48,4 +48,4 @@ Use the names of shadcn and Tailwind:
 }
 ```
 
-With one family, `--font-heading` is `var(--font-sans)`. Add `--font-mono` only if the project shows code or data.
+With one family, `--font-heading` is `var(--font-sans)`. If the running text is a serif, name it `--font-serif` and set it on `body`, rather than putting a serif in `--font-sans`. Add `--font-mono` only if the project shows code or data.
