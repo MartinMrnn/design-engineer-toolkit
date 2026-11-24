@@ -21,7 +21,7 @@ The knowledge skills draw on the work below. MIT or CC BY: text may be adapted w
 | Coursey | Paco Coursey | https://paco.me/writing/redesign-2021 | none found | principle cited |
 | Puckett | Josh Puckett | https://joshpuckett.me/ | OFL-1.1 (Allo typeface) | read, nothing used |
 | Floguo | Floguo | https://www.floguo.com/ | not applicable | read, nothing used |
-| shadcn | shadcn | https://github.com/shadcn-ui/ui | MIT | token names used in `colour` and `type`; nothing used in `ux` |
+| shadcn | shadcn | https://github.com/shadcn-ui/ui | MIT | token names used in `colour`, `type` and `layout`; nothing used in `ux` |
 | CSS Color 4 | W3C | https://www.w3.org/TR/css-color-4/ | W3C Software and Document License | published constants used |
 | Ottosson 2020 | Björn Ottosson | https://bottosson.github.io/posts/oklab/ | code public domain or MIT | published constants used |
 | Machado 2009 | G. M. Machado, M. M. Oliveira, L. A. F. Fernandes | https://doi.org/10.1109/TVCG.2009.113 | IEEE, all rights reserved | published constants used |
@@ -45,7 +45,7 @@ The knowledge skills draw on the work below. MIT or CC BY: text may be adapted w
 | Coursey rem | Paco Coursey | https://paco.me/writing/px-vs-rem | none found | principle cited |
 | Utopia | James Gilyead, Trys Mudford | https://utopia.fyi/type/calculator/ | none found | principle cited |
 | Barvian 2023 | Maxwell Barvian | https://www.smashingmagazine.com/2023/11/addressing-accessibility-concerns-fluid-type/ | none found | principle cited |
-| Tailwind | Tailwind Labs | https://github.com/tailwindlabs/tailwindcss | MIT | token names used in `type` |
+| Tailwind | Tailwind Labs | https://github.com/tailwindlabs/tailwindcss | MIT | token names used in `type` and `layout` |
 | Dyson & Kipping 1998 | M. C. Dyson, G. J. Kipping | https://journals.uc.edu/index.php/vl/article/view/5671 | journal copyright | principle cited |
 | Web Almanac 2025 | HTTP Archive | https://almanac.httparchive.org/en/2025/fonts | Apache 2.0 | figures cited |
 | Fontshare | Indian Type Foundry | https://www.fontshare.com/faq | ITF Free Font License or SIL OFL, per font | where to search |
@@ -57,4 +57,15 @@ The knowledge skills draw on the work below. MIT or CC BY: text may be adapted w
 | Fontsource | Fontsource | https://fontsource.org/ | per font | where to search |
 | Google Fonts | Google | https://developers.google.com/fonts/faq | SIL OFL for most, Apache for some | where to search |
 | Bunny Fonts | bunny.net | https://fonts.bunny.net/about | varies per font | where to search |
+| Krehel layout | Jakub Krehel | https://github.com/jakubkrehel/skills | MIT | principle cited |
+| Krehel UI | Jakub Krehel | https://github.com/jakubkrehel/skills | MIT | principle cited |
+| Every Layout | Heydon Pickering, Andy Bell | https://every-layout.dev/ | proprietary, paid | principle cited |
+| Utopia space | James Gilyead, Trys Mudford | https://utopia.fyi/space/calculator/ | none found | principle cited |
+| Refactoring UI | Adam Wathan, Steve Schoger | https://www.refactoringui.com/ | paid book, all rights reserved | principle cited |
+| Self-Made Web Designer | Self-Made Web Designer | https://selfmadewebdesigner.com/ | none found | principle cited |
+| Wertheimer 1923 | M. Wertheimer | https://doi.org/10.1007/BF00410640 | published paper | principle cited |
+| von Restorff 1933 | H. von Restorff | https://doi.org/10.1007/BF02409636 | published paper | principle cited |
+| Palmer 1992 | S. E. Palmer | https://doi.org/10.1016/0010-0285(92)90014-S | published paper | principle cited |
+| Palmer & Rock 1994 | S. E. Palmer, I. Rock | https://doi.org/10.3758/BF03200760 | published paper | principle cited |
+| Wagemans 2012 | J. Wagemans et al. | https://doi.org/10.1037/a0029333 | published paper | principle cited |
 | Studio | this project | https://github.com/MartinMrnn/design-engineer-toolkit | MIT | text adapted |
