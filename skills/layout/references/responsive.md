@@ -33,7 +33,8 @@ Break where the layout stops fitting: where a column falls under a readable widt
 ## The phone layout
 - **Compose it.** Decide for each section what moves, what shrinks, what hides behind a disclosure, and what stays within thumb reach. One column of content, two at most for small items.
 - **Stack or swipe, by content.** What the visitor compares or must read entirely stacks: offers, steps, a lawyer's fields of practice. What is browsed may become a swiping row: products, screenings, works. **Measured:** rows of three or more items on a phone are stacked in 50 % of cases and swipe in 43 %.
-- **A swiping row shows the next item** peeking 16 to 32 px past the edge; a row that ends exactly at the edge looks complete and nobody swipes it. Its items stay reachable by keyboard, and nothing the visitor must see lives only in it.
+- **A swiping row shows the next item** peeking at least 16 px past the edge (16 to 32 px is enough); a row that ends exactly at the edge looks complete and nobody swipes it. The row bleeds to the screen's edge while its first item starts on the margin. Its items stay reachable by keyboard, and nothing the visitor must see lives only in it.
+- **The header stays light:** the name and a few links, with room around them; on a phone nothing wraps onto a second line. Its menus belong to `components`.
 
 ```css
 .reel {
@@ -52,11 +53,11 @@ Break where the layout stops fitting: where a column falls under a readable widt
 ```
 
 ## The first screen
-Two ways, chosen by the direction:
+Two ways, chosen by the direction and written on the entry's `First screen` line. A full screen suits an opening that is an image or a statement; a hint suits a page whose answer starts just below.
 - **A full first screen:** the opening fills the window, `min-height: 100svh` (minus the header if the header is not over it). Every measured brand site does this.
 - **A hint of what follows:** the start of the next section shows, inviting the scroll. Next.js, shadcn and Stripe do this.
 
-Either way, the headline, its supporting line and the main action are inside the first screen at 1440 × 900 and 390 × 844, and on a short screen (1440 × 700, 390 × 667) the opening grows taller rather than cutting its content. Its headline size comes from `type`.
+Either way, the headline, its supporting line and the main action are inside the first screen at 1440 × 900 and 390 × 844, and on a short screen (1440 × 700, 390 × 667) the opening grows taller rather than cutting its content; `layout.js` does not try short screens, so check them by eye. The headline is the page's main statement, whatever its tag: an `h1` holding the site's name is not it. Its size comes from `type`.
 
 ## Sticky chrome
 - A sticky header needs `scroll-padding-block-start` set to its height, so an anchor or a focused field never lands under it.
@@ -68,7 +69,7 @@ Either way, the headline, its supporting line and the main action are inside the
 |---|---|---|---|---|
 | `proof-6` · Boxes holding text take `min-height`, never a fixed height; grid tracks `minmax(0, 1fr)`; widths `100%`, never `100vw`; full-height panes `svh` or `dvh`, never `vh` | fixed sizes clip text in long languages and at zoom, `100vw` adds the scrollbar, `vh` ignores mobile toolbars | heuristic | Krehel layout | critic phase 4 |
 | `proof-7` · The layout holds with the fullest and the emptiest real content | real names, titles and lists are longer or shorter than the mock-up's | heuristic | Self-Made Web Designer, Krehel layout | critic phases 3, 4 |
-| `proof-8` · Side margins of at least 16 px on a phone; text and controls stay inside the margins and safe areas, while backgrounds and images may bleed | text against the edge looks cut, and curved screens and gesture zones hide it | heuristic | Krehel layout, Studio | critic phase 4 |
+| `proof-8` · Side margins of at least 16 px on a phone; text and controls stay inside the margins and safe areas, while backgrounds, images and swiping rows may bleed | text against the edge looks cut, and curved screens and gesture zones hide it | heuristic | Krehel layout, Studio | critic phase 4 |
 
 **Measured:** the side margin at 390 px is 16 to 28 px on the 15 pages, 16 px on six of them.
 

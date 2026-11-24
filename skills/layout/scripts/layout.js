@@ -3,20 +3,24 @@
 // { "filename": "<path to>/layout.js" }. It resizes the page through 1440, 1024, 768, 390 and 320 px
 // (900 px high from 768 up, 844 below) and returns, with fixed and sticky elements left out:
 // - sections: columns in a row per section at 1440 and at 390 (flex and grid rows of boxes at least
-//   100 px wide and 60 px high), and maxCols;
-// - proximity: each h1-h4 with the gap to the nearest content above and below it (within 4 times its size,
-//   an image or a short kicker on top of it counted as part of it), at 1440 and 390;
-//   a fault when the heading is not closer to what it introduces than to what precedes it;
-// - crushed: text of 3 lines or more under 12 characters per line (under 32 px, no <br>), per width;
-// - spacing: distinct margin, padding and gap values and the most used; radii: values, and each rounded
-//   surface inside another with an even inset, as concentric (outer = inner + inset), same or other;
+//   100 px wide and 40 px high, wholly on screen, decorative ones left out), and maxCols;
+// - proximity: at every width, each h1-h4 with the gap to the nearest content above and below it (within
+//   4 times its size, an image or a short kicker on top of it counted as part of it); a fault when the
+//   heading is not closer to what it introduces than to what precedes it. A heading set beside its
+//   content, with nothing close below, is not judged;
+// - crushed: text of 3 lines or more under 12 characters per line, or of 2 lines under 6 (under 32 px,
+//   no <br>), per width; sideways: the widths at which the page scrolls sideways;
+// - spacing: distinct margin, padding and gap values, how many cover 90 % of uses, the most used;
+//   radii: values, and each rounded surface inside another with an even inset, as concentric
+//   (outer = inner + inset), same or other;
 // - firstScreen at 1440 × 900 and 390 × 844: whether the first section fills it, whether the h1 is
-//   whole, how many filled buttons show;
+//   whole (null without a visible h1; it may be the site's name), how many filled buttons show;
 // - reordered: flex and grid containers whose children show in another order than the source.
 // One standard sets pass to false: a focused element entirely hidden by a fixed or sticky element
-// (WCAG 2.4.11), tried at 1440 and 390 on the first 300 focusable elements.
-// It does not see: menus or dialogs once opened, CSS columns or floats as columns, whether the
-// reordering changes the meaning (WCAG 1.3.2 is the critic's), or whether the composition is good.
+// (WCAG 2.4.11), tried at 1440 and 390 on the first 300 focusable elements, with smooth scrolling off.
+// It does not see: menus or dialogs once opened, CSS columns or floats as columns, ::before and ::after
+// content, short screens, whether a reordering changes the meaning (WCAG 1.3.2 is the critic's), or
+// whether the composition is good.
 async (page) => {
   const WIDTHS = [1440, 1024, 768, 390, 320];
   const MAX_PER_KIND = 10;
@@ -68,7 +72,7 @@ async (page) => {
         range.selectNodeContents(node);
         const rects = [...range.getClientRects()].filter((r) => r.width > 0 && r.height > 0).map(page);
         if (!rects.length) continue;
-        const block = blockOf(parent);
+        const block = parent.closest('h1, h2, h3, h4') || blockOf(parent); // a heading may hold block spans
         if (!texts.has(block)) texts.set(block, { el: block, rects: [], chars: 0 });
         const t = texts.get(block);
         t.rects.push(...rects);
@@ -109,18 +113,22 @@ async (page) => {
       }
       return [...spine.children].filter((c) => shown(c) && !floating(c)
         && !c.matches('header, nav, footer, script, style, [role="banner"], [role="navigation"], [role="contentinfo"]')
-        && c.getBoundingClientRect().height >= 100);
+        && c.getBoundingClientRect().height >= 48);
     };
 
-    // The most boxes side by side in one flex or grid row of the section.
+    // Decorative or layered children are not columns, nor part of a reading order.
+    const flowKids = (c) => [...c.children].filter((k) => shown(k) && !/absolute|fixed/.test(cs(k).position) && !k.matches('[aria-hidden="true"]'));
+
+    // The most boxes side by side in one flex or grid row of the section, each wholly on screen.
     const cols = (root) => {
       let best = 1;
       for (const c of [root, ...root.querySelectorAll('*')]) {
         if (!/flex|grid/.test(cs(c).display) || !shown(c)) continue;
-        const kids = [...c.children].filter(shown).map((k) => ({ k, r: k.getBoundingClientRect() }))
-          .filter(({ k, r }) => r.width >= 100 && r.height >= 60 && (k.textContent.trim() || k.querySelector('img, video, picture, canvas, svg')));
+        const kids = flowKids(c).map((k) => ({ k, r: k.getBoundingClientRect() }))
+          .filter(({ k, r }) => r.width >= 100 && r.height >= 40 && !(k.matches('a, button') && r.height < 80)
+            && (k.textContent.trim() || k.querySelector('img, video, picture, canvas, svg')));
         if (kids.length < 2) continue;
-        best = Math.max(best, kids.filter(({ r }) => sameRow(r, kids[0].r) && r.left < innerWidth && r.right > 0).length);
+        best = Math.max(best, kids.filter(({ r }) => sameRow(r, kids[0].r) && r.left >= -1 && r.right <= innerWidth + 1).length);
       }
       return best;
     };
@@ -140,7 +148,7 @@ async (page) => {
         let top = h.top;
         let above = nearestAbove(top);
         const size = parseFloat(cs(h.el).fontSize);
-        const label = (i) => i.kind === 'media' || (i.kind === 'text' && i.lines === 1 && i.chars <= 40 && parseFloat(cs(i.el).fontSize) < size);
+        const label = (i) => i.kind === 'media' || (i.kind === 'text' && i.lines === 1 && i.chars <= 40 && parseFloat(cs(i.el).fontSize) <= size);
         if (above && label(above) && top - above.bottom <= gapBelow) {
           top = above.top;
           above = nearestAbove(top);
@@ -156,7 +164,7 @@ async (page) => {
     };
 
     const crushed = (all) => all
-      .filter((i) => (i.kind === 'text' || i.kind === 'heading') && i.lines >= 3 && i.chars / i.lines < 12)
+      .filter((i) => (i.kind === 'text' || i.kind === 'heading') && ((i.lines >= 3 && i.chars / i.lines < 12) || (i.lines === 2 && i.chars / i.lines < 6)))
       .filter((i) => parseFloat(cs(i.el).fontSize) < 32 && !i.el.querySelector('br') && !i.el.closest('pre'))
       .map((i) => `${describe(i.el)}: ${i.lines} lines of ${Math.round(i.chars / i.lines)} characters`);
 
@@ -171,7 +179,10 @@ async (page) => {
         }
       }
       const sorted = [...count.entries()].sort((a, b) => b[1] - a[1]);
-      return { distinct: sorted.length, top: sorted.slice(0, 8).map(([v, n]) => `${v}×${n}`) };
+      const total = sorted.reduce((sum, [, n]) => sum + n, 0);
+      let covered = 0;
+      const for90 = sorted.findIndex(([, n]) => (covered += n) >= 0.9 * total) + 1;
+      return { distinct: sorted.length, for90, top: sorted.slice(0, 8).map(([v, n]) => `${v}×${n}`) };
     };
 
     const radii = () => {
@@ -217,9 +228,11 @@ async (page) => {
       for (const c of document.body.querySelectorAll('*')) {
         if (!/flex|grid/.test(cs(c).display) || !shown(c)) continue;
         const rtl = cs(c).direction === 'rtl';
-        const kids = [...c.children].filter((k) => shown(k) && !/absolute|fixed/.test(cs(k).position)).map((k) => k.getBoundingClientRect());
+        const kids = flowKids(c).map((k) => k.getBoundingClientRect());
         for (let i = 1; i < kids.length; i++) {
           const [a, b] = [kids[i - 1], kids[i]];
+          const layered = Math.min(a.right, b.right) - Math.max(a.left, b.left) > 2 && Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top) > 2;
+          if (layered) continue; // stacked on purpose (an image under a title), not a reading order
           const before = sameRow(a, b) ? (rtl ? b.right > a.right + 1 : b.left < a.left - 1) : b.bottom <= a.top + 1;
           if (before) {
             out.push(`${describe(c)}: visual order differs from source`);
@@ -237,7 +250,7 @@ async (page) => {
       return {
         fills: second.length ? Math.min(...second.map((i) => i.top)) >= innerHeight : null,
         h1Whole: r ? r.top >= 0 && r.left >= 0 && r.bottom <= innerHeight && r.right <= innerWidth : null,
-        filled: all.filter((i) => i.kind === 'control' && i.filled && i.top < innerHeight && i.bottom > 0).length,
+        filled: all.filter((i) => i.kind === 'control' && i.filled && i.top < innerHeight && i.bottom > 0 && i.right > 0 && i.left < innerWidth).length,
       };
     };
 
@@ -246,6 +259,9 @@ async (page) => {
       const out = [];
       const FOCUSABLE = 'a[href], button, input:not([type="hidden"]), select, textarea, summary, [tabindex]:not([tabindex="-1"])';
       const list = [...document.querySelectorAll(FOCUSABLE)].filter((el) => shown(el) && !floating(el) && !el.disabled).slice(0, 300);
+      // A smooth scroll would still be on its way when the box is read.
+      const instant = document.head.appendChild(document.createElement('style'));
+      instant.textContent = '* { scroll-behavior: auto !important; }';
       for (const el of list) {
         el.focus();
         if (document.activeElement !== el) continue;
@@ -268,6 +284,7 @@ async (page) => {
       }
       document.activeElement?.blur?.();
       scrollTo(0, 0);
+      instant.remove();
       return out;
     };
 
@@ -275,8 +292,8 @@ async (page) => {
   });
 
   const report = {
-    url, pass: true, sections: [], maxCols: 1, proximity: null, crushed: [], spacing: null, radii: null,
-    firstScreen: {}, reordered: [], issues: [],
+    url, pass: true, sections: [], maxCols: 1, proximity: { n: 0, closer: 0, faults: [] }, crushed: [], sideways: [],
+    spacing: null, radii: null, firstScreen: {}, reordered: [], issues: [],
   };
   const faults = new Map();
   const hidden = new Map();
@@ -289,27 +306,32 @@ async (page) => {
         const L = window.__layout;
         const all = L.items();
         if (!L.secs) L.secs = L.sections();
-        const out = { crushed: L.crushed(all), cols: L.secs.map((s) => L.cols(s)) };
-        if (w === 1440 || w === 390) Object.assign(out, { proximity: L.proximity(all), firstScreen: L.firstScreen(all, L.secs) });
+        const out = {
+          crushed: L.crushed(all), cols: L.secs.map((s) => L.cols(s)), proximity: L.proximity(all),
+          sideways: document.documentElement.scrollWidth > innerWidth + 1,
+        };
+        if (w === 1440 || w === 390) out.firstScreen = L.firstScreen(all, L.secs);
         if (w === 1440) Object.assign(out, { at: L.secs.map(L.describe), spacing: L.spacing(), radii: L.radii(), reordered: L.reordered() });
         return out;
       }, width);
       for (const c of found.crushed) if (report.crushed.length < MAX_PER_KIND) report.crushed.push(`${width} px · ${c}`);
+      if (found.sideways) report.sideways.push(width);
+      report.proximity.n += found.proximity.n;
+      report.proximity.closer += found.proximity.closer;
+      for (const f of found.proximity.faults) {
+        if (!faults.has(f.at)) faults.set(f.at, { detail: f.detail, widths: [] });
+        faults.get(f.at).widths.push(width);
+      }
       if (width === 1440) {
         report.sections = found.at.map((at, i) => ({ at, cols: found.cols[i], phone: null }));
         report.maxCols = Math.max(1, ...found.cols);
         report.spacing = found.spacing;
         report.radii = { values: found.radii.values, nested: found.radii.nested.slice(0, MAX_PER_KIND) };
         report.reordered = found.reordered.slice(0, MAX_PER_KIND);
-        report.proximity = { n: found.proximity.n, closer: found.proximity.closer, faults: [] };
       }
       if (width === 390) found.cols.forEach((n, i) => { if (report.sections[i]) report.sections[i].phone = n; });
-      if (found.proximity) {
+      if (found.firstScreen) {
         report.firstScreen[width] = found.firstScreen;
-        for (const f of found.proximity.faults) {
-          if (!faults.has(f.at)) faults.set(f.at, { detail: f.detail, widths: [] });
-          faults.get(f.at).widths.push(width);
-        }
         for (const o of await page.evaluate(() => window.__layout.obscured())) {
           if (!hidden.has(o.at)) hidden.set(o.at, { by: o.by, widths: [] });
           hidden.get(o.at).widths.push(width);

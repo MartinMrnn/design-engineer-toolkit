@@ -8,7 +8,7 @@ State it in one sentence: which radii exist, on what, and why. For example: "rou
 **Measured.** The 9 brand sites use none or one radius besides the pill; the 6 product sites use 3 to 14.
 
 ## Radii as tokens
-shadcn sets one base, `--radius`, and derives the others from it: `--radius-sm` (0.6 ×), `--radius-md` (0.8 ×), `--radius-lg` (1 ×), `--radius-xl` (1.4 ×), and larger. Keep two or three of them, plus the pill (`9999px`). From phase 3, `check.js` reports radii written by hand (`script token`).
+shadcn sets one base, `--radius`, and derives the others from it: `--radius-sm` (0.6 ×), `--radius-md` (0.8 ×), `--radius-lg` (1 ×), `--radius-xl` (1.4 ×), and larger. Keep three at most, plus the pill (`9999px`) if the logic uses one. A square direction sets `--radius: 0` and keeps the names, so components stay compatible. From phase 3, `check.js` reports radii written by hand (`script token`).
 
 Few, simple forms are read at once (Prägnanz). A cut corner, a blob or a wavy edge is a gesture: once, on purpose, never as decoration everywhere.
 

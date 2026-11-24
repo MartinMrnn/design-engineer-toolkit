@@ -24,6 +24,8 @@ test('a clean page passes and its layout is described', async () => {
   assert.deepEqual(report.proximity.faults, []);
   assert.ok(report.proximity.closer >= 2, JSON.stringify(report.proximity));
   assert.deepEqual(report.crushed, []);
+  assert.deepEqual(report.sideways, []);
+  assert.ok(report.spacing.for90 > 0 && report.spacing.for90 <= report.spacing.distinct, JSON.stringify(report.spacing));
   assert.ok(report.radii.nested.length && report.radii.nested.every((n) => n.startsWith('concentric')), JSON.stringify(report.radii));
   assert.deepEqual(report.reordered, []);
   assert.equal(report.firstScreen[1440].h1Whole, true);

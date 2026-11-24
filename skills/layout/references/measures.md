@@ -36,12 +36,13 @@
 
 ## Reading `layout.js`
 - **`pass`** is false only for `focus-obscured` (WCAG 2.4.11). Everything else is evidence for the agent and the critic.
-- **`sections`**: columns at 1440 and on a phone (`phone`). More than 6 breaks `grid-2`; a 3 or more that stays above 2 on a phone deserves a look under `proof-4`.
-- **`proximity.faults`**: headings not closer to what they introduce, with both gaps and the widths. Each one breaks `space-2` unless the critic sees a reason. An image or a short kicker on top of a heading counts as part of it; a heading whose next content is more than four times its size away is not judged, since that content is often a CSS background the script cannot see.
-- **`crushed`**: text of three lines or more under 12 characters per line, per width. It breaks `proof-2`. Large titles (32 px and up) and text with forced line breaks are left out.
-- **`spacing`**: how many distinct values, and the most used. Many more than the scale's steps suggests values chosen one by one (`space-1`).
+- **`sections`**: columns at 1440 and on a phone (`phone`), counting only boxes wholly on screen and leaving out decorative layers. More than 6 breaks `grid-2`; 3 or more on a phone deserves a look under `proof-4`.
+- **`proximity`**: `n` judgements over the five widths, `closer` the good ones, and `faults`, the headings not closer to what they introduce, with both gaps and the widths. Each fault breaks `space-2` unless the critic sees a reason. An image or a short kicker on top of a heading counts as part of it. Not judged: a heading whose next content is more than four times its size away (often a CSS background the script cannot see), and a heading set beside its content, as in a heading column; check those by eye.
+- **`crushed`**: per width, text of three lines or more under 12 characters per line, or two lines under 6. Most lines break `proof-2`; a short caption may not, and the critic judges. Large titles (32 px and up) and text with forced line breaks are left out.
+- **`sideways`**: the widths at which the page scrolls sideways, evidence for `proof-1` when `check.js` is not run.
+- **`spacing`**: `distinct` values, `for90`, how many cover 90 % of uses, and the most used. Compare `for90` with the scale's steps; with no scale, with the 6 to 20 measured on real sites (`space-1`). Boxes sized by padding for their aspect ratio inflate it.
 - **`radii`**: values and nested surfaces. `same` or `other` breaks `shape-3`; more than three values besides the pill breaks `shape-2`.
-- **`firstScreen`**: `fills`, `h1Whole` (null when there is no visible `h1`) and `filled` at 1440 and 390, for `proof-5` and `hierarchy-3`.
-- **`reordered`**: containers whose children show in another order than the source, for `hierarchy-7`.
+- **`firstScreen`**: `fills`, `h1Whole` (null when there is no visible `h1`; it may be the site's name) and `filled`, at 1440 and 390, for `proof-5` and `hierarchy-3`. `fills` is judged against the entry's `First screen` line, never alone.
+- **`reordered`**: containers whose children show in another order than the source, for `hierarchy-7`. Children stacked on top of each other are left out.
 
-It does not see: menus and dialogs once opened, CSS columns or floats used as columns, content behind a hover, whether a reordering changes the meaning, or whether the composition is good.
+It does not see: menus and dialogs once opened, CSS columns or floats used as columns, `::before` and `::after` content, content behind a hover, short screens, the peek of a swiping row, whether a reordering changes the meaning, or whether the composition is good.

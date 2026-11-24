@@ -16,16 +16,16 @@ Look at what is already decided, in this order:
 | **Assertive** | Asymmetry, one or two deliberate breaks of the grid | a narrow column beside a wide one; one image bleeding off an edge; a section that leaves the grid; a column that stays while the other scrolls |
 | **Radical** | Editorial or poster composition | type and image overlapping; extreme scale contrast; a grid broken on purpose; the first screen as one full-bleed image with the headline over it |
 
-These are kinds to choose from with the project in mind, never a menu to fill. Write the level with its reason: `Level: assertive, because the colour is one saturated ground`.
+These are kinds to choose from with the project in mind, never a menu to fill. Write the level with its reason: `Level: radical, the type's level`, or `Level: assertive, a step under the type's, because the brief asks for calm`.
 
 ## One idea, three voices
 The colour, the type and the layout each may carry a gesture, and **the three gestures express one idea**. A cinema programme printed on newsprint: ink on paper for the colour, condensed headlines for the type, dense columns and rules for the layout. If two gestures pull apart, keep the stronger one and calm the other. Three unrelated gestures on one page read as too much.
 
 ## Overused patterns
-Generated pages repeat these because they are common, not because the project needs them. Each one is allowed only with a reason written in the layout entry, a reason that comes from the brief, the plan or the inspirations.
+Generated pages repeat these because they are common, not because the project needs them. Each one is allowed only with a reason written on the entry's `Kept on purpose` line, a reason that comes from the brief, the plan or the inspirations.
 
 - The centred hero over a gradient or a blurred shape: headline, one line, two buttons.
-- Three or four identical cards: an icon, a short title, two lines of text.
+- Three or four identical boxed cards: an icon, a short title, two lines of text. A plain list of titles and text, with no boxes and no icons, is not this pattern.
 - A small pill or kicker above every heading.
 - Image left, image right, all the way down the page.
 - Every section boxed in a rounded card with a soft shadow.
@@ -44,4 +44,4 @@ Generated pages repeat these because they are common, not because the project ne
 | Every section in a card "to make it cleaner" | Space groups; a box only where a group must read as one unit (`space-3`) |
 
 ## Competitors
-A quick look at 3 to 5 sites of the sector, for one purpose: naming what is overused. Write one line, such as `Overused in the sector: full-screen video heroes with a centred title`, and stop. Take no structure, grid or idea from them, even when one looks good. Examples come only from the brief, `design/inspiration/` and its `board.md`.
+A quick look at 3 to 5 sites of the sector, for one purpose: naming what is overused. Write one line, such as `Overused in the sector: full-screen video heroes with a centred title`, and stop. If you cannot look at real sites, write `Overused in the sector: not looked` rather than a line from memory. Take no structure, grid or idea from them, even when one looks good. Examples come only from the brief, `design/inspiration/` and its `board.md`.

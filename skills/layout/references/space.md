@@ -6,7 +6,7 @@ Space is the first tool of layout. It says what belongs together, what comes nex
 - **One base step.** `--spacing: 0.25rem`, Tailwind's base: component spacing is a multiple of it (`calc(var(--spacing) * 4)` is 16 px). In `rem`, so space grows with the reader's text size.
 - **Steps that are not linear.** Small steps close together, large ones far apart, such as 4, 8, 12, 16, 24, 32, 48, 64, 96, 128 px. A choice between 120 and 125 px is no choice; between 96 and 128 it is.
 - **Named, fluid steps for the page.** Gutter, side margin and the gap between sections change with the screen: one value on a phone, another on a wide screen, linear between, written with `clamp()` in `rem` and `vw`. This is Utopia's method of fluid space steps and pairs.
-- **Every value from the scale.** From phase 3, `check.js` reports spacing written by hand once the page links `tokens.css` (`script token`).
+- **Every value from the scale.** A multiple of a token, such as `calc(var(--spacing-gutter) * 2)`, is on the scale; a number written by hand is not. From phase 3, `check.js` reports spacing written by hand once the page links `tokens.css` (`script token`).
 
 ```css
 :root {
@@ -25,9 +25,10 @@ People read nearness as belonging. So the gaps must rank the relations:
 | Between | Starting point |
 |---|---|
 | Parts of one item: a label and its field, a price and its button, an icon and its word | 4 to 12 px |
+| A heading and the content it introduces | 8 to 24 px, always less than the gap above the heading |
 | Items of one group: the fields of a form, the cards of a row | 16 to 24 px |
-| Groups: a heading with its content and the next one | 32 to 64 px |
-| Sections | 72 to 160 px, fluid |
+| One group and the next | 32 to 64 px |
+| Sections | 72 to 160 px, fluid or by steps |
 
 - **At least twice.** The gap between groups is at least twice the gap within one.
 - **A heading belongs to what follows.** It sits closer to the text it introduces than to the block before it. The same holds for a label and its field, a price and its button.
@@ -39,7 +40,7 @@ Each tool only where the one before cannot carry the structure:
 2. **A shared region**, a background or a frame, where a group must read as one unit: a card that is one link, a selectable row, a form step. People see things inside one boundary as a group (Common Region).
 3. **Lines**, for dense data where space costs too much: tables, long settings lists. A thin, quiet line, never added to a gap that already did the work.
 
-Boxing everything is how a page becomes a stack of sealed blocks.
+Boxing everything is how a page becomes a stack of sealed blocks. Rules drawn as the direction's gesture, such as the columns of a printed programme, are a choice: write them on the entry's `Kept on purpose` line.
 
 ## Start generous
 When unsure, give more space, then take some away. Crowding is harder to see than emptiness, and the user's taste rejects the too-full screen. You do not have to fill the whole width: a form or a text can stay narrow on a wide screen.

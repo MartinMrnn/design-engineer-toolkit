@@ -3,7 +3,7 @@
 Hierarchy decides what is seen first, second and third. The `ux` plan already ranks each view: what must be seen, what helps decide, what can wait (`thread-4`). Layout makes that ranking visible, mostly by **taking away**.
 
 ## One focal point per screen
-Each screen-height of the page has one thing the eye lands on first: the "must be seen" of the plan. Everything else on that screen supports it. When two things fight for attention, the eye has no start and the page reads as too much.
+A screen is one window-height of the page, or one dialog. Each has one thing the eye lands on first: the "must be seen" of the plan. Everything else on that screen supports it. When two things fight for attention, the eye has no start and the page reads as too much.
 
 **Measured.** On the first screens of 15 home pages, 9 have no filled button at all and none has more than two.
 
@@ -15,7 +15,7 @@ To make one thing stand out, lower the rest before raising it. Raising everythin
 - **The heading level is not the look.** An `h2` can look small and a paragraph large; the document order stays correct.
 
 ## Actions
-- One **filled** action per view: the main action of the plan.
+- One **filled** action per screen: the main action of the plan, or the one action of that screen (a newsletter form at the end).
 - Secondary actions are quieter: outlined, or text with an underline.
 - More than three secondary actions in one place go behind a menu.
 

@@ -6,6 +6,8 @@
 <title>Layout faults</title>
 <style>
   * { box-sizing: border-box; }
+  /* Focus scrolls smoothly: the hidden link must still be found. */
+  html { scroll-behavior: smooth; }
   body { margin: 0; font: 16px/1.5 Arial, "Liberation Sans", "DejaVu Sans", sans-serif; color: #111; background: #fff; }
   header { padding: 16px 24px; }
   main { max-width: 72rem; min-height: 100vh; margin: 0 auto; padding: 0 24px; }
@@ -16,6 +18,7 @@
   /* The heading sits closer to the paragraph above than to the one it introduces. */
   .lead { margin-bottom: 8px; }
   h2.near { margin: 0 0 48px; }
+  h2.near span { display: block; }
   /* Four columns that never wrap: on a phone each one is a sliver of text. */
   .row { display: flex; gap: 16px; }
   .col { flex: 1 1 0; min-width: 0; }
@@ -35,7 +38,7 @@
   <section>
     <h1>Furniture made to last</h1>
     <p class="lead">Solid oak tables and chairs, built to order in a small workshop.</p>
-    <h2 class="near">Too close to the paragraph above</h2>
+    <h2 class="near"><span>Too close to</span> <span>the paragraph above</span></h2>
     <p>This paragraph is the one the heading introduces, yet it sits far below it.</p>
   </section>
   <section>
