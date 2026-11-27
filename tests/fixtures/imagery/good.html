@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Imagery, clean</title>
+<style>
+  :root {
+    --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.06), 0 2px 4px rgb(0 0 0 / 0.04);
+    --shadow-md: 0 2px 4px rgb(0 0 0 / 0.06), 0 8px 16px rgb(0 0 0 / 0.05), 0 16px 32px rgb(0 0 0 / 0.04);
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font: 16px/1.5 Arial, "Liberation Sans", "DejaVu Sans", sans-serif; color: #111; background: #fff; }
+  /* Glass over the page, with a solid fallback. */
+  header { position: sticky; top: 0; z-index: 2; padding: 16px 24px; background: rgb(255 255 255 / 0.7); backdrop-filter: blur(16px); }
+  @media (prefers-reduced-transparency: reduce) { header { background: #fff; backdrop-filter: none; } }
+  /* White text on a dark image: its space is reserved and it loads first. */
+  .hero { position: relative; min-height: 80vh; display: grid; align-content: end; padding: 48px 24px; color: #fff; }
+  .hero img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: -1; }
+  .hero h1 { font-size: 48px; line-height: 1.1; margin: 0 0 12px; max-width: 16ch; }
+  .hero p { margin: 0; max-width: 40ch; }
+  main { position: relative; z-index: 0; }
+  section { padding: 64px 24px; }
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); gap: 24px; }
+  .card { padding: 24px; border-radius: 12px; background: #fff; }
+  .lifted { box-shadow: var(--shadow-sm); }
+  .menu { box-shadow: var(--shadow-md); }
+  .label { display: inline-flex; align-items: center; gap: 8px; }
+  .label svg { width: 1.25em; height: 1.25em; }
+  figure { margin: 0; }
+  figure img { display: block; width: 100%; height: auto; }
+  /* A faint drawing under the whole first screen: the hero image is still what the first screen shows. */
+  .floor { position: absolute; top: 0; left: 0; width: 100%; height: 100vh; z-index: -2; }
+  /* A grain layer over the hero does not hide its text. */
+  .grain { position: absolute; inset: 0; opacity: 0.3; mix-blend-mode: overlay; pointer-events: none;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+  /* Text on a solid panel over the image: axe's to judge, not this script's. */
+  .panel { justify-self: start; margin-top: 16px; padding: 8px 12px; background: #fff; color: #999; }
+  /* A pill behind the active tab is not a blob. */
+  .tabs { position: relative; display: flex; gap: 8px; padding: 8px; }
+  .tabs .active { position: absolute; left: 8px; top: 8px; width: 120px; height: 36px; border-radius: 18px; background: #eee; }
+  .tabs span { position: relative; padding: 8px 16px; }
+  /* On a dark ground, a light ring and a lighter surface carry the shadow. */
+  .night { background: #0a0a0a; color: #fff; }
+  .night .card { background: #1c1c1c; box-shadow: 0 0 0 1px rgb(255 255 255 / 0.08), 0 8px 24px rgb(0 0 0 / 0.5); }
+</style>
+</head>
+<body>
+<header><span>Cinéma Lumière</span></header>
+<main>
+  <svg class="floor" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><path d="M0 50h100M50 0v100" stroke="#eee" stroke-width="0.2"/></svg>
+  <section class="hero">
+    <img src="dark.svg" width="1440" height="900" alt="" fetchpriority="high">
+    <div class="grain"></div>
+    <h1>The night of the hunter</h1>
+    <p>A restored print, introduced by the team, on Thursday at 8 pm.</p>
+    <p class="panel">Doors at 7.30 pm</p>
+  </section>
+  <section>
+    <div class="tabs"><div class="active"></div><span>This week</span><span>Next week</span></div>
+  </section>
+  <section class="night">
+    <div class="card"><h2>Late shows</h2><p>Every Friday at 11 pm.</p></div>
+  </section>
+  <section>
+    <div class="cards">
+      <div class="card lifted"><h2>Programme</h2><p>Every film of the season, by week.</p></div>
+      <div class="card menu"><h2>Tickets</h2><p class="label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M4 7h16v10H4z"/></svg>Book a seat</p></div>
+    </div>
+  </section>
+  <section>
+    <figure><img src="dark.svg" width="1440" height="900" loading="lazy" alt="The screening room, lights down."></figure>
+  </section>
+</main>
+</body>
+</html>

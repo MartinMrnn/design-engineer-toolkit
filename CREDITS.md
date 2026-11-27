@@ -45,7 +45,7 @@ The knowledge skills draw on the work below. MIT or CC BY: text may be adapted w
 | Coursey rem | Paco Coursey | https://paco.me/writing/px-vs-rem | none found | principle cited |
 | Utopia | James Gilyead, Trys Mudford | https://utopia.fyi/type/calculator/ | none found | principle cited |
 | Barvian 2023 | Maxwell Barvian | https://www.smashingmagazine.com/2023/11/addressing-accessibility-concerns-fluid-type/ | none found | principle cited |
-| Tailwind | Tailwind Labs | https://github.com/tailwindlabs/tailwindcss | MIT | token names used in `type` and `layout` |
+| Tailwind | Tailwind Labs | https://github.com/tailwindlabs/tailwindcss | MIT | token names used in `type`, `layout` and `imagery` |
 | Dyson & Kipping 1998 | M. C. Dyson, G. J. Kipping | https://journals.uc.edu/index.php/vl/article/view/5671 | journal copyright | principle cited |
 | Web Almanac 2025 | HTTP Archive | https://almanac.httparchive.org/en/2025/fonts | Apache 2.0 | figures cited |
 | Fontshare | Indian Type Foundry | https://www.fontshare.com/faq | ITF Free Font License or SIL OFL, per font | where to search |
@@ -68,4 +68,17 @@ The knowledge skills draw on the work below. MIT or CC BY: text may be adapted w
 | Palmer 1992 | S. E. Palmer | https://doi.org/10.1016/0010-0285(92)90014-S | published paper | principle cited |
 | Palmer & Rock 1994 | S. E. Palmer, I. Rock | https://doi.org/10.3758/BF03200760 | published paper | principle cited |
 | Wagemans 2012 | J. Wagemans et al. | https://doi.org/10.1037/a0029333 | published paper | principle cited |
+| Freiberg depth | Rauno Freiberg | https://rauno.me/craft/depth | none found | principle cited |
+| Krehel shadows | Jakub Krehel | https://jakub.kr/work/shadows | none found | principle cited |
+| Nelson renders | Gavin Nelson | https://nelson.co/work/linear-renders | none found | principle cited |
+| Comeau shadows | Josh W. Comeau | https://www.joshwcomeau.com/css/designing-shadows/ | all rights reserved | principle cited |
+| Doron Studio | Doron Studio | https://www.youtube.com/watch?v=6R4v60jM1UU | none read | principle cited from the user's notes |
+| Framer University | Framer University | https://www.youtube.com/watch?v=fMrR-NqyGSk | none read | principle cited from the user's notes |
+| Unsplash | Unsplash | https://unsplash.com/license | Unsplash License | library named, no image shipped |
+| Pexels | Pexels | https://www.pexels.com/license/ | Pexels License | library named, no image shipped |
+| Poly Haven | Poly Haven | https://polyhaven.com/license | CC0 | library named, no asset shipped |
+| ambientCG | ambientCG | https://ambientcg.com/license | CC0 1.0 | library named, no asset shipped |
+| Lucide | Lucide contributors | https://github.com/lucide-icons/lucide | ISC, Feather icons MIT | library named, no icon shipped |
+| Phosphor | Phosphor Icons | https://github.com/phosphor-icons/core | MIT | library named, no icon shipped |
+| Tabler | Tabler | https://github.com/tabler/tabler-icons | MIT | library named, no icon shipped |
 | Studio | this project | https://github.com/MartinMrnn/design-engineer-toolkit | MIT | text adapted |

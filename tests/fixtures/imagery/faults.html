@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Imagery faults</title>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; font: 16px/1.5 Arial, "Liberation Sans", "DejaVu Sans", sans-serif; color: #111; background: #fff; }
+  header { padding: 16px 24px; }
+  /* White text straight on a light image, lazy although it is the first screen. */
+  .hero { position: relative; min-height: 80vh; display: grid; align-content: end; padding: 48px 24px; color: #fff; }
+  .hero img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: -1; }
+  .hero h1 { font-size: 48px; line-height: 1.1; margin: 0; max-width: 16ch; }
+  main { position: relative; z-index: 0; }
+  section { position: relative; padding: 64px 24px; }
+  /* A round blob and a blurred glow: shapes standing in for an image. */
+  .blob { position: absolute; top: 24px; right: 24px; width: 300px; height: 300px; border-radius: 50%; background: #e8643c; }
+  .glow::before { content: ""; position: absolute; top: 0; left: 0; width: 400px; height: 300px; background: #f2a65a; filter: blur(60px); }
+  /* Two lights: one shadow falls right and down, the other left and up. */
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); gap: 24px; position: relative; }
+  .card { padding: 24px; border-radius: 12px; background: #fff; }
+  .a { box-shadow: 4px 4px 12px rgb(0 0 0 / 0.2); }
+  .b { box-shadow: -4px -4px 12px rgb(0 0 0 / 0.2); }
+  /* Glass inside glass, and no fallback for reduced transparency. */
+  .outer { padding: 24px; background: rgb(255 255 255 / 0.5); backdrop-filter: blur(12px); }
+  .inner { padding: 24px; background: rgb(255 255 255 / 0.5); backdrop-filter: blur(8px); }
+  .unsized { width: 300px; }
+  .raster { display: block; width: 400px; height: 400px; }
+  /* Not measured: a caption hidden under an opaque layer, and a text blended with difference. */
+  .frame { position: relative; width: 320px; height: 200px; }
+  .frame img { width: 100%; height: 100%; object-fit: cover; }
+  .frame p { position: absolute; left: 16px; bottom: 16px; margin: 0; color: #fff; }
+  .frame .cover { position: absolute; inset: 0; background: #f4f4f4; }
+  .frame .blend { mix-blend-mode: difference; }
+  /* A caption that ignores the pointer is still read over its image, and fails. */
+  .tag { position: relative; width: 320px; margin: 0; }
+  .tag img { display: block; width: 100%; height: auto; }
+  .tag figcaption { position: absolute; left: 16px; bottom: 16px; color: #fff; pointer-events: none; }
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  /* White text on a flat light image: no ground of its own, so it is measured, and fails. */
+  .flat { height: 200px; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Crect width='8' height='8' fill='%23f0f0f0'/%3E%3C/svg%3E"); color: #fff; }
+  /* A video with no frame yet: not measured, and said so. */
+  .reel { position: relative; width: 320px; height: 200px; }
+  .reel video { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .reel p { position: absolute; left: 16px; bottom: 16px; margin: 0; color: #fff; }
+  /* A black shadow lost on a dark ground. */
+  .night { background: #0a0a0a; }
+  .night .card { background: #0a0a0a; color: #fff; box-shadow: 0 8px 24px rgb(0 0 0 / 0.5); }
+  .gone { opacity: 0; }
+</style>
+</head>
+<body>
+<header><span>Cinéma Lumière</span></header>
+<main>
+  <section class="hero">
+    <img src="light.svg" width="1440" height="900" loading="lazy" alt="">
+    <h1>The night of the hunter</h1>
+    <span class="sr-only">Thursday at 8 pm, restored print</span>
+  </section>
+  <section class="glow">
+    <div class="blob"></div>
+    <div class="cards">
+      <div class="card a"><h2>Programme</h2><p>Every film of the season, by week.</p></div>
+      <div class="card b"><h2>Tickets</h2><p>Book a seat for Thursday.</p></div>
+    </div>
+  </section>
+  <section>
+    <div class="outer"><p>Members</p><div class="inner"><p>Join the club for a year.</p></div></div>
+  </section>
+  <section>
+    <img class="unsized" src="dark.svg" alt="The screening room, lights down.">
+  </section>
+  <section>
+    <img class="raster" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAIAAABLbSncAAAAGklEQVR4nGOIstE4UWGDSTJgFY2y0WAYlDoA7x1HQR4+pPMAAAAASUVORK5CYII=" width="400" height="400" alt="A film poster.">
+    <div class="gone"><img class="raster" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAIAAABLbSncAAAAGklEQVR4nGOIstE4UWGDSTJgFY2y0WAYlDoA7x1HQR4+pPMAAAAASUVORK5CYII=" width="400" height="400" alt="A hidden poster."></div>
+  </section>
+  <section>
+    <div class="frame"><img src="light.svg" width="1440" height="900" alt=""><p>Hidden caption</p><div class="cover"></div></div>
+    <div class="frame"><img src="light.svg" width="1440" height="900" alt=""><p class="blend">Blended title</p></div>
+    <figure class="tag"><img src="light.svg" width="1440" height="900" alt=""><figcaption>Now showing</figcaption></figure>
+    <div class="flat"><p>Flat light poster</p></div>
+    <div class="reel"><video muted playsinline width="320" height="200"></video><p>Late show</p></div>
+  </section>
+  <section class="night">
+    <div class="card"><h2>Late shows</h2><p>Every Friday at 11 pm.</p></div>
+  </section>
+</main>
+</body>
+</html>
