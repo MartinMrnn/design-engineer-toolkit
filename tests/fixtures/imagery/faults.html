@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Imagery faults</title>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; font: 16px/1.5 Arial, "Liberation Sans", "DejaVu Sans", sans-serif; color: #111; background: #fff; }
+  header { padding: 16px 24px; }
+  /* White text straight on a light image, lazy although it is the first screen. */
+  .hero { position: relative; min-height: 80vh; display: grid; align-content: end; padding: 48px 24px; color: #fff; }
+  .hero img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: -1; }
+  .hero h1 { font-size: 48px; line-height: 1.1; margin: 0; max-width: 16ch; }
+  main { position: relative; z-index: 0; }
+  section { position: relative; padding: 64px 24px; }
+  /* A round blob and a blurred glow: shapes standing in for an image. */
+  .blob { position: absolute; top: 24px; right: 24px; width: 300px; height: 300px; border-radius: 50%; background: #e8643c; }
+  .glow::before { content: ""; position: absolute; top: 0; left: 0; width: 400px; height: 300px; background: #f2a65a; filter: blur(60px); }
+  /* Two lights: one shadow falls right and down, the other left and up. */
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr)); gap: 24px; position: relative; }
+  .card { padding: 24px; border-radius: 12px; background: #fff; }
+  .a { box-shadow: 4px 4px 12px rgb(0 0 0 / 0.2); }
+  .b { box-shadow: -4px -4px 12px rgb(0 0 0 / 0.2); }
+  /* Glass inside glass, and no fallback for reduced transparency. */
+  .outer { padding: 24px; background: rgb(255 255 255 / 0.5); backdrop-filter: blur(12px); }
+  .inner { padding: 24px; background: rgb(255 255 255 / 0.5); backdrop-filter: blur(8px); }
+  .unsized { width: 300px; }
+  .raster { display: block; width: 400px; height: 400px; }
+</style>
+</head>
+<body>
+<header><span>Cinéma Lumière</span></header>
+<main>
+  <section class="hero">
+    <img src="light.svg" width="1440" height="900" loading="lazy" alt="">
+    <h1>The night of the hunter</h1>
+  </section>
+  <section class="glow">
+    <div class="blob"></div>
+    <div class="cards">
+      <div class="card a"><h2>Programme</h2><p>Every film of the season, by week.</p></div>
+      <div class="card b"><h2>Tickets</h2><p>Book a seat for Thursday.</p></div>
+    </div>
+  </section>
+  <section>
+    <div class="outer"><p>Members</p><div class="inner"><p>Join the club for a year.</p></div></div>
+  </section>
+  <section>
+    <img class="unsized" src="dark.svg" alt="The screening room, lights down.">
+  </section>
+  <section>
+    <img class="raster" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAIAAABLbSncAAAAGklEQVR4nGOIstE4UWGDSTJgFY2y0WAYlDoA7x1HQR4+pPMAAAAASUVORK5CYII=" width="400" height="400" alt="A film poster.">
+  </section>
+</main>
+</body>
+</html>
