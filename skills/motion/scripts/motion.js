@@ -11,7 +11,7 @@
 // - reveals: blocks below the first screen hidden at load (opacity, movement, or a clip-path that changes)
 //   that show up once the page is scrolled to its end with the wheel, and their share of the blocks below;
 // - scroll: a smooth-scroll takeover (Lenis), scroll-behavior: smooth, scroll-driven animations
-//   (animation-timeline), GSAP ScrollTrigger instances with scrub and pin;
+//   (animation-timeline), GSAP ScrollTrigger instances with scrub and pin, and how far the window scrolled;
 // - loops: infinite animations running in the first screen, and those still running once out of view.
 // With reduced motion, reloaded:
 // - reduced: boxes of the first screen still moving over 600 ms, running animations that move
@@ -34,7 +34,27 @@ async (page) => {
     const BLOCKS = 'h1, h2, h3, h4, p, li, img, video, figure, blockquote, a, button';
     const MOVING = /^(transform|translate|scale|rotate|top|left|right|bottom|offset(-|[A-Z]))/;
     const ZERO = /scale(?:3d|X|Y)?\(\s*0(?:\.0*)?\s*[,)]/;
-    const name = (el) => `${el.tagName.toLowerCase()}${el.id ? `#${el.id}` : ''}${[...el.classList].slice(0, 2).map((c) => `.${c}`).join('')}`;
+    const own = (el) => `${el.tagName.toLowerCase()}${el.id ? `#${el.id}` : ''}${[...el.classList].slice(0, 2).map((c) => `.${c}`).join('')}`;
+    // An element with no id or class is named after its nearest ancestor that has one: `svg.logo circle`.
+    const name = (el) => {
+      if (el.id || el.classList.length) return own(el);
+      const anchor = el.parentElement?.closest('[id], [class]');
+      return anchor && anchor !== document.body ? `${own(anchor)} ${own(el)}` : own(el);
+    };
+    // A selector with :hover outside :not(), so the rule applies while hovered.
+    const onHover = (selector) => {
+      let out = '';
+      for (let i = 0; i < selector.length; i++) {
+        if (selector.startsWith(':not(', i)) {
+          let depth = 0;
+          for (i += 4; i < selector.length; i++) {
+            if (selector[i] === '(') depth += 1;
+            else if (selector[i] === ')' && --depth === 0) break;
+          }
+        } else out += selector[i];
+      }
+      return out.includes(':hover');
+    };
     const opacity = (el) => {
       let o = 1;
       for (let n = el; n && n.nodeType === 1; n = n.parentElement) o *= +getComputedStyle(n).opacity;
@@ -153,7 +173,7 @@ async (page) => {
       hover: () => {
         const out = new Set();
         for (const { rule, gated } of rules()) {
-          if (gated || !(rule instanceof CSSStyleRule) || !rule.selectorText.includes(':hover')) continue;
+          if (gated || !(rule instanceof CSSStyleRule) || !onHover(rule.selectorText)) continue;
           const moves = ['transform', 'translate', 'scale', 'rotate'].filter((p) => {
             const v = rule.style.getPropertyValue(p);
             return v && v !== 'none';
@@ -246,6 +266,8 @@ async (page) => {
       last = y;
     }
     await page.waitForTimeout(1200);
+    // How far the window really scrolled: 0 means the page scrolls inside its own container.
+    return page.evaluate(() => `${Math.round(scrollY)} of ${Math.max(0, document.documentElement.scrollHeight - innerHeight)} px`);
   };
   // Blocks hidden at load and shown after scrolling.
   const revealed = (blocks, now) => blocks.flatMap((b) => {
@@ -268,7 +290,7 @@ async (page) => {
       const m = window.__motion;
       return { transitions: m.transitions(), entrances: m.entrances(), hover: m.hover(), scroll: m.scroll(), loops: m.loops(), blocks: m.mark() };
     });
-    await scrollDown();
+    const depth = await scrollDown();
     const after = await page.evaluate(() => ({ blocks: window.__motion.blocks(), loops: window.__motion.loops() }));
     const shown = revealed(first.blocks, after.blocks);
     const { over300, all, easeIn, ...counts } = first.transitions;
@@ -282,7 +304,7 @@ async (page) => {
       share: first.blocks.length ? Math.round((shown.length / first.blocks.length) * 100) : 0,
       at: unique(shown.map((s) => s.at)),
     };
-    report.scroll = first.scroll;
+    report.scroll = { ...first.scroll, depth };
     report.loops = {
       running: unique(first.loops.filter((l) => l.seen && !l.off).map((l) => l.at)),
       offscreen: unique(after.loops.filter((l) => l.off).map((l) => l.at)),

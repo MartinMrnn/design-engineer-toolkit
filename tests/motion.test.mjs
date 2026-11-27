@@ -36,6 +36,8 @@ test('the motion faults are reported, and only movement under reduced motion fai
   assert.ok(report.issues.length >= 2 && report.issues.every((i) => i.kind === 'reduced-motion' && i.rule === 'proof-2'), JSON.stringify(report.issues));
   assert.ok(report.issues.some((i) => /ticker/.test(i.at)), 'the ticker still moves');
   assert.ok(report.issues.some((i) => /reveal/.test(i.at)), 'the reveal still slides in');
+  assert.ok(report.issues.some((i) => i.at === 'svg.pulse-icon circle'), 'an element with no class is named after its ancestor');
+  assert.match(report.scroll.depth, /^[1-9]\d* of \d+ px$/);
   assert.ok(report.transitions.all.some((t) => /t-all/.test(t)), JSON.stringify(report.transitions));
   assert.ok(report.transitions.over300.some((t) => /t-slow.*450/.test(t)), JSON.stringify(report.transitions));
   assert.ok(report.transitions.easeIn.some((t) => /t-in/.test(t)), JSON.stringify(report.transitions));

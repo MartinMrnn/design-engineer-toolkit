@@ -16,6 +16,8 @@
   .card { display: block; padding: 24px; margin: 24px 0; border: 1px solid #ddd; color: inherit; text-decoration: none; }
   .pop { position: absolute; top: 24px; right: 40px; padding: 12px; background: #fff; border: 1px solid #ddd; }
   .programme p { margin: 0 0 400px; }
+  /* Applies while NOT hovered: not a hover movement. */
+  .card:not(:hover) { transform: translateY(0); }
   /* Motion only for those who did not ask for less. */
   @media (prefers-reduced-motion: no-preference) {
     .button { transition: transform var(--duration-press) var(--ease-out), background-color var(--duration-press) var(--ease-out); }

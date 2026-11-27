@@ -23,6 +23,9 @@
   /* A lift on hover, for touch screens too. */
   .card { display: block; margin: 24px 0; padding: 24px; border: 1px solid #ddd; transition: transform 200ms ease-out; }
   .card:hover { transform: translateY(-4px); }
+  /* A pulsing dot with no class of its own, never stopped. */
+  .pulse-icon circle { animation: pulse 1.2s ease-in-out infinite; transform-origin: center; }
+  @keyframes pulse { 50% { transform: scale(0.6); } }
   /* Everything fades up on scroll, with no reduced-motion rule. */
   .spacer { height: 1500px; }
   .reveal { opacity: 0; transform: translateY(40px); transition: opacity 600ms ease-out, transform 600ms ease-out; }
@@ -37,6 +40,7 @@
   <a class="t-slow" href="#programme">Programme</a>
   <button class="t-in" type="button">Book</button>
   <span class="pop">New</span>
+  <svg class="pulse-icon" width="20" height="20" aria-hidden="true"><circle cx="10" cy="10" r="6" fill="#c00"/></svg>
   <a class="card" href="#hunter">The Night of the Hunter, 8:30 pm</a>
   <div class="spacer"></div>
   <section id="programme">

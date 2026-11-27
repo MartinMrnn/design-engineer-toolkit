@@ -27,9 +27,9 @@ Limits: one day; scroll-library reveals are seen through their effect, not their
 | `entrances` | keyframes, `@starting-style` rules or running animations that start at scale 0 | breaks `choreography-5` |
 | `hover` | `:hover` rules that move something outside a `(hover: hover)` query | breaks `proof-4` |
 | `reveals` | blocks below the first screen hidden at load and shown after scrolling: `below`, `hidden`, `shown`, `share` | a share above a few percent without a brief asking for it is the fade-up cliché (`level-3`); a hidden block never shown is lost content (`choreography-4`) |
-| `scroll` | `takeover` (Lenis), `smooth`, `timelines` (scroll-driven animations), GSAP `triggers` with `scrub` and `pin` | a takeover needs `Kept on purpose` (`choreography-8`); `smooth` alone is fine for anchors |
+| `scroll` | `takeover` (Lenis), `smooth`, `timelines` (scroll-driven animations), GSAP `triggers` with `scrub` and `pin`, and `depth`, how far the window scrolled | a takeover needs `Kept on purpose` (`choreography-8`); `smooth` alone is fine for anchors. A `depth` of `0 of …` means the page scrolls inside its own container: reveals and loops out of view were not seen, say so under `Not seen` |
 | `loops` | infinite animations in the first screen (`running`), and those still running out of view (`offscreen`) | `offscreen` breaks `proof-5`; a loop beside content needs `imagery` `proof-3`'s pause |
 | `reduced` | under reduced motion: boxes still moving, animations that move, blocks that still slide in, a takeover still active | each one breaks `proof-2` |
-| `issues` | one per element that still moves under reduced motion, rule `proof-2` | the only kind; sets `pass` to false |
+| `issues` | one per element that still moves under reduced motion, rule `proof-2`; an element with no class is named after its nearest named ancestor (`svg.logo circle`) | the only kind; sets `pass` to false |
 
 The script reloads the page twice: anything typed into it is lost. It does not see flashes, how motion feels, cross-origin style sheets, menus and dialogs once opened, hovers driven by script, or pages that scroll inside their own container. A carousel moving on a timer under reduced motion is a true finding, not noise.
