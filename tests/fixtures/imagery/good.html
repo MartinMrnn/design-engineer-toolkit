@@ -29,6 +29,15 @@
   .label svg { width: 1.25em; height: 1.25em; }
   figure { margin: 0; }
   figure img { display: block; width: 100%; height: auto; }
+  /* Text on a solid panel over the image: axe's to judge, not this script's. */
+  .panel { justify-self: start; margin-top: 16px; padding: 8px 12px; background: #fff; color: #999; }
+  /* A pill behind the active tab is not a blob. */
+  .tabs { position: relative; display: flex; gap: 8px; padding: 8px; }
+  .tabs .active { position: absolute; left: 8px; top: 8px; width: 120px; height: 36px; border-radius: 18px; background: #eee; }
+  .tabs span { position: relative; padding: 8px 16px; }
+  /* On a dark ground, a light ring and a lighter surface carry the shadow. */
+  .night { background: #0a0a0a; color: #fff; }
+  .night .card { background: #1c1c1c; box-shadow: 0 0 0 1px rgb(255 255 255 / 0.08), 0 8px 24px rgb(0 0 0 / 0.5); }
 </style>
 </head>
 <body>
@@ -38,6 +47,13 @@
     <img src="dark.svg" width="1440" height="900" alt="" fetchpriority="high">
     <h1>The night of the hunter</h1>
     <p>A restored print, introduced by the team, on Thursday at 8 pm.</p>
+    <p class="panel">Doors at 7.30 pm</p>
+  </section>
+  <section>
+    <div class="tabs"><div class="active"></div><span>This week</span><span>Next week</span></div>
+  </section>
+  <section class="night">
+    <div class="card"><h2>Late shows</h2><p>Every Friday at 11 pm.</p></div>
   </section>
   <section>
     <div class="cards">

@@ -9,12 +9,16 @@
 // - contrast: each text over an image, video, canvas, CSS image or gradient (its box meets the visual, or a
 //   background on the way to its first opaque ground), at most 40 per width. Text is made transparent,
 //   its box captured and its pixels decoded in the page; the ratio kept is the worst 5 % of pixels against
-//   the text colour. The 20 lowest are listed.
+//   the text colour. A flat ground is left to axe. The 20 lowest are listed;
+// - unmeasured: texts over a visual that were not measured: blended (mix-blend-mode), or covered or clipped
+//   (another element is on top at the centre of the text);
 // At 1440 only, the whole page:
 // - shapes: empty absolute or fixed elements and pseudo-elements, filled, at least 4000 px², round
-//   (radius 30 % of the short side or more) or blurred (blur 20 px or more): shapes standing in for an image;
+//   (radius 30 % of a short side of 80 px or more) or blurred (blur 20 px or more): shapes standing in for
+//   an image;
 // - shadows: distinct outer box-shadow values (rings left out), with neutral or tinted colour and alpha;
-//   mixed when offsets point both ways on one axis; lost when a dark neutral shadow sits on a dark ground;
+//   mixed when offsets point both ways on one axis; lost when a dark neutral shadow sits on a dark ground
+//   with no light ring and no surface lighter than the ground;
 // - glass: backdrop-filter elements, their blur, glass inside glass, and whether a readable style sheet
 //   has a prefers-reduced-transparency rule; gradients: how many, how many cover a quarter of the screen;
 // - textures: feTurbulence, backgrounds named noise, grain or texture, blended layers over half the screen.
@@ -34,7 +38,8 @@ async (page) => {
     const shown = (el) => {
       const s = cs(el);
       const r = el.getBoundingClientRect();
-      return s.visibility !== 'hidden' && s.display !== 'none' && +s.opacity > 0.05 && r.width > 1 && r.height > 1;
+      return s.visibility !== 'hidden' && s.display !== 'none' && +s.opacity > 0.05 && r.width > 1 && r.height > 1
+        && el.checkVisibility({ opacityProperty: true, visibilityProperty: true });
     };
     const name = (el) => `${el.tagName.toLowerCase()}${el.id ? `#${el.id}` : ''}${[...el.classList].slice(0, 2).map((c) => `.${c}`).join('')}`;
     const describe = (el) => {
@@ -105,7 +110,7 @@ async (page) => {
           const scale = fit === 'cover' ? Math.max(r.width / img.naturalWidth, r.height / img.naturalHeight)
             : fit === 'contain' ? Math.min(r.width / img.naturalWidth, r.height / img.naturalHeight) : r.width / img.naturalWidth;
           const density = 1 / scale;
-          if (density < 1) out.blurry.push(`${describe(img)} ${img.naturalWidth} px shown ${Math.round(r.width)}`);
+          if (density < 0.95) out.blurry.push(`${describe(img)} ${img.naturalWidth} px shown ${Math.round(r.width)}`);
           else if (density < 2) out.soft.push(`${describe(img)} ${density.toFixed(1)}x`);
           else if (density > 3) out.heavy.push(`${describe(img)} ${density.toFixed(1)}x`);
         }
@@ -138,8 +143,10 @@ async (page) => {
         }
         if (!over) continue;
         const size = parseFloat(s.fontSize);
+        let blend = '';
+        for (let a = el; !blend && a; a = a.parentElement) if (cs(a).mixBlendMode !== 'normal') blend = cs(a).mixBlendMode;
         texts.push({ el, nodes });
-        out.push({ at: describe(el), color: srgb(s.color), large: size >= 24 || (size >= 18.66 && +s.fontWeight >= 700) });
+        out.push({ at: describe(el), color: srgb(s.color), large: size >= 24 || (size >= 18.66 && +s.fontWeight >= 700), blend });
       }
       return out;
     };
@@ -152,7 +159,11 @@ async (page) => {
       const top = Math.max(0, Math.min(...rects.map((r) => r.top)));
       const right = Math.min(innerWidth, Math.max(...rects.map((r) => r.right)));
       const bottom = Math.min(innerHeight, Math.max(...rects.map((r) => r.bottom)));
-      return right - left >= 2 && bottom - top >= 2 ? { x: left, y: top, width: right - left, height: bottom - top } : null;
+      if (right - left < 2 || bottom - top < 2) return null;
+      // Text clipped by its container or under another element is not what people see there.
+      const hit = document.elementFromPoint((left + right) / 2, (top + bottom) / 2);
+      if (!hit || !(el.contains(hit) || hit.contains(el))) return { covered: hit ? name(hit) : 'nothing' };
+      return { x: left, y: top, width: right - left, height: bottom - top };
     };
     const hideText = (on) => {
       let style = document.getElementById('__imagery-hide');
@@ -179,7 +190,7 @@ async (page) => {
         const raw = s.borderTopLeftRadius;
         const radius = raw.endsWith('%') ? (parseFloat(raw) / 100) * Math.min(w, h) : parseFloat(raw) || 0;
         const blur = s.filter.match(/blur\(([\d.]+)px\)/);
-        const round = radius >= 0.3 * Math.min(w, h);
+        const round = radius >= 0.3 * Math.min(w, h) && Math.min(w, h) >= 80; // a pill behind a tab is not a blob
         const blurred = blur && +blur[1] >= 20;
         if (!round && !blurred) return;
         out.push(`${pseudo ? name(el) + pseudo : name(el)} ${Math.round(w)}×${Math.round(h)} ${[round && 'round', blurred && blur[0]].filter(Boolean).join(' ')}`);
@@ -221,17 +232,21 @@ async (page) => {
       for (const el of all()) {
         const s = cs(el);
         if (s.boxShadow === 'none' || !shown(el)) continue;
-        const outer = layers(s.boxShadow).map((l) => {
+        const parsed = layers(s.boxShadow).map((l) => {
           const colour = (l.match(/(rgba?|hsla?|oklch|oklab|lab|lch|color)\([^)]*\)/) || ['black'])[0];
-          const [x = 0, y = 0, blur = 0] = l.replace(colour, '').replace('inset', '').trim().split(/\s+/).map(parseFloat);
+          const [x = 0, y = 0, blur = 0, spread = 0] = l.replace(colour, '').replace('inset', '').trim().split(/\s+/).map(parseFloat);
           const rgb = srgb(colour);
-          return { inset: l.includes('inset'), x, y, blur, a: alpha(colour), neutral: Math.max(...rgb) - Math.min(...rgb) <= 10, dark: lum(rgb) < 0.05 };
-        }).filter((l) => !l.inset && (l.blur > 0 || l.x || l.y));
+          return { inset: l.includes('inset'), x, y, blur, spread, a: alpha(colour), neutral: Math.max(...rgb) - Math.min(...rgb) <= 10, dark: lum(rgb) < 0.05 };
+        });
+        const outer = parsed.filter((l) => !l.inset && (l.blur > 0 || l.x || l.y));
         if (!outer.length) continue;
+        // On a dark ground, a light ring or a surface lighter than the ground does the shadow's job.
+        const ring = parsed.some((l) => !l.dark && (l.inset || (!l.blur && !l.x && !l.y && l.spread > 0)));
+        const lighter = alpha(s.backgroundColor) >= 0.9 && (lum(srgb(s.backgroundColor)) + 0.05) / (lum(ground(el)) + 0.05) >= 1.04;
         const key = outer.map((l) => `${l.x} ${l.y} ${l.blur} ${l.neutral ? 'neutral' : 'tinted'}/${+l.a.toFixed(2)}`).join(', ');
         values.set(key, (values.get(key) || 0) + 1);
         for (const l of outer) { if (l.x) signs.x.add(Math.sign(l.x)); if (l.y) signs.y.add(Math.sign(l.y)); }
-        if (lost.length < 10 && outer.every((l) => l.neutral && l.dark) && lum(ground(el)) < 0.05) lost.push(`${describe(el)}: black shadow on a dark ground`);
+        if (lost.length < 10 && !ring && !lighter && outer.every((l) => l.neutral && l.dark) && lum(ground(el)) < 0.05) lost.push(`${describe(el)}: black shadow on a dark ground`);
       }
       return {
         distinct: values.size,
@@ -293,7 +308,8 @@ async (page) => {
   });
 
   // Decodes a PNG in the page (no data: URL, so the site's CSP cannot block it) and returns the contrast
-  // of the text colour against the worst 5 % of its pixels.
+  // of the text colour against the worst 5 % of its pixels, or null when the ground is one flat colour:
+  // text on a solid ground is axe's to judge.
   const worst = (png, color) => page.evaluate(async ({ b64, color }) => {
     const bytes = Uint8Array.from(atob(b64), (c) => c.charCodeAt(0));
     const bmp = await createImageBitmap(new Blob([bytes], { type: 'image/png' }));
@@ -305,17 +321,18 @@ async (page) => {
     const lum = (r, g, b) => 0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(b);
     const lt = lum(...color);
     const step = Math.max(1, Math.floor(d.length / 4 / 40000));
-    const ratios = [];
-    for (let p = 0; p < d.length; p += 4 * step) {
-      const l = lum(d[p], d[p + 1], d[p + 2]);
-      ratios.push((Math.max(l, lt) + 0.05) / (Math.min(l, lt) + 0.05));
-    }
-    ratios.sort((a, b) => a - b);
+    const lums = [];
+    for (let p = 0; p < d.length; p += 4 * step) lums.push(lum(d[p], d[p + 1], d[p + 2]));
+    lums.sort((a, b) => a - b);
+    const [low, high] = [lums[Math.floor(lums.length * 0.05)], lums[Math.floor(lums.length * 0.95)]];
+    if ((high + 0.05) / (low + 0.05) < 1.1) return null;
+    const ratios = lums.map((l) => (Math.max(l, lt) + 0.05) / (Math.min(l, lt) + 0.05)).sort((a, b) => a - b);
     return ratios[Math.floor(ratios.length * 0.05)];
   }, { b64: png.toString('base64'), color });
 
-  const report = { url, pass: true, visuals: {}, shapes: [], shadows: null, glass: null, gradients: null, textures: [], images: null, contrast: [], issues: [] };
+  const report = { url, pass: true, visuals: {}, shapes: [], shadows: null, glass: null, gradients: null, textures: [], images: null, contrast: [], unmeasured: [], issues: [] };
   const lists = { unsized: new Set(), blurry: new Set(), soft: new Set(), heavy: new Set(), lazyFirst: new Set() };
+  const unmeasured = new Set();
   const failing = new Map();
   const measured = [];
   let images = { n: 0, outlined: 0 };
@@ -341,18 +358,21 @@ async (page) => {
       await page.evaluate(() => window.__imagery.hideText(true));
       try {
         for (let i = 0; i < found.texts.length; i++) {
+          const { at, large, blend, color } = found.texts[i];
+          if (blend) { unmeasured.add(`${at}: blend mode ${blend}`); continue; }
           const box = await page.evaluate((n) => window.__imagery.textBox(n), i);
           if (!box) continue;
+          if (box.covered) { unmeasured.add(`${at}: covered by ${box.covered}`); continue; }
           await frame();
-          const ratio = await worst(await page.screenshot({ clip: box }), found.texts[i].color);
-          const { at, large } = found.texts[i];
+          const ratio = await worst(await page.screenshot({ clip: box }), color);
+          if (ratio === null) continue;
           const needs = large ? 3 : 4.5;
           measured.push({ at, width, ratio: Math.round(ratio * 100) / 100, needs });
           if (ratio < needs) {
-            if (!failing.has(at)) failing.set(at, { ratio, needs, widths: [] });
+            if (!failing.has(at)) failing.set(at, { ratio, needs, widths: new Set() });
             const f = failing.get(at);
             f.ratio = Math.min(f.ratio, ratio);
-            f.widths.push(width);
+            f.widths.add(width);
           }
         }
       } finally {
@@ -366,9 +386,10 @@ async (page) => {
   }
   report.images = { ...images, ...Object.fromEntries(Object.entries(lists).map(([k, v]) => [k, [...v].slice(0, MAX)])) };
   report.contrast = measured.sort((a, b) => a.ratio - b.ratio).slice(0, 20);
+  report.unmeasured = [...unmeasured].slice(0, MAX);
   report.issues = [...failing.entries()].slice(0, MAX).map(([at, f]) => ({
     kind: 'text-over-image', at, rule: 'WCAG 1.4.3',
-    detail: `${Math.round(f.ratio * 100) / 100}:1 on its worst 5 %, needs ${f.needs}:1, at ${f.widths.join(', ')} px`,
+    detail: `${Math.round(f.ratio * 100) / 100}:1 on its worst 5 %, needs ${f.needs}:1, at ${[...f.widths].join(', ')} px`,
   }));
   report.pass = report.issues.length === 0;
   return report;

@@ -21,8 +21,11 @@ test('a clean page passes and its imagery is described', async () => {
   assert.deepEqual(report.issues, []);
   assert.ok(report.visuals[1440].share >= 40, JSON.stringify(report.visuals));
   assert.ok(report.contrast.length >= 2 && report.contrast.every((c) => c.ratio >= c.needs), JSON.stringify(report.contrast));
-  assert.deepEqual(report.shapes, []);
+  assert.ok(!report.contrast.some((c) => /Doors/.test(c.at)), 'text on a solid panel is left to axe');
+  assert.deepEqual(report.unmeasured, []);
+  assert.deepEqual(report.shapes, [], 'a pill behind a tab is not a blob');
   assert.equal(report.shadows.mixed, false);
+  assert.deepEqual(report.shadows.lost, [], 'a light ring and a lighter surface carry a shadow on a dark ground');
   assert.ok(report.shadows.distinct >= 2, JSON.stringify(report.shadows));
   assert.deepEqual(report.glass.nested, []);
   assert.equal(report.glass.reducedTransparency, true);
@@ -36,11 +39,13 @@ test('the imagery faults are reported, and only the text over the light image fa
   assert.equal(report.issues[0].rule, 'WCAG 1.4.3');
   assert.match(report.issues[0].detail, /1440.*390|390.*1440/);
   assert.ok(report.shapes.some((s) => /round/.test(s)) && report.shapes.some((s) => /::before.*blur/.test(s)), JSON.stringify(report.shapes));
+  assert.ok(report.unmeasured.some((u) => /Hidden caption.*covered/.test(u)) && report.unmeasured.some((u) => /Blended title.*blend mode difference/.test(u)), JSON.stringify(report.unmeasured));
   assert.equal(report.shadows.mixed, true);
+  assert.equal(report.shadows.lost.length, 1, JSON.stringify(report.shadows));
   assert.equal(report.glass.nested.length, 1, JSON.stringify(report.glass));
   assert.equal(report.glass.reducedTransparency, false);
   assert.equal(report.images.unsized.length, 1, JSON.stringify(report.images));
-  assert.ok(report.images.blurry.length >= 1, JSON.stringify(report.images));
+  assert.equal(report.images.blurry.length, 1, 'an image inside a hidden parent is left out');
   assert.equal(report.images.lazyFirst.length, 1, JSON.stringify(report.images));
 });
 

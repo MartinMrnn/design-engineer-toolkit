@@ -27,6 +27,16 @@
   .inner { padding: 24px; background: rgb(255 255 255 / 0.5); backdrop-filter: blur(8px); }
   .unsized { width: 300px; }
   .raster { display: block; width: 400px; height: 400px; }
+  /* Not measured: a caption hidden under an opaque layer, and a text blended with difference. */
+  .frame { position: relative; width: 320px; height: 200px; }
+  .frame img { width: 100%; height: 100%; object-fit: cover; }
+  .frame p { position: absolute; left: 16px; bottom: 16px; margin: 0; color: #fff; }
+  .frame .cover { position: absolute; inset: 0; background: #f4f4f4; }
+  .frame .blend { mix-blend-mode: difference; }
+  /* A black shadow lost on a dark ground. */
+  .night { background: #0a0a0a; }
+  .night .card { background: #0a0a0a; color: #fff; box-shadow: 0 8px 24px rgb(0 0 0 / 0.5); }
+  .gone { opacity: 0; }
 </style>
 </head>
 <body>
@@ -51,6 +61,14 @@
   </section>
   <section>
     <img class="raster" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAIAAABLbSncAAAAGklEQVR4nGOIstE4UWGDSTJgFY2y0WAYlDoA7x1HQR4+pPMAAAAASUVORK5CYII=" width="400" height="400" alt="A film poster.">
+    <div class="gone"><img class="raster" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAIAAABLbSncAAAAGklEQVR4nGOIstE4UWGDSTJgFY2y0WAYlDoA7x1HQR4+pPMAAAAASUVORK5CYII=" width="400" height="400" alt="A hidden poster."></div>
+  </section>
+  <section>
+    <div class="frame"><img src="light.svg" width="1440" height="900" alt=""><p>Hidden caption</p><div class="cover"></div></div>
+    <div class="frame"><img src="light.svg" width="1440" height="900" alt=""><p class="blend">Blended title</p></div>
+  </section>
+  <section class="night">
+    <div class="card"><h2>Late shows</h2><p>Every Friday at 11 pm.</p></div>
   </section>
 </main>
 </body>
