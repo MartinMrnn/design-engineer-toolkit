@@ -8,7 +8,7 @@ None of 35 recent gallery sites uses generic shapes as its visual. Every one sho
 3. **A coded visual**, drawn from a real material of the project: its photos, its words, its data, its sound.
 4. **Type as the image**: the name, a figure or a sentence set large in live text.
 
-What only the client can supply is written `[à fournir : what]` with a brief, never filled with a stand-in.
+The order runs per need, not once for the page: a cinema's films come from the distributor's stills (step 1), the grain of its ground may come from a library (step 2). A library photo never shows what visitors would read as the client's own: a cinema room, a lawyer's office, a team. What only the client can supply is written `[à fournir : what]` with a brief, never filled with a stand-in.
 
 ## What Claude does well, and badly
 
@@ -36,6 +36,7 @@ The official Unsplash MCP server (`mcp.unsplash.com`) can search and fetch photo
 ## Honesty
 - A stock person is never presented as the client's team, customers or patients; a stock place never as their premises; a stock object never as their product.
 - A photo of a person needs that person's consent for commercial use. Library licences do not give it.
+- Press stills and distributor images come with their own terms: check whether cropping, toning or a treatment is allowed before applying one.
 
 ## The brief for what the client supplies
 ```markdown

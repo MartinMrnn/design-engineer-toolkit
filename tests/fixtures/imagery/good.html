@@ -29,6 +29,11 @@
   .label svg { width: 1.25em; height: 1.25em; }
   figure { margin: 0; }
   figure img { display: block; width: 100%; height: auto; }
+  /* A faint drawing under the whole first screen: the hero image is still what the first screen shows. */
+  .floor { position: absolute; top: 0; left: 0; width: 100%; height: 100vh; z-index: -2; }
+  /* A grain layer over the hero does not hide its text. */
+  .grain { position: absolute; inset: 0; opacity: 0.3; mix-blend-mode: overlay; pointer-events: none;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
   /* Text on a solid panel over the image: axe's to judge, not this script's. */
   .panel { justify-self: start; margin-top: 16px; padding: 8px 12px; background: #fff; color: #999; }
   /* A pill behind the active tab is not a blob. */
@@ -43,8 +48,10 @@
 <body>
 <header><span>Cinéma Lumière</span></header>
 <main>
+  <svg class="floor" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><path d="M0 50h100M50 0v100" stroke="#eee" stroke-width="0.2"/></svg>
   <section class="hero">
     <img src="dark.svg" width="1440" height="900" alt="" fetchpriority="high">
+    <div class="grain"></div>
     <h1>The night of the hunter</h1>
     <p>A restored print, introduced by the team, on Thursday at 8 pm.</p>
     <p class="panel">Doors at 7.30 pm</p>

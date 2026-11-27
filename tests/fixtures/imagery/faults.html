@@ -33,6 +33,17 @@
   .frame p { position: absolute; left: 16px; bottom: 16px; margin: 0; color: #fff; }
   .frame .cover { position: absolute; inset: 0; background: #f4f4f4; }
   .frame .blend { mix-blend-mode: difference; }
+  /* A caption that ignores the pointer is still read over its image, and fails. */
+  .tag { position: relative; width: 320px; margin: 0; }
+  .tag img { display: block; width: 100%; height: auto; }
+  .tag figcaption { position: absolute; left: 16px; bottom: 16px; color: #fff; pointer-events: none; }
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  /* White text on a flat light image: no ground of its own, so it is measured, and fails. */
+  .flat { height: 200px; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Crect width='8' height='8' fill='%23f0f0f0'/%3E%3C/svg%3E"); color: #fff; }
+  /* A video with no frame yet: not measured, and said so. */
+  .reel { position: relative; width: 320px; height: 200px; }
+  .reel video { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .reel p { position: absolute; left: 16px; bottom: 16px; margin: 0; color: #fff; }
   /* A black shadow lost on a dark ground. */
   .night { background: #0a0a0a; }
   .night .card { background: #0a0a0a; color: #fff; box-shadow: 0 8px 24px rgb(0 0 0 / 0.5); }
@@ -45,6 +56,7 @@
   <section class="hero">
     <img src="light.svg" width="1440" height="900" loading="lazy" alt="">
     <h1>The night of the hunter</h1>
+    <span class="sr-only">Thursday at 8 pm, restored print</span>
   </section>
   <section class="glow">
     <div class="blob"></div>
@@ -66,6 +78,9 @@
   <section>
     <div class="frame"><img src="light.svg" width="1440" height="900" alt=""><p>Hidden caption</p><div class="cover"></div></div>
     <div class="frame"><img src="light.svg" width="1440" height="900" alt=""><p class="blend">Blended title</p></div>
+    <figure class="tag"><img src="light.svg" width="1440" height="900" alt=""><figcaption>Now showing</figcaption></figure>
+    <div class="flat"><p>Flat light poster</p></div>
+    <div class="reel"><video muted playsinline width="320" height="200"></video><p>Late show</p></div>
   </section>
   <section class="night">
     <div class="card"><h2>Late shows</h2><p>Every Friday at 11 pm.</p></div>

@@ -20,6 +20,8 @@ test('a clean page passes and its imagery is described', async () => {
   assert.equal(report.pass, true, JSON.stringify(report.issues));
   assert.deepEqual(report.issues, []);
   assert.ok(report.visuals[1440].share >= 40, JSON.stringify(report.visuals));
+  assert.match(report.visuals[1440].kinds[0], /^img/, 'the hero image, not the faint drawing under the whole screen');
+  assert.ok(report.textures.length >= 1, JSON.stringify(report.textures));
   assert.ok(report.contrast.length >= 2 && report.contrast.every((c) => c.ratio >= c.needs), JSON.stringify(report.contrast));
   assert.ok(!report.contrast.some((c) => /Doors/.test(c.at)), 'text on a solid panel is left to axe');
   assert.deepEqual(report.unmeasured, []);
@@ -32,12 +34,16 @@ test('a clean page passes and its imagery is described', async () => {
   for (const kind of ['unsized', 'blurry', 'soft', 'heavy', 'lazyFirst']) assert.deepEqual(report.images[kind], [], kind);
 });
 
-test('the imagery faults are reported, and only the text over the light image fails', async () => {
+test('the imagery faults are reported, and only the texts over light images fail', async () => {
   const report = await imagery('faults.html');
   assert.equal(report.pass, false);
-  assert.deepEqual(report.issues.map((i) => i.kind), ['text-over-image'], JSON.stringify(report.issues));
-  assert.equal(report.issues[0].rule, 'WCAG 1.4.3');
-  assert.match(report.issues[0].detail, /1440.*390|390.*1440/);
+  assert.deepEqual(report.issues.map((i) => i.kind), ['text-over-image', 'text-over-image', 'text-over-image'], JSON.stringify(report.issues));
+  assert.ok(report.issues.every((i) => i.rule === 'WCAG 1.4.3'));
+  assert.match(report.issues.find((i) => /night of the hunter/.test(i.at)).detail, /1440.*390|390.*1440/);
+  assert.ok(report.issues.some((i) => /Now showing/.test(i.at)), 'a caption with pointer-events: none is still measured');
+  assert.ok(report.issues.some((i) => /Flat light poster/.test(i.at)), 'a flat image is not a ground of the text\'s own');
+  assert.ok(report.unmeasured.some((u) => /Late show.*no frame/.test(u)), JSON.stringify(report.unmeasured));
+  assert.ok(![...report.unmeasured, ...report.contrast.map((c) => c.at)].some((t) => /Thursday at 8 pm/.test(t)), 'visually hidden text is left out');
   assert.ok(report.shapes.some((s) => /round/.test(s)) && report.shapes.some((s) => /::before.*blur/.test(s)), JSON.stringify(report.shapes));
   assert.ok(report.unmeasured.some((u) => /Hidden caption.*covered/.test(u)) && report.unmeasured.some((u) => /Blended title.*blend mode difference/.test(u)), JSON.stringify(report.unmeasured));
   assert.equal(report.shadows.mixed, true);

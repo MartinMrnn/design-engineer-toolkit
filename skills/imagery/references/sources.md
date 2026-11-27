@@ -4,7 +4,7 @@ Every source this skill and `imagery.js` rest on, with its link and its licence 
 
 **What was copied: nothing.** Every text and code sample here is written in our own words. Where a licence forbids adaptation, or no licence could be found, only the principle is cited. Each idea is credited to the author who wrote it: the 2 % noise against banding is Nelson's, "never glass on glass" is Kowalski's.
 
-**How licences were checked, on 2026-11-27.** Software licences were read from each repository through the GitHub API. Other licences were read on the source's own page. The Unsplash and Pexels pages refused automated reading; their terms were read through a web search of their own pages and help centres, and are summarised, not quoted.
+**How licences were checked, on 2026-11-27.** Software licences were read from each repository through the GitHub API. Other licences were read on the source's own page. The Unsplash and Pexels pages refused our automated browser; their terms were read through a web search of their own pages and help centres, and are summarised, not quoted.
 
 ## Standards
 - **W3C** · WCAG 2.2, SC 1.1.1, 1.4.3, 1.4.5, 1.4.11 and 2.2.2 · https://www.w3.org/TR/WCAG22/ · Licence: W3C Document License (2023). Criteria are cited by number and stated in our own words.

@@ -91,15 +91,15 @@ Images that read, load and hold. Read `references/media.md` and `references/meas
 
 ```markdown
 ## Imagery · Direction A
-Level: assertive, the layout's level.
+Level: radical, the layout's level.
 Gesture: one beam of projector light across real film stills, the same idea as the colour, type and layout gestures.
 Overused in the sector: <one line> (never an example), or `not looked` when you could not look.
 Kept on purpose: none, or <a cliché>, because <the project's reason>.
-Visuals: <kind> from <source>: <what they show>; `[à fournir : …]` for what only the client has.
+Visuals: <kind> from <source>: <what they show>; `[à fournir : …]` for what only the client has, its brief below the entry.
 Treatment: <light, temperature, crop logic, the treatment>, in one sentence.
-Finish: <depth|matter|light>, <how>, <discreet|visible|the gesture>; `--shadow-sm` to `--shadow-lg` for what floats.
+Finish: <depth|matter|light>, <how>, <discreet|visible|the gesture>; the `--shadow-*` tokens for what floats, or `no shadow`.
 Icons: <library>, <stroke> beside <weight> text, or none.
-Assets: <file> · <what it shows> · <source> · <author> · <licence>, one line each.
+Assets: <file> · <what it shows> · <source> · <author, or the library when it names none> · <licence>, one line each; `[à fournir : …]` for files to come.
 Proof: `imagery.js` audit passes, or `not yet` before there is a page.
 ```
 

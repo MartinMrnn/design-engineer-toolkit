@@ -25,7 +25,7 @@ Each coded first screen says the brand's idea: Stripe's gradient, Raycast's beam
 ## Reading `imagery.js`
 | Field | What it means | What to do |
 |---|---|---|
-| `pass`, `issues` | `text-over-image`: a text over a visual under 4.5:1, or 3:1 when large, on its worst 5 % of pixels (WCAG 1.4.3) | Fix with `media.md`; it blocks |
+| `pass`, `issues` | `text-over-image`: a text over a visual under 4.5:1, or 3:1 when large, on its worst 5 % of pixels (WCAG 1.4.3) | Fix with `media.md`; it blocks. Text that is part of a picture, such as a product mock-up, is incidental under 1.4.3: set it aside, and mark the mock-up `aria-hidden` or `inert`, which the script skips |
 | `visuals` | Share of the first screen covered by a visual, and its kinds | 0 % on a brand page with an assertive or radical level is worth a look (`level-2`) |
 | `contrast` | The 20 lowest ratios measured, passing or not; text on a flat ground is left to axe | A ratio just above its need will fail on another crop: give it margin |
 | `unmeasured` | Texts over a visual not measured: blended, or covered and clipped | Look at each one on the page; a blended text can still be unreadable |
@@ -39,4 +39,7 @@ Each coded first screen says the brand's idea: Stripe's gradient, Raycast's beam
 - `unsized` also lists an image whose box has a fixed CSS height: no jump, so set it aside.
 - `contrast` ignores text opacity and gradient-filled text, and a fixed header can fall inside a captured box. A video is judged on the frame captured.
 - Style sheets from another origin cannot be read: `reducedTransparency` may be `false` while a rule exists.
+- The script runs with reduced motion, so it never sees what moves without it: a ticker, a looping video, a logo band. Whether they can be paused (`proof-3`) is the critic's to try.
+- Elements revealed on scroll may be measured before they appear.
+- `glass` counts every `backdrop-filter`, blurred edge fades included; `nested` sees glass inside glass, not glass laid over a sibling.
 - The script does not judge whether an image fits the project, or whether the finish is good. That is the critic's and the user's.

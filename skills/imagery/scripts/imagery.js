@@ -2,16 +2,19 @@
 // Usage: open the page with browser_navigate, then call browser_run_code_unsafe with
 // { "filename": "<path to>/imagery.js" }. With reduced motion, at 1440 × 900 and 390 × 844, it returns:
 // - visuals: the share of the first screen covered by a visual (img, video, canvas, iframe, svg, CSS image,
-//   at least 160 × 120, by rectangle so a canvas with pointer-events: none counts) and its kinds;
+//   at least 160 × 120, by rectangle so a canvas with pointer-events: none counts, each point given to the
+//   smallest visual over it) and its kinds;
 // - images: images at least 80 px wide that reserve no space (no aspect ratio, not absolutely placed),
 //   blurry (fewer image pixels than CSS pixels shown), soft (under 2x), heavy (over 3x), lazy in the first
 //   screen, and how many have an outline or border. Vectors skip resolution;
 // - contrast: each text over an image, video, canvas, CSS image or gradient (its box meets the visual, or a
 //   background on the way to its first opaque ground), at most 40 per width. Text is made transparent,
 //   its box captured and its pixels decoded in the page; the ratio kept is the worst 5 % of pixels against
-//   the text colour. A flat ground is left to axe. The 20 lowest are listed;
+//   the text colour. Text on a flat ground of its own, in front of the visuals, is left to axe. The 20
+//   lowest are listed;
 // - unmeasured: texts over a visual that were not measured: blended (mix-blend-mode), or covered or clipped
-//   (another element is on top at the centre of the text);
+//   (an opaque element above it at the centre of the text, pointer-events ignored). Text in a box under
+//   4 px, such as .sr-only, is left out; a video under the text that shows no frame after 2 s is listed too;
 // At 1440 only, the whole page:
 // - shapes: empty absolute or fixed elements and pseudo-elements, filled, at least 4000 px², round
 //   (radius 30 % of a short side of 80 px or more) or blurred (blur 20 px or more): shapes standing in for
@@ -90,7 +93,9 @@ async (page) => {
       for (let i = 0; i < 24; i++) for (let j = 0; j < 15; j++) {
         const x = ((i + 0.5) / 24) * innerWidth;
         const y = ((j + 0.5) / 15) * innerHeight;
-        const v = vis.find((v) => v.kind !== 'gradient' && x >= v.r.left && x <= v.r.right && y >= v.r.top && y <= v.r.bottom);
+        // The smallest visual under the point: a card over a faint full-width drawing is the card.
+        const v = vis.filter((v) => v.kind !== 'gradient' && x >= v.r.left && x <= v.r.right && y >= v.r.top && y <= v.r.bottom)
+          .sort((a, b) => a.r.width * a.r.height - b.r.width * b.r.height)[0];
         if (v) { hit++; kinds[v.kind] = (kinds[v.kind] || 0) + 1; }
       }
       return { share: Math.round((hit / n) * 100), kinds: Object.entries(kinds).sort((a, b) => b[1] - a[1]).map(([k, c]) => `${k} ${Math.round((c / n) * 100)} %`) };
@@ -127,7 +132,7 @@ async (page) => {
       const out = [];
       for (const el of all()) {
         if (out.length >= max) break;
-        if (el.closest('script, style, noscript, template, [aria-hidden="true"]') || !shown(el)) continue;
+        if (el.closest('script, style, noscript, template, [aria-hidden="true"], [inert]') || !shown(el)) continue;
         const nodes = [...el.childNodes].filter((n) => n.nodeType === 3 && n.textContent.trim());
         if (!nodes.length) continue;
         const s = cs(el);
@@ -135,18 +140,23 @@ async (page) => {
         const rects = nodes.flatMap((n) => { const range = document.createRange(); range.selectNodeContents(n); return [...range.getClientRects()]; }).filter((r) => r.width > 0 && r.height > 0);
         if (!rects.length) continue;
         const box = { left: Math.min(...rects.map((r) => r.left)), right: Math.max(...rects.map((r) => r.right)), top: Math.min(...rects.map((r) => r.top)), bottom: Math.max(...rects.map((r) => r.bottom)) };
-        let over = vis.some((v) => v.el !== el && !el.contains(v.el) && meets(v.r, box));
-        for (let a = el; !over && a; a = a.parentElement) {
+        const own = el.getBoundingClientRect();
+        if (own.width < 4 || own.height < 4) continue; // visually hidden text, such as .sr-only
+        const under = vis.filter((v) => v.el !== el && !el.contains(v.el) && meets(v.r, box));
+        // solid: the text has a flat ground of its own in front of the visuals, which axe can judge.
+        let over = under.length > 0;
+        let solid = false;
+        for (let a = el; a; a = a.parentElement) {
           const as = cs(a);
-          if (imageBg(as)) over = true;
-          else if (alpha(as.backgroundColor) >= 0.9) break;
+          if (imageBg(as)) { over = true; break; }
+          if (alpha(as.backgroundColor) >= 0.9) { solid = !under.some((v) => a.contains(v.el)); break; }
         }
         if (!over) continue;
         const size = parseFloat(s.fontSize);
         let blend = '';
         for (let a = el; !blend && a; a = a.parentElement) if (cs(a).mixBlendMode !== 'normal') blend = cs(a).mixBlendMode;
         texts.push({ el, nodes });
-        out.push({ at: describe(el), color: srgb(s.color), large: size >= 24 || (size >= 18.66 && +s.fontWeight >= 700), blend });
+        out.push({ at: describe(el), color: srgb(s.color), large: size >= 24 || (size >= 18.66 && +s.fontWeight >= 700), blend, solid });
       }
       return out;
     };
@@ -160,11 +170,27 @@ async (page) => {
       const right = Math.min(innerWidth, Math.max(...rects.map((r) => r.right)));
       const bottom = Math.min(innerHeight, Math.max(...rects.map((r) => r.bottom)));
       if (right - left < 2 || bottom - top < 2) return null;
-      // Text clipped by its container or under another element is not what people see there.
-      const hit = document.elementFromPoint((left + right) / 2, (top + bottom) / 2);
-      if (!hit || !(el.contains(hit) || hit.contains(el))) return { covered: hit ? name(hit) : 'nothing' };
-      return { x: left, y: top, width: right - left, height: bottom - top };
+      // Text clipped by its container or under an opaque element is not what people see there. The text is
+      // made hit-testable for this one test, so a label with pointer-events: none still counts; forcing it
+      // on the whole page would wake hover states.
+      const [value, priority] = [el.style.getPropertyValue('pointer-events'), el.style.getPropertyPriority('pointer-events')];
+      el.style.setProperty('pointer-events', 'auto', 'important');
+      const stack = document.elementsFromPoint((left + right) / 2, (top + bottom) / 2);
+      if (value) el.style.setProperty('pointer-events', value, priority); else el.style.removeProperty('pointer-events');
+      const opaque = (hit) => {
+        const hs = cs(hit);
+        if (+hs.opacity < 0.9 || hs.mixBlendMode !== 'normal') return false; // a grain or tint layer does not hide the text
+        return ['IMG', 'VIDEO', 'CANVAS', 'IFRAME'].includes(hit.tagName) || alpha(hs.backgroundColor) >= 0.9 || hs.backgroundImage.includes('url(');
+      };
+      const at = stack.findIndex((hit) => el.contains(hit) || hit.contains(el));
+      const cover = stack.slice(0, at < 0 ? stack.length : at).find(opaque);
+      if (at < 0 || cover) return { covered: cover ? name(cover) : 'nothing' };
+      // A video under the text with no frame yet would be measured as an empty ground.
+      const below = stack.slice(at).find((hit) => !hit.contains(el) && opaque(hit));
+      texts[i].video = below && below.tagName === 'VIDEO' ? below : null;
+      return { x: left, y: top, width: right - left, height: bottom - top, video: !!texts[i].video };
     };
+    const framed = (i) => !texts[i].video || texts[i].video.readyState >= 2;
     const hideText = (on) => {
       let style = document.getElementById('__imagery-hide');
       if (on && !style) {
@@ -304,12 +330,11 @@ async (page) => {
       return [...out];
     };
 
-    window.__imagery = { visuals, firstScreen, images, candidates, textBox, hideText, shapes, shadows, glass, gradients, textures };
+    window.__imagery = { visuals, firstScreen, images, candidates, textBox, framed, hideText, shapes, shadows, glass, gradients, textures };
   });
 
   // Decodes a PNG in the page (no data: URL, so the site's CSP cannot block it) and returns the contrast
-  // of the text colour against the worst 5 % of its pixels, or null when the ground is one flat colour:
-  // text on a solid ground is axe's to judge.
+  // of the text colour against the worst 5 % of its pixels, and whether the ground is one flat colour.
   const worst = (png, color) => page.evaluate(async ({ b64, color }) => {
     const bytes = Uint8Array.from(atob(b64), (c) => c.charCodeAt(0));
     const bmp = await createImageBitmap(new Blob([bytes], { type: 'image/png' }));
@@ -325,13 +350,12 @@ async (page) => {
     for (let p = 0; p < d.length; p += 4 * step) lums.push(lum(d[p], d[p + 1], d[p + 2]));
     lums.sort((a, b) => a - b);
     const [low, high] = [lums[Math.floor(lums.length * 0.05)], lums[Math.floor(lums.length * 0.95)]];
-    if ((high + 0.05) / (low + 0.05) < 1.1) return null;
     const ratios = lums.map((l) => (Math.max(l, lt) + 0.05) / (Math.min(l, lt) + 0.05)).sort((a, b) => a - b);
-    return ratios[Math.floor(ratios.length * 0.05)];
+    return { ratio: ratios[Math.floor(ratios.length * 0.05)], flat: (high + 0.05) / (low + 0.05) < 1.1 };
   }, { b64: png.toString('base64'), color });
 
   const report = { url, pass: true, visuals: {}, shapes: [], shadows: null, glass: null, gradients: null, textures: [], images: null, contrast: [], unmeasured: [], issues: [] };
-  const lists = { unsized: new Set(), blurry: new Set(), soft: new Set(), heavy: new Set(), lazyFirst: new Set() };
+  const lists = { unsized: new Map(), blurry: new Map(), soft: new Map(), heavy: new Map(), lazyFirst: new Map() }; // item → its widths
   const unmeasured = new Set();
   const failing = new Map();
   const measured = [];
@@ -350,7 +374,7 @@ async (page) => {
         return out;
       }, [width, MAX_TEXT]);
       report.visuals[width] = found.first;
-      for (const kind of Object.keys(lists)) for (const item of found.images[kind]) lists[kind].add(item);
+      for (const kind of Object.keys(lists)) for (const item of found.images[kind]) lists[kind].set(item, [...(lists[kind].get(item) || []), width]);
       if (width === 1440) {
         images = { n: found.images.n, outlined: found.images.outlined };
         Object.assign(report, { shapes: found.shapes, shadows: found.shadows, glass: found.glass, gradients: found.gradients, textures: found.textures });
@@ -358,14 +382,16 @@ async (page) => {
       await page.evaluate(() => window.__imagery.hideText(true));
       try {
         for (let i = 0; i < found.texts.length; i++) {
-          const { at, large, blend, color } = found.texts[i];
+          const { at, large, blend, color, solid } = found.texts[i];
           if (blend) { unmeasured.add(`${at}: blend mode ${blend}`); continue; }
           const box = await page.evaluate((n) => window.__imagery.textBox(n), i);
           if (!box) continue;
           if (box.covered) { unmeasured.add(`${at}: covered by ${box.covered}`); continue; }
+          if (box.video) await page.waitForFunction((n) => window.__imagery.framed(n), i, { timeout: 2000 }).catch(() => {});
+          if (!(await page.evaluate((n) => window.__imagery.framed(n), i))) { unmeasured.add(`${at}: the video under it shows no frame yet`); continue; }
           await frame();
-          const ratio = await worst(await page.screenshot({ clip: box }), color);
-          if (ratio === null) continue;
+          const { ratio, flat } = await worst(await page.screenshot({ clip: { x: box.x, y: box.y, width: box.width, height: box.height } }), color);
+          if (flat && solid) continue; // text on its own flat ground is axe's to judge
           const needs = large ? 3 : 4.5;
           measured.push({ at, width, ratio: Math.round(ratio * 100) / 100, needs });
           if (ratio < needs) {
@@ -384,7 +410,7 @@ async (page) => {
     if (start) await page.setViewportSize(start);
     await page.evaluate(() => scrollTo(0, 0));
   }
-  report.images = { ...images, ...Object.fromEntries(Object.entries(lists).map(([k, v]) => [k, [...v].slice(0, MAX)])) };
+  report.images = { ...images, ...Object.fromEntries(Object.entries(lists).map(([k, v]) => [k, [...v].slice(0, MAX).map(([item, w]) => `${item} (${w.join(', ')} px)`)])) };
   report.contrast = measured.sort((a, b) => a.ratio - b.ratio).slice(0, 20);
   report.unmeasured = [...unmeasured].slice(0, MAX);
   report.issues = [...failing.entries()].slice(0, MAX).map(([at, f]) => ({
