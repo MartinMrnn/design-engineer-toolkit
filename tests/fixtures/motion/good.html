@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Night screenings</title>
+<style>
+  :root {
+    --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+    --duration-press: 160ms;
+    --duration-pop: 200ms;
+  }
+  body { margin: 0; font: 16px/1.5 system-ui, sans-serif; color: #111; background: #fafafa; }
+  main { padding: 40px; max-width: 720px; }
+  .button { padding: 10px 16px; border: 0; border-radius: 8px; background: #111; color: #fff; font: inherit; }
+  .card { display: block; padding: 24px; margin: 24px 0; border: 1px solid #ddd; color: inherit; text-decoration: none; }
+  .pop { position: absolute; top: 24px; right: 40px; padding: 12px; background: #fff; border: 1px solid #ddd; }
+  .programme p { margin: 0 0 400px; }
+  /* Motion only for those who did not ask for less. */
+  @media (prefers-reduced-motion: no-preference) {
+    .button { transition: transform var(--duration-press) var(--ease-out), background-color var(--duration-press) var(--ease-out); }
+    .button:active { transform: scale(0.97); }
+    .card { transition: transform 200ms var(--ease-out); }
+    .pop { transition: opacity var(--duration-pop) var(--ease-out), transform var(--duration-pop) var(--ease-out); }
+    @starting-style {
+      .pop { opacity: 0; transform: scale(0.96); }
+    }
+  }
+  @media (prefers-reduced-motion: no-preference) and (hover: hover) and (pointer: fine) {
+    .card:hover { transform: translateY(-2px); }
+  }
+</style>
+</head>
+<body>
+<main>
+  <h1>Night screenings</h1>
+  <p>Two films a night, in the small room on the second floor.</p>
+  <button class="button" type="button">Book a seat</button>
+  <button class="button" type="button">See the programme</button>
+  <div class="pop" role="status">Tonight: 42 seats left</div>
+  <a class="card" href="#hunter">The Night of the Hunter, 8:30 pm</a>
+  <section class="programme">
+    <h2>This week</h2>
+    <p>Monday: The Night of the Hunter.</p>
+    <p>Tuesday: Stalker.</p>
+    <p>Wednesday: Late Spring.</p>
+    <p>Thursday: Paris, Texas.</p>
+  </section>
+</main>
+</body>
+</html>
