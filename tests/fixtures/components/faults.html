@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Atelier Rayon · réparation de vélos</title>
+<style>
+  :root { --background: #f7f5f0; --foreground: #1f1d1a; --border: #d6d0c4; --ring: #2c7a5c; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--background); color: var(--foreground); font: 16px/1.5 system-ui, sans-serif; }
+  :focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+  /* A ring too pale for its ground. */
+  .pale:focus-visible { outline: 2px solid #ddd8cc; }
+  header { display: flex; justify-content: space-between; align-items: center; padding: 16px 24px; position: relative; }
+  nav ul { list-style: none; display: flex; gap: 12px; margin: 0; padding: 0; }
+  .burger, .faq, .open-quote, button { font: inherit; min-height: 44px; padding: 0 16px; }
+  .panel { position: absolute; right: 24px; top: 72px; background: #fff; border: 1px solid var(--border); padding: 12px; }
+  .hours { padding: 12px; }
+  .quote { position: fixed; inset: 20% 30%; background: #fff; border: 1px solid var(--border); padding: 24px; }
+  .wrap { max-width: 960px; margin: 0 auto; padding: 32px 24px; }
+</style>
+</head>
+<body>
+  <header>
+    <a href="#">Atelier Rayon</a>
+    <nav>
+      <ul role="menubar">
+        <li role="none"><a role="menuitem" href="#tarifs">Tarifs</a></li>
+        <li role="none"><a role="menuitem" href="#atelier">L'atelier</a></li>
+      </ul>
+    </nav>
+    <button class="burger">Menu</button>
+    <div class="panel" hidden>
+      <a href="#reparations">Réparations</a>
+      <a href="#contact">Contact</a>
+    </div>
+  </header>
+  <div class="wrap">
+    <p class="title">Votre vélo réparé en 48 heures.</p>
+    <p><a class="pale" href="#tarifs">Voir les tarifs</a></p>
+    <div tabindex="3">Promo du mois</div>
+    <p><button class="faq" type="button" aria-expanded="false">Horaires</button></p>
+    <div class="hours" hidden><a href="#samedi">Le samedi</a> de 9 h à 18 h.</div>
+    <p><button class="open-quote" type="button" aria-haspopup="dialog">Demander un devis</button></p>
+    <div class="quote" role="dialog" aria-modal="true" aria-label="Devis" hidden>
+      <label for="bike">Votre vélo</label>
+      <input id="bike">
+      <button type="button" class="send-quote">Envoyer le devis</button>
+    </div>
+    <form>
+      <label for="mail">Courriel</label>
+      <input id="mail" type="email" aria-label="Adresse électronique">
+      <button type="submit" aria-label="Valider">Envoyer</button>
+      <button type="submit" disabled>M'inscrire</button>
+    </form>
+    <!-- Buttons that switch a view (Linear's product demo): not menus, even inside a nav and without aria-expanded. -->
+    <nav aria-label="Vues">
+      <button class="view-button" data-view="view-1">L'atelier</button>
+      <button class="view-button" data-view="view-2">La boutique</button>
+    </nav>
+    <div id="view-1" class="view"><a href="#atelier">Voir l'atelier</a></div>
+    <div id="view-2" class="view" hidden><a href="#boutique">Voir la boutique</a></div>
+    <p><a href="#fin">Mentions</a></p>
+  </div>
+<script>
+  for (const b of document.querySelectorAll('.view-button')) b.addEventListener('click', () => {
+    for (const v of document.querySelectorAll('.view')) v.hidden = v.id !== b.dataset.view;
+  });
+  // A menu button with no aria-expanded, whose panel ignores Escape.
+  const burger = document.querySelector('.burger');
+  const panel = document.querySelector('.panel');
+  burger.addEventListener('click', () => { panel.hidden = !panel.hidden; });
+  // A disclosure that closes on Escape but drops focus on body.
+  const faq = document.querySelector('.faq');
+  const hours = document.querySelector('.hours');
+  faq.addEventListener('click', () => { const open = faq.getAttribute('aria-expanded') !== 'true'; faq.setAttribute('aria-expanded', String(open)); hours.hidden = !open; });
+  // A modal that moves focus inside but lets Tab leave; Escape closes it and returns focus.
+  const opener = document.querySelector('.open-quote');
+  const quote = document.querySelector('.quote');
+  opener.addEventListener('click', () => { quote.hidden = false; document.getElementById('bike').focus(); });
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Escape') return;
+    if (!hours.hidden) { hours.hidden = true; faq.setAttribute('aria-expanded', 'false'); document.activeElement.blur(); }
+    if (!quote.hidden) { quote.hidden = true; opener.focus(); }
+  });
+</script>
+</body>
+</html>
