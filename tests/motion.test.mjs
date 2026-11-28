@@ -126,3 +126,7 @@ test('every motion source states its licence and is credited', () => {
 test('nothing is left of the v0.3 motion material', () => {
   for (const file of files()) assert.doesNotMatch(text(file), /charter|12-motion|cards and proposals|B2 plan|art director|gsap@3\.15|lenis@1\.3\.26/i, file);
 });
+
+test('no example comes from the test projects', () => {
+  for (const file of files()) assert.doesNotMatch(text(file), /avocat|lawyer|cinéma|cinema|séance|screening|juridique|cabinet|family law|droit de la famille|projector|film still/i, file);
+});

@@ -121,3 +121,7 @@ test('every layout source states its licence and is credited', () => {
 test('nothing is left of the v0.3 layout material', () => {
   for (const file of files()) assert.doesNotMatch(text(file), /charter|tokens\.json|06-structure|10-shape|13-rules|B2 plan|--fluid-|art director/i, file);
 });
+
+test('no example comes from the test projects', () => {
+  for (const file of files()) assert.doesNotMatch(text(file), /avocat|lawyer|cinéma|cinema|séance|screening|juridique|cabinet|family law|droit de la famille|projector|film still/i, file);
+});

@@ -32,7 +32,7 @@ Break where the layout stops fitting: where a column falls under a readable widt
 
 ## The phone layout
 - **Compose it.** Decide for each section what moves, what shrinks, what hides behind a disclosure, and what stays within thumb reach. One column of content, two at most for small items.
-- **Stack or swipe, by content.** What the visitor compares or must read entirely stacks: offers, steps, a lawyer's fields of practice. What is browsed may become a swiping row: products, screenings, works. **Measured:** rows of three or more items on a phone are stacked in 50 % of cases and swipe in 43 %.
+- **Stack or swipe, by content.** What the visitor compares or must read entirely stacks: offers, steps, a workshop's repair services. What is browsed may become a swiping row: products, events, works. **Measured:** rows of three or more items on a phone are stacked in 50 % of cases and swipe in 43 %.
 - **A swiping row shows the next item** peeking at least 16 px past the edge (16 to 32 px is enough); a row that ends exactly at the edge looks complete and nobody swipes it. The row bleeds to the screen's edge while its first item starts on the margin. Its items stay reachable by keyboard, and nothing the visitor must see lives only in it.
 - **The header stays light:** the name and a few links, with room around them; on a phone nothing wraps onto a second line. Its menus belong to `components`.
 

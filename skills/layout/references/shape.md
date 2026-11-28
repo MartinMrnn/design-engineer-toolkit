@@ -3,7 +3,7 @@
 Shapes are corners, silhouettes and borders. Like colour, they need a logic, or the page looks assembled from several kits.
 
 ## The shape logic
-State it in one sentence: which radii exist, on what, and why. For example: "round means it can be picked up: buttons and tags; the page structure stays straight". Or: "everything is square, like the printed programme". The logic follows the level: a restrained direction keeps one or two radii; a radical one may make a single shape its gesture.
+State it in one sentence: which radii exist, on what, and why. For example: "round means it can be picked up: buttons and tags; the page structure stays straight". Or: "everything is square, like the printed catalogue". The logic follows the level: a restrained direction keeps one or two radii; a radical one may make a single shape its gesture.
 
 **Measured.** The 9 brand sites use none or one radius besides the pill; the 6 product sites use 3 to 14.
 

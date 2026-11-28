@@ -82,16 +82,16 @@ Ideal, empty, loading, error, success and limit. Read `references/states.md` for
 
 ```markdown
 ## Accueil
-Goal: a parent going through a separation books a first meeting.
-Arrives from: search, a referral.
-Main action: Prendre un premier rendez-vous
+Goal: someone whose bike broke down books a repair.
+Arrives from: search, a map.
+Main action: Réserver une réparation
 Intents: « Peut-on m'aider ? », « Combien ça coûte ? »
-Paths: main, Accueil → Contact; secondary, Accueil → Honoraires → Contact.
-Objections: « Ça va me coûter trop cher », answered by the fees section.
-Priority: first the specialty and the action, then the steps, last the address.
+Paths: main, Accueil → Réservation; secondary, Accueil → Tarifs → Réservation.
+Objections: « Ça va me coûter trop cher », answered by the price list.
+Priority: first the repairs and the action, then the steps, last the address.
 
-1. « Ce cabinet traite-t-il mon cas ? »
-   → Droit de la famille à Lyon, du premier rendez-vous au jugement.
+1. « Cet atelier répare-t-il mon vélo ? »
+   → Réparation de vélos à Nantes, de la crevaison à la révision complète.
    Leads to: « Comment ça se passe ? »
 2. « Comment ça se passe ? »
    → Les 3 étapes, avec leurs délais.

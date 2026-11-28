@@ -25,8 +25,8 @@ Two different things share the word grid. The **alignment grid** gives the page 
 |---|---|---|---|
 | 1 | focus on one message | the opening, a call to action, a strong statement | 1 |
 | 2 | pair two things | text and image, a quote and a face, a title column beside cards | 1 |
-| 3 or 4 | compare a few things | offers, services, fields of practice | stacked |
-| 4 or more | browse rich content | works, a gallery, a programme | 2, stacked, or swiping |
+| 3 or 4 | compare a few things | offers, services, plans | stacked |
+| 4 or more | browse rich content | works, a gallery, a collection | 2, stacked, or swiping |
 | 5 to 6 | scan many small items | a catalogue, a list of dates | 2, or swiping |
 
 - **Four things to compare** sit in one row of four or in two rows of two; both are comparisons.
