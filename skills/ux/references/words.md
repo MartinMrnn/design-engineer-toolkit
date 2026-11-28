@@ -17,7 +17,7 @@ Content is the interface. It is written first, in the site's language, and it de
 
 | Where | Broken | Fixed |
 |---|---|---|
-| Headline | Your trusted partner | Family law in Lyon, from the first meeting to the judgement |
+| Headline | Your trusted partner | Bike repair in Nantes, from a puncture to a full service |
 | Button | Get started | Book a first call |
 | Link | Click here | See the fees |
 | Field error | Invalid input | Enter a date like 14/03/2027 |

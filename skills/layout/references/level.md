@@ -19,7 +19,7 @@ Look at what is already decided, in this order:
 These are kinds to choose from with the project in mind, never a menu to fill. Write the level with its reason: `Level: radical, the type's level`, or `Level: assertive, a step under the type's, because the brief asks for calm`.
 
 ## One idea, three voices
-The colour, the type and the layout each may carry a gesture, and **the three gestures express one idea**. A cinema programme printed on newsprint: ink on paper for the colour, condensed headlines for the type, dense columns and rules for the layout. If two gestures pull apart, keep the stronger one and calm the other. Three unrelated gestures on one page read as too much.
+The colour, the type and the layout each may carry a gesture, and **the three gestures express one idea**. A record shop's mail-order catalogue printed on newsprint: ink on paper for the colour, condensed headlines for the type, dense columns and rules for the layout. If two gestures pull apart, keep the stronger one and calm the other. Three unrelated gestures on one page read as too much.
 
 ## Overused patterns
 Generated pages repeat these because they are common, not because the project needs them. Each one is allowed only with a reason written on the entry's `Kept on purpose` line, a reason that comes from the brief, the plan or the inspirations.

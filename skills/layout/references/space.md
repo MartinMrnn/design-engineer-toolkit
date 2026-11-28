@@ -40,7 +40,7 @@ Each tool only where the one before cannot carry the structure:
 2. **A shared region**, a background or a frame, where a group must read as one unit: a card that is one link, a selectable row, a form step. People see things inside one boundary as a group (Common Region).
 3. **Lines**, for dense data where space costs too much: tables, long settings lists. A thin, quiet line, never added to a gap that already did the work.
 
-Boxing everything is how a page becomes a stack of sealed blocks. Rules drawn as the direction's gesture, such as the columns of a printed programme, are a choice: write them on the entry's `Kept on purpose` line.
+Boxing everything is how a page becomes a stack of sealed blocks. Rules drawn as the direction's gesture, such as the columns of a printed catalogue, are a choice: write them on the entry's `Kept on purpose` line.
 
 ## Start generous
 When unsure, give more space, then take some away. Crowding is harder to see than emptiness, and the user's taste rejects the too-full screen. You do not have to fill the whole width: a form or a text can stay narrow on a wide screen.

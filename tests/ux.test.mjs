@@ -97,3 +97,7 @@ test('every source states its licence and is credited', () => {
   const credits = new Set(readFileSync(join(ROOT, 'CREDITS.md'), 'utf8').split('\n').filter((line) => line.startsWith('|')).map((line) => cells(line)[0]));
   for (const key of keys()) assert.ok(credits.has(key), `CREDITS.md has no row "${key}"`);
 });
+
+test('no example comes from the test projects', () => {
+  for (const file of files()) assert.doesNotMatch(read(file), /avocat|lawyer|cinéma|cinema|séance|screening|juridique|cabinet|family law|droit de la famille|projector|film still/i, file);
+});

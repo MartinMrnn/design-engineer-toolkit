@@ -8,7 +8,7 @@ None of 35 recent gallery sites uses generic shapes as its visual. Every one sho
 3. **A coded visual**, drawn from a real material of the project: its photos, its words, its data, its sound.
 4. **Type as the image**: the name, a figure or a sentence set large in live text.
 
-The order runs per need, not once for the page: a cinema's films come from the distributor's stills (step 1), the grain of its ground may come from a library (step 2). A library photo never shows what visitors would read as the client's own: a cinema room, a lawyer's office, a team. What only the client can supply is written `[à fournir : what]` with a brief, never filled with a stand-in.
+The order runs per need, not once for the page: a bakery's loaves come from the baker's own photos (step 1), the grain of its ground may come from a library (step 2). A library photo never shows what visitors would read as the client's own: the bakery's shop, a workshop's bench, a team. What only the client can supply is written `[à fournir : what]` with a brief, never filled with a stand-in.
 
 ## What Claude does well, and badly
 
@@ -20,7 +20,7 @@ The order runs per need, not once for the page: a cinema's films come from the d
 | Three.js with physical materials and a CC0 HDRI | Modelling a detailed 3D object |
 | Setting type as an image | Logos and marks: they are always supplied |
 
-A generative piece with no source is decoration with extra steps. Tie it to something real: the cinema's schedule drives the lines, a real still is dithered, the sound of the venue shapes the particles.
+A generative piece with no source is decoration with extra steps. Tie it to something real: the bakery's batch times drive the lines, a real photo is dithered, the sound of the street shapes the particles.
 
 ## Libraries
 
@@ -36,7 +36,7 @@ The official Unsplash MCP server (`mcp.unsplash.com`) can search and fetch photo
 ## Honesty
 - A stock person is never presented as the client's team, customers or patients; a stock place never as their premises; a stock object never as their product.
 - A photo of a person needs that person's consent for commercial use. Library licences do not give it.
-- Press stills and distributor images come with their own terms: check whether cropping, toning or a treatment is allowed before applying one.
+- Press photos and supplier images come with their own terms: check whether cropping, toning or a treatment is allowed before applying one.
 
 ## The brief for what the client supplies
 ```markdown
@@ -50,7 +50,7 @@ Framing: horizontal 3:2, room above the head for the headline.
 They are provided files, made in their own editors; Claude does not author them. Check the licence of a community file before using it. How they move, and what reduced motion shows, is `motion`'s.
 
 ## The asset list
-One line per file on the entry's `Assets` line or below it: `stills/night-01.jpg · the hunter on the river · https://… · photographer · Unsplash License`. Assets of a direction that was not kept leave with it.
+One line per file on the entry's `Assets` line or below it: `photos/clay-01.jpg · raw clay, close · https://… · photographer · Unsplash License`. Assets of a direction that was not kept leave with it.
 
 | Rule | Why | Kind | Source | Checked by |
 |---|---|---|---|---|
