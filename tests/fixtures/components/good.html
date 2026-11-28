@@ -18,6 +18,8 @@
   main { max-width: 960px; margin: 0 auto; padding: 32px 24px; }
   .btn { font: inherit; min-height: 44px; padding: 0 18px; border-radius: var(--radius); border: 1px solid transparent; background: var(--primary); color: var(--primary-foreground); }
   .icon-btn { width: 44px; height: 44px; border-radius: 999px; border: 1px solid var(--border); background: var(--background); color: var(--foreground); }
+  .story { position: relative; min-height: 56px; }
+  .story-panel { position: absolute; top: 48px; left: 0; padding: 8px 0; }
   .cards { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
   .card { position: relative; padding: 20px; border: 1px solid var(--border); border-radius: 14px; }
   .card a { text-decoration: none; }
@@ -36,6 +38,7 @@
     <a class="logo" href="#">Atelier Rayon</a>
     <nav aria-label="Principale">
       <button class="menu-button" type="button" aria-expanded="false" aria-controls="menu">Menu</button>
+      <button class="menu-button" type="button" lang="en" id="english">English</button>
       <ul id="menu" hidden>
         <li><a href="#reparations">Réparations</a></li>
         <li><a href="#tarifs">Tarifs</a></li>
@@ -52,7 +55,13 @@
         <svg aria-hidden="true" focusable="false" width="18" height="18" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/></svg>
       </button>
       <button class="btn" type="button" aria-label="Rechercher une pièce détachée">Rechercher</button>
+      <button class="btn" type="button" role="combobox" aria-haspopup="listbox" aria-expanded="false" aria-label="Thème">Clair</button>
+      <a class="btn" href="#rdv" aria-label="Prendre rendez-vous">Prendre rendez-vous <span class="who">avec Lou</span></a>
     </p>
+    <div class="story">
+      <button type="button" class="story-button" aria-expanded="false" aria-controls="story-1">L'histoire de l'atelier</button>
+      <div id="story-1" class="story-panel" hidden><a href="#atelier">Lire la suite</a></div>
+    </div>
     <h2 id="reparations">Réparations</h2>
     <ul class="cards">
       <li class="card"><h3><a href="#revision">Révision complète</a></h3><p>Freins, transmission, roues.</p></li>
@@ -78,11 +87,20 @@
 <script>
   const button = document.querySelector('.menu-button');
   const menu = document.getElementById('menu');
-  const setMenu = (open) => { button.setAttribute('aria-expanded', String(open)); menu.hidden = !open; };
+  const setMenu = (open) => {
+    button.setAttribute('aria-expanded', String(open));
+    if (open) menu.hidden = false;
+    else setTimeout(() => { menu.hidden = true; }, 600);
+  };
   button.addEventListener('click', () => setMenu(button.getAttribute('aria-expanded') !== 'true'));
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && button.getAttribute('aria-expanded') === 'true') { setMenu(false); button.focus(); }
   });
+  // An accordion in the content, absolutely placed, that ignores Escape: not an overlay (Stripe's stories).
+  const story = document.querySelector('.story-button');
+  story.addEventListener('click', () => { const open = story.getAttribute('aria-expanded') !== 'true'; story.setAttribute('aria-expanded', String(open)); document.getElementById('story-1').hidden = !open; });
+  // Switching the language reloads the page (Plnty's header replaced the document under the script).
+  document.getElementById('english').addEventListener('click', () => location.reload());
   const dialog = document.getElementById('booking');
   const book = document.getElementById('book');
   book.addEventListener('click', () => dialog.showModal());

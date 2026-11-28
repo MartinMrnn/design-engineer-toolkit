@@ -42,6 +42,13 @@ test('only the ring contrast and the label in name fail; the rest is reported', 
   assert.deepEqual([...failing].sort(), ['element-4', 'focus-2']);
 });
 
+test('headings are enough to skip blocks, without a main landmark', async () => {
+  const report = await components('headings.html');
+  assert.deepEqual(report.issues.filter((i) => i.kind === 'bypass'), []);
+  assert.equal(report.bypass.main, false);
+  assert.ok(report.bypass.headings >= 2);
+});
+
 const text = (file) => readFileSync(join(DIR, file), 'utf8');
 const files = () => ['SKILL.md', ...REFS.map((name) => `references/${name}.md`)];
 const cells = (line) => line.trim().slice(1, -1).split('|').map((cell) => cell.trim());

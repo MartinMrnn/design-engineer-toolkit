@@ -9,7 +9,7 @@
 //   ground (focus-contrast, WCAG 1.4.11);
 // - reads accessible names that leave out the visible label (label-in-name, WCAG 2.5.3), ARIA menu roles inside a
 //   navigation (menu-role), positive tabindex (tabindex), submit buttons disabled at load (disabled-submit), and a page
-//   with neither a main landmark nor a skip link (bypass);
+//   with no main landmark, no skip link and no headings (bypass);
 // - then at 1440 × 900 and 390 × 844, opens with Enter every trigger it finds ([aria-expanded], [aria-haspopup],
 //   [popovertarget], summary, buttons in a header or navigation), Tabs three times when what opened is modal, presses
 //   Escape, and reports what opened without aria-expanded (overlay-state), an overlay Escape leaves open
@@ -22,7 +22,7 @@ async (page) => {
   const MAX_STOPS = 40;
   const MAX_TRIGGERS = 12;
   const MAX_PER_KIND = 10;
-  const WAIT = 400;
+  const SETTLE = [600, 2500]; // menus and dialogs may animate past 300 ms: wait at least 600 ms, at most 2.5 s
   const FAILING = ['focus-contrast', 'label-in-name'];
   const url = page.url().split('#')[0];
   const issues = [];
@@ -87,6 +87,20 @@ async (page) => {
     window.__c = { FOCUSABLE, short, visible, describe, focusables, rgba, over, ratio, ground, place };
   };
 
+  // Reads the page until the reading stops changing (or `done` holds and it is stable), within SETTLE.
+  const settle = async (fn, done = () => true) => {
+    await page.waitForTimeout(SETTLE[0]);
+    const start = Date.now();
+    let last = await page.evaluate(fn);
+    for (;;) {
+      if (Date.now() - start > SETTLE[1] - SETTLE[0]) return last;
+      await page.waitForTimeout(200);
+      const next = await page.evaluate(fn);
+      if (JSON.stringify(next) === JSON.stringify(last) && done(next)) return next;
+      last = next;
+    }
+  };
+
   const load = async ([width, height]) => {
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.setViewportSize({ width, height });
@@ -102,14 +116,16 @@ async (page) => {
     const c = window.__c;
     const norm = (text) => (text || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^\p{L}\p{N}]+/gu, ' ').trim();
     const labelled = [...document.querySelectorAll('a[href], button, input[type="submit"], input[type="button"], [role="button"], [role="link"], [role="tab"], [role="menuitem"]')]
-      .filter((el) => c.visible(el) && (el.hasAttribute('aria-label') || el.hasAttribute('aria-labelledby')))
+      // A combobox or a select shows its value, not its label.
+      .filter((el) => c.visible(el) && (el.hasAttribute('aria-label') || el.hasAttribute('aria-labelledby')) && !el.matches('[role="combobox"], [role="listbox"], [aria-haspopup="listbox"]'))
       .flatMap((el) => {
         const shown = el.matches('input') ? el.value : el.innerText;
         const seen = norm(shown);
         if (!/\p{L}/u.test(seen)) return [];
         const ids = (el.getAttribute('aria-labelledby') || '').split(/\s+/).filter(Boolean);
         const name = ids.length ? ids.map((id) => document.getElementById(id)?.textContent || '').join(' ') : el.getAttribute('aria-label');
-        return norm(name).includes(seen) ? [] : [{ at: c.describe(el), detail: `visible "${c.short(shown)}", name "${c.short(name)}"` }];
+        // Extra visible words (a badge, a signature) are not a failure; a name that shares nothing with the label is.
+        return norm(name).includes(seen) || seen.includes(norm(name)) ? [] : [{ at: c.describe(el), detail: `visible "${c.short(shown)}", name "${c.short(name)}"` }];
       });
     return {
       labelled,
@@ -182,20 +198,24 @@ async (page) => {
     const details = t.tagName === 'SUMMARY' ? t.parentElement : null;
     const popover = document.getElementById(t.getAttribute('popovertarget') || '');
     const expanded = t.getAttribute('aria-expanded');
-    // An overlay sits above the page: modal, a popover, or new controls in a positioned box apart from the trigger.
-    const positioned = o.fresh.some((el) => {
+    // An overlay sits over the page: a modal, a popover, a menu or listbox (aria-haspopup), what a header or navigation
+    // opens, or controls in a fixed box. A card or an accordion that unfolds in the content is not one, even when absolute.
+    const fixed = o.fresh.some((el) => {
       for (let node = el; node && node !== document.body; node = node.parentElement) {
         if (node.contains(t)) return false;
-        if (/absolute|fixed/.test(getComputedStyle(node).position)) return true;
+        if (getComputedStyle(node).position === 'fixed') return true;
       }
       return false;
     });
+    const chrome = !!t.closest('header, nav, [role="banner"], [role="navigation"]') || (t.hasAttribute('aria-haspopup') && t.getAttribute('aria-haspopup') !== 'false');
     return {
       expanded,
-      opened: expanded === 'true' || !!(details && details.open) || !!(popover && popover.matches(':popover-open')) || o.fresh.length > 0 || !!o.modal,
-      overlay: !!o.modal || !!(popover && popover.matches(':popover-open')) || positioned,
+      // Opened means Enter changed something: an aria-expanded already true does not count.
+      opened: (expanded === 'true' && o.expandedBefore !== 'true') || !!(details && details.open) || !!(popover && popover.matches(':popover-open')) || o.fresh.length > 0 || !!o.modal,
+      overlay: !!o.modal || !!(popover && popover.matches(':popover-open')) || fixed || (chrome && (expanded === 'true' || o.fresh.length > 0)),
       native: !!details || !!popover,
       modal: !!o.modal,
+      fresh: o.fresh.length,
       focus: c.place(),
     };
   };
@@ -236,7 +256,7 @@ async (page) => {
   }
   const firstInMain = stops.findIndex((s) => s.inMain);
   const bypass = { main: facts.main, skip: !!stops[0]?.skip, headings: facts.headings, before: firstInMain >= 0 ? firstInMain : stops.length };
-  if (!bypass.main && !bypass.skip) add('bypass', 'page', 'focus-4', 'no main landmark and no skip link');
+  if (!bypass.main && !bypass.skip && !bypass.headings) add('bypass', 'page', 'focus-4', 'no main landmark, no skip link and no headings');
 
   // 1440 then 390: every trigger, opened with Enter, then Escape.
   const overlays = [];
@@ -246,20 +266,21 @@ async (page) => {
     let dirty = false;
     for (let i = 0; i < Math.min(n, MAX_TRIGGERS); i++) {
       if (dirty) { await load(size); n = await page.evaluate(candidates); dirty = false; }
+      try {
       const at = await page.evaluate((i) => {
         const c = window.__c;
         const t = window.__cands[i];
         if (!t || !c.visible(t)) return null;
-        window.__o = { t, before: new Set(c.focusables()), fresh: [], modal: null };
+        window.__o = { t, before: new Set(c.focusables()), fresh: [], modal: null, expandedBefore: t.getAttribute('aria-expanded') };
         t.focus();
         return c.describe(t);
       }, i);
       if (!at) continue;
       const expandedBefore = await page.evaluate(() => window.__o.t.getAttribute('aria-expanded'));
       await page.keyboard.press('Enter');
-      await page.waitForTimeout(WAIT);
       if (page.url().split('#')[0] !== url) { dirty = true; continue; }
-      const open = await page.evaluate(openState);
+      const open = await settle(openState);
+      if (page.url().split('#')[0] !== url) { dirty = true; continue; }
       if (!open.opened) continue;
       const row = { at, width: size[0], expanded: open.expanded === null ? 'none' : `${expandedBefore} → ${open.expanded}`, opened: true, modal: open.modal, focus: open.focus, leaves: false };
       if (open.modal) {
@@ -270,8 +291,7 @@ async (page) => {
         });
       }
       await page.keyboard.press('Escape');
-      await page.waitForTimeout(WAIT);
-      const closed = await page.evaluate(closedState);
+      const closed = await settle(closedState, (r) => r.closed);
       row.escape = closed.closed ? 'closes' : 'stays';
       row.returns = closed.returns;
       overlays.push(row);
@@ -280,6 +300,10 @@ async (page) => {
       if (closed.closed && closed.returns === 'body') add('overlay-focus', at, 'focus-6', 'focus dropped on body after Escape');
       if (row.leaves) add('overlay-leak', at, 'pattern-3', 'Tab leaves the open modal');
       if (!closed.closed || open.modal) dirty = true;
+      } catch {
+        // The trigger reloaded or replaced the page: what it did cannot be read. Start the next one on a fresh load.
+        dirty = true;
+      }
     }
   }
 
