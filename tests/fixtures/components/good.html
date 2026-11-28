@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Atelier Rayon · réparation de vélos</title>
+<style>
+  :root { --background: #f7f5f0; --foreground: #1f1d1a; --muted: #ebe7de; --border: #d6d0c4; --primary: #1f5c45; --primary-foreground: #f7f5f0; --ring: #2c7a5c; --radius: 10px; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--background); color: var(--foreground); font: 16px/1.5 system-ui, sans-serif; }
+  a { color: inherit; }
+  :focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+  header { display: flex; align-items: center; justify-content: space-between; padding: 16px 24px; border-bottom: 1px solid var(--border); position: relative; }
+  .logo { font-weight: 700; text-decoration: none; }
+  .menu-button { font: inherit; min-height: 44px; padding: 0 16px; border-radius: var(--radius); border: 1px solid var(--border); background: var(--background); color: var(--foreground); }
+  #menu { position: absolute; right: 24px; top: 72px; list-style: none; margin: 0; padding: 8px; background: var(--background); border: 1px solid var(--border); border-radius: var(--radius); }
+  #menu a { display: block; padding: 10px 12px; text-decoration: none; }
+  main { max-width: 960px; margin: 0 auto; padding: 32px 24px; }
+  .btn { font: inherit; min-height: 44px; padding: 0 18px; border-radius: var(--radius); border: 1px solid transparent; background: var(--primary); color: var(--primary-foreground); }
+  .icon-btn { width: 44px; height: 44px; border-radius: 999px; border: 1px solid var(--border); background: var(--background); color: var(--foreground); }
+  .cards { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
+  .card { position: relative; padding: 20px; border: 1px solid var(--border); border-radius: 14px; }
+  .card a { text-decoration: none; }
+  .card a::after { content: ""; position: absolute; inset: 0; }
+  .band { margin-top: 32px; padding: 32px; border-radius: 14px; background: #18332a; color: #eef3ef; --ring: #9fe0c3; }
+  .band .btn { background: #eef3ef; color: #18332a; }
+  form { margin-top: 32px; display: flex; gap: 8px; flex-wrap: wrap; }
+  input { font: inherit; font-size: 16px; min-height: 44px; padding: 0 12px; border-radius: var(--radius); border: 1px solid #8a8274; background: var(--background); }
+  dialog { border: 1px solid var(--border); border-radius: 14px; padding: 24px; max-width: 420px; }
+  dialog::backdrop { background: rgb(0 0 0 / 0.4); }
+  .visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+</style>
+</head>
+<body>
+  <header>
+    <a class="logo" href="#">Atelier Rayon</a>
+    <nav aria-label="Principale">
+      <button class="menu-button" type="button" aria-expanded="false" aria-controls="menu">Menu</button>
+      <ul id="menu" hidden>
+        <li><a href="#reparations">Réparations</a></li>
+        <li><a href="#tarifs">Tarifs</a></li>
+        <li><a href="#atelier">L'atelier</a></li>
+      </ul>
+    </nav>
+  </header>
+  <main id="main">
+    <h1>Votre vélo réparé en 48 heures.</h1>
+    <p>Un diagnostic gratuit, un devis avant toute intervention.</p>
+    <p>
+      <button class="btn" type="button" aria-haspopup="dialog" id="book">Prendre rendez-vous</button>
+      <button class="icon-btn" type="button" aria-label="Partager la page">
+        <svg aria-hidden="true" focusable="false" width="18" height="18" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/></svg>
+      </button>
+      <button class="btn" type="button" aria-label="Rechercher une pièce détachée">Rechercher</button>
+    </p>
+    <h2 id="reparations">Réparations</h2>
+    <ul class="cards">
+      <li class="card"><h3><a href="#revision">Révision complète</a></h3><p>Freins, transmission, roues.</p></li>
+      <li class="card"><h3><a href="#crevaison">Crevaison</a></h3><p>Le jour même.</p></li>
+    </ul>
+    <section class="band">
+      <h2>Ouvert le samedi.</h2>
+      <button class="btn" type="button">Voir les horaires</button>
+    </section>
+    <form>
+      <label for="mail">Être prévenu quand le vélo est prêt</label>
+      <input id="mail" type="email" autocomplete="email">
+      <button class="btn" type="submit">M'inscrire</button>
+    </form>
+    <p role="status" class="visually-hidden" id="status"></p>
+  </main>
+  <dialog id="booking" aria-labelledby="booking-title">
+    <h2 id="booking-title">Prendre rendez-vous</h2>
+    <label for="day">Jour souhaité</label>
+    <input id="day" type="date">
+    <p><button class="btn" type="button" id="confirm">Confirmer</button> <button type="button" id="close">Fermer</button></p>
+  </dialog>
+<script>
+  const button = document.querySelector('.menu-button');
+  const menu = document.getElementById('menu');
+  const setMenu = (open) => { button.setAttribute('aria-expanded', String(open)); menu.hidden = !open; };
+  button.addEventListener('click', () => setMenu(button.getAttribute('aria-expanded') !== 'true'));
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && button.getAttribute('aria-expanded') === 'true') { setMenu(false); button.focus(); }
+  });
+  const dialog = document.getElementById('booking');
+  const book = document.getElementById('book');
+  book.addEventListener('click', () => dialog.showModal());
+  document.getElementById('close').addEventListener('click', () => dialog.close());
+  dialog.addEventListener('close', () => book.focus());
+  document.querySelector('form').addEventListener('submit', (e) => { e.preventDefault(); document.getElementById('status').textContent = 'Inscription enregistrée.'; });
+</script>
+</body>
+</html>
