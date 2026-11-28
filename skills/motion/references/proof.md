@@ -11,7 +11,7 @@ Nothing flashes more than three times in any one second (`proof-1`, WCAG 2.3.1, 
 | parallax, scroll scenes, pinned sections | an instant jump instead of smooth scroll | a fade of opacity or colour |
 | slides, scales, flips, morphs of position or size | a crossfade in place | spinners and progress bars |
 | autoplaying loops, tickers, carousels | started paused, or a still | a focus ring, a hover tint |
-| staggers and staged openings | everything shown together | a short press feedback |
+| staggers and staged openings | everything shown together | a press shown by colour or opacity, not by scale |
 
 How:
 - **Motion is opt-in.** Write the base state without motion, and put transitions and animations inside `@media (prefers-reduced-motion: no-preference)`. Browsers that do not know the query then get no motion.
@@ -38,4 +38,4 @@ A loop stops when it leaves the screen (`proof-5`): an `IntersectionObserver` se
 Switch off transitions for the theme change, force a style flush, and switch them back on at the next frame.
 
 ## Checking by hand
-What no script sees, check on the page: open the menus and dialogs, hover and press, reverse each motion halfway, replay it five to ten times slower, and imagine the fiftieth use of the day. Gestures (drag, swipe) are checked on a real touch device.
+What no script sees, check on the page: open the menus and dialogs, hover and press, reverse each motion halfway, replay it five to ten times slower, and imagine the fiftieth use of the day. Move through the page with the keyboard (Tab, Enter, the arrows) and watch what moves (`purpose-3`). Load it once with JavaScript off: every piece of content must show (`choreography-4`). Gestures (drag, swipe) are checked on a real touch device. On a site whose motion is driven by script (a builder such as Framer, a library), the browser's slow-motion panel does not slow it: record the screen and step through the frames instead.

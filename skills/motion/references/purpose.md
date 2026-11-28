@@ -12,7 +12,7 @@ The question comes before any curve or duration, and its answer is often no. Kow
 | Now and then | a dialog, a drawer, a toast, a menu on a site seen once | the standard motion of `timing.md` |
 | Rarely, or once | a first visit, a success, an empty state, an explanation | room for delight, still never holding the page |
 
-2. **Was it triggered from the keyboard?** Then it does not animate (`purpose-3`). A keyboard user repeats the action far more often than a mouse user, and keyboard input already feels mechanical: motion on top reads as waiting.
+2. **Is it a repeated keyboard action?** A shortcut, arrow keys through a list or a menu, a command palette: then it does not animate (`purpose-3`). A keyboard user repeats these far more often than a mouse user, and keyboard input already feels mechanical: motion on top reads as waiting. A button pressed with Enter or Space is not one of them: it moves exactly as when it is clicked.
 3. **Name its purpose**, in one of these words:
    - **feedback**: the interface heard the press, the hover, the drop;
    - **origin**: where something came from or goes (a popup from its trigger, a toast leaving the way it came);

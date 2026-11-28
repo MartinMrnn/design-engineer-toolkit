@@ -26,8 +26,10 @@ test('a clean page passes and its motion is described', async () => {
   assert.deepEqual(report.hover, [], 'a lift inside (hover: hover) is gated');
   assert.equal(report.reveals.hidden, 0, JSON.stringify(report.reveals));
   assert.equal(report.scroll.takeover, null);
-  assert.deepEqual(report.loops.running, []);
-  assert.deepEqual(report.reduced, { moving: [], animations: [], reveals: [], takeover: false });
+  assert.ok(report.loops.running.every((l) => /spinner/.test(l)), JSON.stringify(report.loops));
+  assert.deepEqual(report.reduced, { moving: [], animations: [], scrolled: [], reveals: [], takeover: false }, 'a spinner may keep turning');
+  assert.deepEqual(report.reveals.lost, [], 'a block centred by a transform is not hidden');
+  assert.deepEqual(report.transitions.layout, []);
 });
 
 test('the motion faults are reported, and only movement under reduced motion fails', async () => {
@@ -38,6 +40,13 @@ test('the motion faults are reported, and only movement under reduced motion fai
   assert.ok(report.issues.some((i) => /reveal/.test(i.at)), 'the reveal still slides in');
   assert.ok(report.issues.some((i) => i.at === 'svg.pulse-icon circle'), 'an element with no class is named after its ancestor');
   assert.match(report.scroll.depth, /^[1-9]\d* of \d+ px$/);
+  const at = (re, what) => assert.ok(report.issues.some((i) => re.test(i.at) && what.test(i.detail)), `${re} ${what}: ${JSON.stringify(report.issues)}`);
+  at(/js-ticker "Partners"/, /keeps moving/);
+  at(/scrub/, /moves as the page scrolls/);
+  at(/intro/, /moves as the page loads/);
+  assert.ok(report.loops.offscreen.some((l) => /js-ticker/.test(l)), 'a loop driven by script is seen off screen');
+  assert.ok(report.transitions.layout.some((t) => /t-left: left/.test(t)), JSON.stringify(report.transitions));
+  assert.ok(report.transitions.easeIn.some((t) => /t-mixed: opacity/.test(t)), JSON.stringify(report.transitions));
   assert.ok(report.transitions.all.some((t) => /t-all/.test(t)), JSON.stringify(report.transitions));
   assert.ok(report.transitions.over300.some((t) => /t-slow.*450/.test(t)), JSON.stringify(report.transitions));
   assert.ok(report.transitions.easeIn.some((t) => /t-in/.test(t)), JSON.stringify(report.transitions));

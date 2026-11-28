@@ -26,6 +26,10 @@
   /* A pulsing dot with no class of its own, never stopped. */
   .pulse-icon circle { animation: pulse 1.2s ease-in-out infinite; transform-origin: center; }
   @keyframes pulse { 50% { transform: scale(0.6); } }
+  /* Interface transitions on a layout property, and an ease-in hidden behind a longer property. */
+  .t-left { position: relative; left: 0; transition: left 200ms ease-out; }
+  .t-left:active { left: 2px; }
+  .t-mixed { transition: transform 250ms ease-out, opacity 150ms ease-in; }
   /* Everything fades up on scroll, with no reduced-motion rule. */
   .spacer { height: 1500px; }
   .reveal { opacity: 0; transform: translateY(40px); transition: opacity 600ms ease-out, transform 600ms ease-out; }
@@ -42,6 +46,9 @@
   <span class="pop">New</span>
   <svg class="pulse-icon" width="20" height="20" aria-hidden="true"><circle cx="10" cy="10" r="6" fill="#c00"/></svg>
   <a class="card" href="#hunter">The Night of the Hunter, 8:30 pm</a>
+  <button class="t-left" type="button">Nudge</button>
+  <button class="t-mixed" type="button">Mixed</button>
+  <p class="intro">Two films a night.</p>
   <div class="spacer"></div>
   <section id="programme">
     <p class="reveal">Monday: The Night of the Hunter.</p>
@@ -49,6 +56,8 @@
     <p class="reveal">Wednesday: Late Spring.</p>
     <p class="reveal">Thursday: Paris, Texas.</p>
   </section>
+  <div class="scrub">Scrubbed with the scroll</div>
+  <div class="js-ticker" aria-label="Partners"><span>Partner one · Partner two · Partner three</span></div>
   <div class="spacer" style="height: 600px"></div>
 </main>
 <script>
@@ -58,6 +67,16 @@
     }
   });
   document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
+  // Driven from script, so the Web Animations API never sees them, and none checks reduced motion.
+  const ticker = document.querySelector('.js-ticker');
+  const tick = (t) => { ticker.style.transform = `translateX(${-((t / 20) % 200)}px)`; requestAnimationFrame(tick); };
+  requestAnimationFrame(tick);
+  const scrub = document.querySelector('.scrub');
+  addEventListener('scroll', () => { scrub.style.transform = `translateX(${Math.round(scrollY / 20)}px)`; });
+  const intro = document.querySelector('.intro');
+  const begin = performance.now();
+  const open = (t) => { const k = Math.min(1, (t - begin) / 900); intro.style.transform = `translateY(${Math.round(40 * (1 - k))}px)`; if (k < 1) requestAnimationFrame(open); };
+  requestAnimationFrame(open);
 </script>
 </body>
 </html>

@@ -12,10 +12,11 @@ The sources agree on small things and spread on large ones. The studio's column 
 | Menu, dropdown, select | 150–250 | 250 | 180 | **150–250** |
 | Dialog, drawer, sheet | 200–500 | 350–450 | 300 (sheet) | **200–300** |
 | Toast | 400 (Sonner) | — | 240 | **200–300** |
-| Page change | — | — | 400 | **200–300 crossfade, or none** |
+| Page change | — | — | 400 | **200–300, or none** |
 
 The 300 ms ceiling for the interface (`timing-1`) is the user's choice after trying 200, 300 and 450 ms side by side, and what the measure shows: products hold their median at 100 to 300 ms, while five brand sites that reach 400–500 ms feel slower on every link. `check.js` reports any transition over 300 ms on what a visitor hovers, presses or opens (`transition-duration`).
 
+- A page change is seen at every navigation, so it stays interface: 300 ms at most, even in a radical direction. A radical direction carries its idea through what moves in those 300 ms (a shared element that morphs from one page to the next), not through length.
 - Nothing that must be seen moving lasts under about 100 ms; under that it reads as a jump.
 - When a motion feels slow, shorten it before touching the curve.
 - A big jump within the range takes the longer end; a small one the shorter end. A container that resizes by a few pixels and by half the screen should not take the same time.
@@ -40,14 +41,16 @@ In `tokens.css`, beside the colour and type tokens. Tailwind has no duration nam
   --duration-small: 180ms;
   --duration-menu: 200ms;
   --duration-dialog: 260ms;
+  --duration-page: 240ms;
   --duration-moment: 600ms;
   --default-transition-duration: var(--duration-small);
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
   --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-colour: ease;
 }
 ```
 
-An exit takes its entry token times 0.7: `calc(var(--duration-dialog) * 0.7)`. Curves and springs are in `easing.md`.
+Keep these names, add one only for an element the table does not cover, and write it in the entry. An exit takes its entry token times 0.7: `calc(var(--duration-dialog) * 0.7)`. Curves and springs, and how long a spring really lasts, are in `easing.md`.
 
 ## Check it slowed down
 Speed hides flaws. Replay each motion at five to ten times its duration (the browser's animation panel, or a temporary multiplier on the tokens) and look for two states overlapping, a wrong origin, properties out of step, an abrupt stop. To time a motion you admire, record it and count frames: at 60 fps, 12 frames are 200 ms.

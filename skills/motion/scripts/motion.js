@@ -3,24 +3,31 @@
 // { "filename": "<path to>/motion.js" }. At 1440 × 900 it loads the page twice and returns:
 // With motion:
 // - transitions: on what a visitor hovers, presses or opens (controls, what they hold, overlays, what
-//   aria-controls points to), the longest transition of each element: how many, the median (delay
-//   included), the class of each curve (out, in, in-out, ease, linear, steps, spring for a linear() with
-//   stops), and the transitions over 300 ms, on `all`, and on an ease-in curve;
-// - entrances: @keyframes, @starting-style rules and running animations that start from a zero scale;
+//   aria-controls points to), each element's longest transition: how many, the median (delay included),
+//   the class of each curve (out, in, in-out, ease, linear, steps, spring for a linear() with stops); and
+//   the transitions over 300 ms, on `all`, on an ease-in curve, or on a layout property (width, height,
+//   top, left, right, bottom, inset, margin, padding);
+// - entrances: @keyframes, @starting-style rules and running animations that start from a uniform zero scale;
 // - hover: :hover rules that move (transform, translate, scale, rotate) outside a (hover: hover) query;
-// - reveals: blocks below the first screen hidden at load (opacity, movement, or a clip-path that changes)
-//   that show up once the page is scrolled to its end with the wheel, and their share of the blocks below;
+// - reveals: blocks below the first screen hidden at load (faded, moved away, or clipped) that show up once
+//   the page is scrolled to its end with the wheel, each counted once at its outermost hidden block, and
+//   their share; `lost`, faded blocks that never show up;
 // - scroll: a smooth-scroll takeover (Lenis), scroll-behavior: smooth, scroll-driven animations
-//   (animation-timeline), GSAP ScrollTrigger instances with scrub and pin, and how far the window scrolled;
-// - loops: infinite animations running in the first screen, and those still running once out of view.
-// With reduced motion, reloaded:
-// - reduced: boxes of the first screen still moving over 600 ms, running animations that move
-//   (transform, translate, scale, rotate, top, left, offset), blocks that still slide in on scroll, and a
-//   smooth-scroll takeover still active.
+//   (animation-timeline), GSAP ScrollTrigger instances with scrub and pin, sticky sections pinned inside a
+//   taller parent, and how far the window scrolled;
+// - loops: what keeps moving at rest, CSS or script alike (every element's box and computed transform read
+//   six times over 600 ms, over the whole page; one change is a jump, two or more are motion): in view at
+//   load (`running`), or out of view (`offscreen`);
+// - generator: the page's <meta name="generator">, such as a site builder whose motion is script-driven.
+// With reduced motion, loaded again: what still moves in the first 600 ms after the document is parsed, at
+// rest anywhere on the page, or with the scroll (computed transforms read at each wheel step); animations
+// that move; blocks that still slide in; a smooth-scroll takeover still active.
+// Spinners and progress bars ([role=status], [role=progressbar], [aria-busy=true]) may keep moving.
 // One rule sets pass to false: movement that persists under reduced motion (motion `proof-2`, the
 // studio's bar; WCAG 2.3.3 is AAA). Everything else is a finding to judge against the skill's rules.
 // It does not see: flashes (WCAG 2.3.1), how motion feels, cross-origin style sheets, menus and dialogs
-// once opened, hovers driven by script, pages that scroll inside their own container.
+// once opened, motion set off by a hover or a key, content hidden when JavaScript is off, pages that scroll
+// inside their own container.
 async (page) => {
   const MAX = 10;
   const href = page.url();
@@ -32,14 +39,18 @@ async (page) => {
     const TARGETS = 'a[href], button, input:not([type="hidden"]), select, textarea, summary, [role="button"], [role="tab"], [role="menuitem"], [role="switch"], [tabindex]:not([tabindex^="-"])';
     const OVERLAYS = 'dialog, [popover], [role="dialog"], [role="menu"], [role="listbox"], [aria-modal="true"]';
     const BLOCKS = 'h1, h2, h3, h4, p, li, img, video, figure, blockquote, a, button';
+    const PROGRESS = '[role="status"], [role="progressbar"], [aria-busy="true"]';
     const MOVING = /^(transform|translate|scale|rotate|top|left|right|bottom|offset(-|[A-Z]))/;
-    const ZERO = /scale(?:3d|X|Y)?\(\s*0(?:\.0*)?\s*[,)]/;
+    const LAYOUT = /^(width|height|top|left|right|bottom|inset|margin|padding)/;
+    const ZERO = /scale\(\s*0(?:\.0*)?\s*(?:,\s*0(?:\.0*)?\s*)?\)|scale3d\(\s*0(?:\.0*)?\s*,\s*0(?:\.0*)?\s*,/;
     const own = (el) => `${el.tagName.toLowerCase()}${el.id ? `#${el.id}` : ''}${[...el.classList].slice(0, 2).map((c) => `.${c}`).join('')}`;
     // An element with no id or class is named after its nearest ancestor that has one: `svg.logo circle`.
     const name = (el) => {
-      if (el.id || el.classList.length) return own(el);
+      const label = el.getAttribute('aria-label');
+      const tail = label ? ` "${label.trim().slice(0, 30)}"` : '';
+      if (el.id || el.classList.length) return own(el) + tail;
       const anchor = el.parentElement?.closest('[id], [class]');
-      return anchor && anchor !== document.body ? `${own(anchor)} ${own(el)}` : own(el);
+      return (anchor && anchor !== document.body ? `${own(anchor)} ${own(el)}` : own(el)) + tail;
     };
     // A selector with :hover outside :not(), so the rule applies while hovered.
     const onHover = (selector) => {
@@ -71,6 +82,7 @@ async (page) => {
       const r = el.getBoundingClientRect();
       return r.bottom < 0 || r.top > innerHeight || r.right < 0 || r.left > innerWidth;
     };
+    const progress = (el) => !!el.closest(PROGRESS);
     // Every readable rule, with what it sits in.
     const rules = () => {
       const out = [];
@@ -117,12 +129,35 @@ async (page) => {
       if (first < 1) return last < 1 ? 'in-out' : 'in';
       return last < 1 ? 'out' : 'linear';
     };
+    // Every element's box (in page coordinates) and computed transform.
+    const sample = (els) => els.map((el) => {
+      const r = el.getBoundingClientRect();
+      return { x: r.left + scrollX, y: r.top + scrollY, w: r.width, h: r.height, t: getComputedStyle(el).transform };
+    });
+    // Moved means more than 1 px, or more than 1 % of scale or rotation: `none` and the identity matrix are
+    // the same place, and sub-pixel drift is no motion.
+    const matrix = (t) => (t && t !== 'none' ? new DOMMatrixReadOnly(t) : new DOMMatrixReadOnly());
+    const turned = (s1, s2) => {
+      if (s1 === s2) return false;
+      const a = matrix(s1);
+      const b = matrix(s2);
+      return Math.abs(a.m41 - b.m41) > 1 || Math.abs(a.m42 - b.m42) > 1
+        || ['a', 'b', 'c', 'd'].some((k) => Math.abs(a[k] - b[k]) > 0.01);
+    };
+    const differ = (a, b, boxes) => turned(a.t, b.t)
+      || (boxes && (Math.abs(a.x - b.x) > 1 || Math.abs(a.y - b.y) > 1 || Math.abs(a.w - b.w) > 1 || Math.abs(a.h - b.h) > 1));
+    // Report what moves, not everything it carries along; spinners and progress bars may move.
+    const outermost = (changed) => [...changed].filter((el) => !changed.has(el.parentElement) && !progress(el));
+    let tracked = null;
 
     window.__motion = {
       top: () => scrollTo(0, 0),
+      generator: () => document.querySelector('meta[name="generator" i]')?.content?.trim() || null,
       transitions: () => {
         const ms = (list) => list.split(',').map((s) => parseFloat(s) * 1000);
         const found = [];
+        const easeIn = new Set();
+        const layout = new Set();
         for (const el of ui()) {
           const s = getComputedStyle(el);
           const durations = ms(s.transitionDuration);
@@ -133,10 +168,13 @@ async (page) => {
           s.transitionProperty.split(',').forEach((p, i) => {
             const prop = p.trim();
             const duration = durations[i % durations.length];
-            const time = duration + delays[i % delays.length];
+            const time = Math.round(duration + delays[i % delays.length]);
+            const fn = fns[i % fns.length];
             if (prop === 'none' || duration <= 0) return;
             if (prop === 'all') all = true;
-            if (!best || time > best.time) best = { time: Math.round(time), prop, fn: fns[i % fns.length] };
+            if (curve(fn) === 'in') easeIn.add(`${name(el)}: ${prop} ${fn}`);
+            if (LAYOUT.test(prop)) layout.add(`${name(el)}: ${prop} ${time} ms`);
+            if (!best || time > best.time) best = { time, prop, fn };
           });
           if (best) found.push({ at: name(el), all, kind: curve(best.fn), ...best });
         }
@@ -150,7 +188,8 @@ async (page) => {
           curves,
           over300: list((t) => t.time > 300, (t) => `${t.at}: ${t.prop} ${t.time} ms`),
           all: list((t) => t.all, (t) => `${t.at}: all ${t.time} ms`),
-          easeIn: list((t) => t.kind === 'in', (t) => `${t.at}: ${t.prop} ${t.fn}`),
+          easeIn: [...easeIn],
+          layout: [...layout],
         };
       },
       entrances: () => {
@@ -185,21 +224,56 @@ async (page) => {
       scroll: () => {
         const html = document.documentElement;
         let timelines = 0;
+        let pinned = 0;
         for (const el of document.querySelectorAll('*')) {
-          const t = getComputedStyle(el).animationTimeline;
-          if (t && t !== 'auto') timelines += 1;
+          const s = getComputedStyle(el);
+          if (s.animationTimeline && s.animationTimeline !== 'auto') timelines += 1;
+          // A sticky block in a parent at least half again as tall is held while the page scrolls past it.
+          if (s.position === 'sticky' && !el.closest('header, nav, [role="banner"]') && el.parentElement
+            && el.parentElement.offsetHeight >= el.offsetHeight * 1.5 && el.offsetHeight > innerHeight / 3) pinned += 1;
         }
         const triggers = window.ScrollTrigger?.getAll?.();
         return {
           takeover: [...html.classList].some((c) => c.startsWith('lenis')) || window.lenis ? 'lenis' : null,
           smooth: getComputedStyle(html).scrollBehavior === 'smooth',
           timelines,
+          pinned,
           triggers: triggers ? { n: triggers.length, scrub: triggers.filter((t) => t.vars?.scrub).length, pin: triggers.filter((t) => t.vars?.pin).length } : null,
         };
       },
-      loops: () => document.getAnimations()
-        .filter((a) => a.playState === 'running' && a.effect?.getTiming().iterations === Infinity && a.effect.target)
-        .map((a) => ({ at: name(a.effect.target), off: off(a.effect.target), seen: a.effect.target.checkVisibility({ opacityProperty: true, visibilityProperty: true }) })),
+      // What keeps moving over 600 ms, anywhere on the page: CSS, Web Animations or script alike.
+      // Six readings 120 ms apart. Two changes or more mean it passed through a position in between, so it
+      // moved; a single change is a jump (a page putting its content in place), not motion. Boxes count
+      // only for what is in view: below it, a lazy image loading shifts the layout.
+      rest: async (boxes = true) => {
+        const els = [...document.body.querySelectorAll('*')];
+        const steps = new Map();
+        let last = sample(els);
+        for (let k = 0; k < 5; k++) {
+          await new Promise((done) => setTimeout(done, 120));
+          const now = sample(els);
+          els.forEach((el, i) => { if (differ(last[i], now[i], boxes && !off(el))) steps.set(el, (steps.get(el) || 0) + 1); });
+          last = now;
+        }
+        const changed = new Set([...steps].filter(([, n]) => n >= 2).map(([el]) => el));
+        return outermost(changed).map((el) => ({ at: name(el), off: off(el) }));
+      },
+      cssLoops: () => document.getAnimations()
+        .filter((a) => a.playState === 'running' && a.effect?.getTiming().iterations === Infinity && a.effect.target && !progress(a.effect.target))
+        .filter((a) => a.effect.target.checkVisibility({ opacityProperty: true, visibilityProperty: true }))
+        .map((a) => ({ at: name(a.effect.target), off: off(a.effect.target) })),
+      // Transforms read at each wheel step: what moves with the scroll.
+      track: () => {
+        const els = [...document.body.querySelectorAll('*')];
+        tracked = { els, last: sample(els), steps: new Map() };
+      },
+      step: () => {
+        const now = sample(tracked.els);
+        tracked.els.forEach((el, i) => { if (differ(tracked.last[i], now[i], false)) tracked.steps.set(el, (tracked.steps.get(el) || 0) + 1); });
+        tracked.last = now;
+      },
+      // As at rest, two changes or more: a block that jumps into place once as it is reached is not motion.
+      tracked: () => (tracked ? outermost(new Set([...tracked.steps].filter(([, n]) => n >= 2).map(([el]) => el))).map(name) : []),
       // Blocks below the first screen, marked so they can be read again after scrolling.
       mark: () => {
         const blocks = [];
@@ -207,8 +281,9 @@ async (page) => {
           const r = el.getBoundingClientRect();
           if (!r.width || !r.height || r.top + scrollY < innerHeight * 1.2) return;
           if (el.closest('nav, header, [aria-hidden="true"], [hidden], dialog:not([open])')) return;
+          const up = el.parentElement?.closest('[data-motion-audit]')?.getAttribute('data-motion-audit') ?? null;
           el.setAttribute('data-motion-audit', i);
-          blocks.push({ id: String(i), at: name(el), faded: opacity(el) < 0.1, move: moved(el) || moved(el.parentElement), clip: getComputedStyle(el).clipPath });
+          blocks.push({ id: String(i), up, at: name(el), faded: opacity(el) < 0.1, move: moved(el) || moved(el.parentElement), clip: getComputedStyle(el).clipPath });
         });
         return blocks;
       },
@@ -217,23 +292,7 @@ async (page) => {
         { opacity: opacity(el), move: moved(el) || moved(el.parentElement), clip: getComputedStyle(el).clipPath },
       ])),
       unmark: () => document.querySelectorAll('[data-motion-audit]').forEach((el) => el.removeAttribute('data-motion-audit')),
-      // With reduced motion: boxes of the first screen read twice, 600 ms apart.
-      stillMoving: async () => {
-        const els = [...document.body.querySelectorAll('*')].filter((el) => {
-          const r = el.getBoundingClientRect();
-          return r.width > 1 && r.height > 1 && r.top < innerHeight && r.bottom > 0;
-        });
-        const before = els.map((el) => el.getBoundingClientRect());
-        await new Promise((done) => setTimeout(done, 600));
-        const changed = new Set(els.filter((el, i) => {
-          const a = before[i];
-          const b = el.getBoundingClientRect();
-          return Math.abs(a.x - b.x) > 1 || Math.abs(a.y - b.y) > 1 || Math.abs(a.width - b.width) > 1 || Math.abs(a.height - b.height) > 1;
-        }));
-        // Report what moves, not everything it carries along.
-        return [...new Set([...changed].filter((el) => !changed.has(el.parentElement)).map(name))];
-      },
-      moving: () => document.getAnimations().filter((a) => a.playState === 'running' && a.effect?.target).flatMap((a) => {
+      moving: () => document.getAnimations().filter((a) => a.playState === 'running' && a.effect?.target && !progress(a.effect.target)).flatMap((a) => {
         let props = [];
         if (a instanceof CSSTransition) props = [a.transitionProperty];
         else {
@@ -245,22 +304,23 @@ async (page) => {
     };
   };
 
-  const load = async (reducedMotion) => {
-    await page.emulateMedia({ reducedMotion });
-    // A new navigation, not a reload: a reload restores the scroll position and fires the reveals early.
-    await page.goto(url, { waitUntil: 'load', timeout: 45000 }).catch(() => { /* a page that never ends loading */ });
+  const settle = async () => {
+    await page.waitForLoadState('load', { timeout: 45000 }).catch(() => { /* a page that never ends loading */ });
     await page.waitForTimeout(1500);
     await page.evaluate(install);
     await page.evaluate(() => window.__motion.top());
     await page.waitForTimeout(200);
   };
-  // To the end of the page with the wheel, so scroll libraries see it as a visitor's scroll.
-  const scrollDown = async () => {
-    await page.mouse.move(720, 450);
+  // To the end of the page with the wheel, so scroll libraries see it as a visitor's scroll. The pointer
+  // rests on the left edge, so the content passing under it is not hovered.
+  const scrollDown = async (track) => {
+    await page.mouse.move(4, 450);
+    if (track) await page.evaluate(() => window.__motion.track());
     let last = -1;
     for (let i = 0; i < 45; i++) {
       await page.mouse.wheel(0, 700);
       await page.waitForTimeout(250);
+      if (track) await page.evaluate(() => window.__motion.step());
       const y = await page.evaluate(() => Math.round(scrollY));
       if (y === last) break;
       last = y;
@@ -269,66 +329,98 @@ async (page) => {
     // How far the window really scrolled: 0 means the page scrolls inside its own container.
     return page.evaluate(() => `${Math.round(scrollY)} of ${Math.max(0, document.documentElement.scrollHeight - innerHeight)} px`);
   };
-  // Blocks hidden at load and shown after scrolling.
-  const revealed = (blocks, now) => blocks.flatMap((b) => {
-    const n = now[b.id];
-    if (!n) return [];
-    const byOpacity = b.faded && n.opacity > 0.9;
-    const byMove = b.move && !n.move;
-    const byClip = b.clip !== 'none' && n.clip !== b.clip;
-    return byOpacity || byMove || byClip ? [{ at: b.at, byMove, byClip }] : [];
-  });
+  // Blocks hidden at load and shown after scrolling, each counted once at its outermost hidden block.
+  const reveal = (blocks, now) => {
+    const state = new Map();
+    for (const b of blocks) {
+      const n = now[b.id];
+      if (!n) continue;
+      const byMove = b.move && !n.move;
+      const byClip = b.clip !== 'none' && n.clip !== b.clip;
+      const shown = (b.faded && n.opacity > 0.9) || byMove || byClip;
+      if (shown || b.faded) state.set(b.id, { at: b.at, shown, byMove });
+    }
+    const byId = new Map(blocks.map((b) => [b.id, b]));
+    const inside = (b) => {
+      for (let up = b.up; up !== null; up = byId.get(up)?.up ?? null) if (state.has(up)) return true;
+      return false;
+    };
+    const units = blocks.filter((b) => state.has(b.id) && !inside(b)).map((b) => state.get(b.id));
+    return { units, below: blocks.filter((b) => b.up === null).length };
+  };
   const unique = (list) => [...new Set(list)].slice(0, MAX);
 
   const report = { url };
   try {
     await page.setViewportSize({ width: 1440, height: 900 });
 
-    // With motion.
-    await load('no-preference');
-    const first = await page.evaluate(() => {
+    // With motion. A new navigation, not a reload: a reload restores the scroll and fires reveals early.
+    await page.emulateMedia({ reducedMotion: 'no-preference' });
+    await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 45000 });
+    await settle();
+    const first = await page.evaluate(async () => {
       const m = window.__motion;
-      return { transitions: m.transitions(), entrances: m.entrances(), hover: m.hover(), scroll: m.scroll(), loops: m.loops(), blocks: m.mark() };
+      return {
+        generator: m.generator(), transitions: m.transitions(), entrances: m.entrances(), hover: m.hover(),
+        scroll: m.scroll(), loops: [...m.cssLoops(), ...(await m.rest())], blocks: m.mark(),
+      };
     });
-    const depth = await scrollDown();
-    const after = await page.evaluate(() => ({ blocks: window.__motion.blocks(), loops: window.__motion.loops() }));
-    const shown = revealed(first.blocks, after.blocks);
-    const { over300, all, easeIn, ...counts } = first.transitions;
-    report.transitions = { ...counts, over300: over300.slice(0, MAX), all: all.slice(0, MAX), easeIn: easeIn.slice(0, MAX) };
+    const depth = await scrollDown(false);
+    const after = await page.evaluate(async () => ({
+      blocks: window.__motion.blocks(), loops: [...window.__motion.cssLoops(), ...(await window.__motion.rest())],
+    }));
+    const { units, below } = reveal(first.blocks, after.blocks);
+    report.generator = first.generator;
+    const { over300, all, easeIn, layout, ...counts } = first.transitions;
+    report.transitions = { ...counts, over300: over300.slice(0, MAX), all: all.slice(0, MAX), easeIn: easeIn.slice(0, MAX), layout: layout.slice(0, MAX) };
     report.entrances = first.entrances.slice(0, MAX);
     report.hover = first.hover.slice(0, MAX);
+    const shown = units.filter((u) => u.shown);
     report.reveals = {
-      below: first.blocks.length,
-      hidden: first.blocks.filter((b) => b.faded || b.move).length + shown.filter((s) => s.byClip).length,
+      below,
+      hidden: units.length,
       shown: shown.length,
-      share: first.blocks.length ? Math.round((shown.length / first.blocks.length) * 100) : 0,
-      at: unique(shown.map((s) => s.at)),
+      share: below ? Math.min(100, Math.round((shown.length / below) * 100)) : 0,
+      lost: unique(units.filter((u) => !u.shown).map((u) => u.at)),
+      at: unique(shown.map((u) => u.at)),
     };
     report.scroll = { ...first.scroll, depth };
     report.loops = {
-      running: unique(first.loops.filter((l) => l.seen && !l.off).map((l) => l.at)),
-      offscreen: unique(after.loops.filter((l) => l.off).map((l) => l.at)),
+      running: unique(first.loops.filter((l) => !l.off).map((l) => l.at)),
+      offscreen: unique([...first.loops, ...after.loops].filter((l) => l.off).map((l) => l.at)),
     };
 
-    // With reduced motion.
-    await load('reduce');
+    // With reduced motion: from the moment the document is parsed, at rest, and with the scroll.
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 45000 });
+    await page.evaluate(install);
+    // Transforms only while the page loads: images and fonts arriving shift boxes without any animation.
+    const early = await page.evaluate(() => window.__motion.rest(false));
+    await settle();
     const still = await page.evaluate(async () => {
       const m = window.__motion;
-      return { moving: await m.stillMoving(), animations: m.moving(), takeover: m.scroll().takeover, blocks: m.mark() };
+      return { rest: await m.rest(), animations: m.moving(), takeover: m.scroll().takeover, blocks: m.mark() };
     });
-    await scrollDown();
-    const slid = revealed(still.blocks, await page.evaluate(() => window.__motion.blocks())).filter((s) => s.byMove);
+    await scrollDown(true);
+    const end = await page.evaluate(async () => ({
+      blocks: window.__motion.blocks(), rest: await window.__motion.rest(), scrolled: window.__motion.tracked(),
+    }));
+    const slid = reveal(still.blocks, end.blocks).units.filter((u) => u.byMove);
+    const moving = unique([...early, ...still.rest, ...end.rest].map((l) => l.at));
     report.reduced = {
-      moving: still.moving.slice(0, MAX),
+      moving,
       animations: unique(still.animations.map((a) => `${a.at}: ${a.props}`)),
+      scrolled: unique(end.scrolled),
       reveals: unique(slid.map((s) => s.at)),
       takeover: !!still.takeover,
     };
 
     const found = new Map();
     const add = (at, what) => found.set(at, (found.get(at) || new Set()).add(what));
-    for (const at of still.moving) add(at, 'moves');
+    for (const l of early) add(l.at, 'moves as the page loads');
+    for (const l of [...still.rest, ...end.rest]) add(l.at, 'keeps moving');
     for (const a of still.animations) add(a.at, `animates ${a.props}`);
+    for (const at of end.scrolled) add(at, 'moves as the page scrolls');
     for (const s of slid) add(s.at, 'slides in on scroll');
     if (still.takeover) add('html', 'smooth scroll (Lenis) still drives the page');
     report.issues = [...found].slice(0, MAX).map(([at, what]) => ({
