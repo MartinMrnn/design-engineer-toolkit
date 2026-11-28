@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Night screenings, with faults</title>
+<style>
+  body { margin: 0; font: 16px/1.5 system-ui, sans-serif; color: #111; background: #fafafa; }
+  main { padding: 40px; max-width: 720px; }
+  /* A ticker that never stops, reduced motion or not, on screen or not. */
+  .ticker { overflow: hidden; white-space: nowrap; }
+  .ticker-track { display: inline-block; animation: ticker 8s linear infinite; }
+  @keyframes ticker { to { transform: translateX(-50%); } }
+  /* Interface transitions: on all, too slow, on ease-in. */
+  .t-all { transition: all 200ms ease; }
+  .t-slow { transition: color 450ms ease-out; }
+  .t-slow:hover { color: #c00; }
+  .t-in { transition: transform 200ms ease-in; }
+  .t-in:active { transform: scale(0.95); }
+  /* An entrance from nothing. */
+  .pop { display: inline-block; animation: pop 300ms cubic-bezier(0.23, 1, 0.32, 1); }
+  @keyframes pop { from { transform: scale(0); } to { transform: scale(1); } }
+  /* A lift on hover, for touch screens too. */
+  .card { display: block; margin: 24px 0; padding: 24px; border: 1px solid #ddd; transition: transform 200ms ease-out; }
+  .card:hover { transform: translateY(-4px); }
+  /* A pulsing dot with no class of its own, never stopped. */
+  .pulse-icon circle { animation: pulse 1.2s ease-in-out infinite; transform-origin: center; }
+  @keyframes pulse { 50% { transform: scale(0.6); } }
+  /* Interface transitions on a layout property, and an ease-in hidden behind a longer property. */
+  .t-left { position: relative; left: 0; transition: left 200ms ease-out; }
+  .t-left:active { left: 2px; }
+  .t-mixed { transition: transform 250ms ease-out, opacity 150ms ease-in; }
+  /* Everything fades up on scroll, with no reduced-motion rule. */
+  .spacer { height: 1500px; }
+  .reveal { opacity: 0; transform: translateY(40px); transition: opacity 600ms ease-out, transform 600ms ease-out; }
+  .reveal.in { opacity: 1; transform: none; }
+</style>
+</head>
+<body>
+<main>
+  <div class="ticker" aria-hidden="true"><div class="ticker-track">Now showing · The Night of the Hunter · Stalker · Late Spring · Paris, Texas · Now showing · The Night of the Hunter · Stalker · Late Spring · Paris, Texas ·</div></div>
+  <h1>Night screenings</h1>
+  <button class="t-all" type="button">All</button>
+  <a class="t-slow" href="#programme">Programme</a>
+  <button class="t-in" type="button">Book</button>
+  <span class="pop">New</span>
+  <svg class="pulse-icon" width="20" height="20" aria-hidden="true"><circle cx="10" cy="10" r="6" fill="#c00"/></svg>
+  <a class="card" href="#hunter">The Night of the Hunter, 8:30 pm</a>
+  <button class="t-left" type="button">Nudge</button>
+  <button class="t-mixed" type="button">Mixed</button>
+  <p class="intro">Two films a night.</p>
+  <div class="spacer"></div>
+  <section id="programme">
+    <p class="reveal">Monday: The Night of the Hunter.</p>
+    <p class="reveal">Tuesday: Stalker.</p>
+    <p class="reveal">Wednesday: Late Spring.</p>
+    <p class="reveal">Thursday: Paris, Texas.</p>
+  </section>
+  <div class="scrub">Scrubbed with the scroll</div>
+  <div class="js-ticker" aria-label="Partners"><span>Partner one · Partner two · Partner three</span></div>
+  <div class="spacer" style="height: 600px"></div>
+</main>
+<script>
+  const io = new IntersectionObserver((entries) => {
+    for (const entry of entries) {
+      if (entry.isIntersecting) { entry.target.classList.add('in'); io.unobserve(entry.target); }
+    }
+  });
+  document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
+  // Driven from script, so the Web Animations API never sees them, and none checks reduced motion.
+  const ticker = document.querySelector('.js-ticker');
+  const tick = (t) => { ticker.style.transform = `translateX(${-((t / 20) % 200)}px)`; requestAnimationFrame(tick); };
+  requestAnimationFrame(tick);
+  const scrub = document.querySelector('.scrub');
+  addEventListener('scroll', () => { scrub.style.transform = `translateX(${Math.round(scrollY / 20)}px)`; });
+  const intro = document.querySelector('.intro');
+  const begin = performance.now();
+  const open = (t) => { const k = Math.min(1, (t - begin) / 900); intro.style.transform = `translateY(${Math.round(40 * (1 - k))}px)`; if (k < 1) requestAnimationFrame(open); };
+  requestAnimationFrame(open);
+</script>
+</body>
+</html>
