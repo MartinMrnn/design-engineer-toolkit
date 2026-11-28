@@ -8,7 +8,7 @@ A role is a promise (`pattern-1`): `role="tab"` tells a screen reader user that 
 Is there a native element that does it?
 ├─ yes → use it: <button>, <a>, <details>/<summary>, <dialog> with showModal(), popover, <select>, <input type="checkbox">
 └─ no → does the stack have a headless library that does it?
-        ├─ yes → use it, styled with the tokens; its need goes on the `Tools` line of the components entry (Ask first)
+        ├─ yes → use it, styled with the tokens; its need goes on the `Tools` line of the components entry (inside the studio a dependency is Ask first; used alone, name it in your answer)
         └─ no → build the APG pattern by hand, with its whole key map below
 ```
 
@@ -19,7 +19,7 @@ What each pattern must answer. Tab moves between patterns; arrow keys move insid
 
 | Pattern | Markup | Keys |
 |---|---|---|
-| Disclosure (and site navigation) | `<button aria-expanded aria-controls>` and the region | Enter and Space toggle; focus stays on the button; Escape closes when it overlays the page, and focus returns to the button |
+| Disclosure (and a navigation dropdown) | `<button aria-expanded aria-controls>` and the region | Enter and Space toggle; focus stays on the button; Escape closes when it overlays the page, and focus returns to the button |
 | Dialog, modal | `<dialog>` opened with `showModal()`, named by its heading through `aria-labelledby` | focus moves inside on open; Tab and Shift+Tab stay inside; Escape closes; focus returns to the trigger |
 | Drawer, full-screen menu | a modal dialog that slides | as a dialog; `overscroll-behavior: contain` on its scroller |
 | Menu button (menu of actions) | `<button aria-haspopup="menu" aria-expanded>`, `role="menu"`, `role="menuitem"` | Enter, Space or Down open and focus the first item; Up the last; arrows move; Home and End; typing jumps to an item; Escape closes and returns focus; Tab closes and moves on |
@@ -34,7 +34,7 @@ What each pattern must answer. Tab moves between patterns; arrow keys move insid
 
 The first focus in a dialog: its first control; a static element at its start (`tabindex="-1"`) when its content is long enough that focusing the first control would scroll its start away; the least destructive action when the dialog confirms something that cannot be undone. After closing, focus goes back to the trigger, or to the nearest logical place if the trigger is gone (`focus-6`).
 
-A modal layer makes the rest inert (`pattern-3`): `showModal()` does it; a custom overlay sets `inert` on the page behind it, rendered outside the overlay. A disclosure is not modal: focus stays on its button and the page stays reachable.
+A navigation menu is a disclosure while the page stays visible beside it; once it covers the whole screen (the usual phone menu), it is a modal dialog, with its focus held and a way to close it. A modal layer makes the rest inert (`pattern-3`): `showModal()` does it; a custom overlay sets `inert` on the page behind it, rendered outside the overlay. A disclosure is not modal: focus stays on its button and the page stays reachable.
 
 ## Details that make patterns feel right
 - A tooltip in a group opens after a short delay; the next ones open at once, without animation (Kowalski, Vercel).

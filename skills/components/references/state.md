@@ -15,8 +15,10 @@ async function save(button, status) {
   if (button.getAttribute('aria-busy') === 'true') return;        // repeat presses do nothing
   button.setAttribute('aria-busy', 'true');
   button.setAttribute('aria-disabled', 'true');                   // still focusable, still in its place
-  button.dataset.state = 'working';
-  setLabel(button, 'Enregistrement…');
+  const late = setTimeout(() => {                                 // a fast answer skips the working state (state-6)
+    button.dataset.state = 'working';
+    setLabel(button, 'Enregistrement…');
+  }, 200);
   try {
     await send();
     button.dataset.state = 'done';
@@ -27,6 +29,7 @@ async function save(button, status) {
     setLabel(button, 'Réessayer');
     status.textContent = 'Échec de l’enregistrement. Réessayez.';
   } finally {
+    clearTimeout(late);
     button.removeAttribute('aria-busy');
     button.removeAttribute('aria-disabled');
   }
@@ -46,7 +49,7 @@ async function save(button, status) {
 | `role="alert"` (assertive) | an urgent error not tied to a field | success, progress, anything frequent |
 | `aria-describedby` on a field | the error or hint of that field | a page-wide message |
 
-Render the region empty at load and write its text later; a region added together with its text is often not read. Write the same message twice in a row by clearing it first.
+Render the region at load, empty or holding its current value (a visible result count can be its own live region), and change its text later; a region added together with its text is often not read. Write the same message twice in a row by clearing it first.
 
 ## Toggles
 A toggle changes its state or its label, never both (`state-3`). A mute button keeps "Son" and turns `aria-pressed="true"`; a play button changes "Lecture" to "Pause" and has no pressed state. Both at once say "Pause, pressed": the opposite of what happened. A setting that is on or off is a switch (`role="switch"` and `aria-checked`) or a checkbox, and takes effect at once.

@@ -74,7 +74,7 @@ What the control is doing, said to everyone. Read `references/state.md`.
 | Rule | Why | Kind | Source | Checked by |
 |---|---|---|---|---|
 | `state-1` · A control at work keeps its place and its focus: `aria-disabled` and `aria-busy` while it works, repeat presses ignored, never `disabled` under the user's finger | a control that turns `disabled` drops focus, and the user loses their place | heuristic | Hairline, APG, Krehel accessibility | critic phase 4 |
-| `state-2` · A result is spoken by a `role=status` region present and empty from the start, outside the control; `role=alert` only for an urgent error | a region added with its text is often not read; an alert interrupts | heuristic | Pickering, Krehel accessibility, Hairline | components audit + critic phase 4 |
+| `state-2` · A result is spoken by a `role=status` region present from the start (empty, or holding its current value), outside the control; `role=alert` only for an urgent error | a region added with its text is often not read; an alert interrupts | heuristic | Pickering, Krehel accessibility, Hairline | components audit + critic phase 4 |
 | `state-3` · A toggle changes its state (`aria-pressed`, `role=switch`) or its label, never both | both at once say the opposite of what happened | heuristic | Pickering | critic phase 4 |
 
 ### 6 · Finish
@@ -92,9 +92,9 @@ The finishing pass: once per built page, after the scripts, before the critic. R
 ## Components · Mockup
 Abstracted: <component>, 3 uses (<pages or sections>); one line each, or `none yet`.
 Tools: native only; or <library> for <component>, because <need>.
-Focus: `--ring` <value>; <section>: `--ring` <value> on its ground.
+Focus: `--ring` from `tokens.css`; <section>: its own `--ring` <value> on its ground.
 Kept on purpose: none, or <a heuristic left>, because <the project's reason>.
-Proof: `components.js` passes on every page, or `not yet`.
+Proof: `components.js` passes on every page, with the triggers it did not open checked by hand (<which>); or `not yet`.
 ```
 
 ## The audit
@@ -112,7 +112,7 @@ Script: <pass or fail, in one line>
 **Blocking:** a broken `blocking` rule or a WCAG A or AA failure. **To fix:** another broken rule, with no stated reason. **Suggestion:** an improvement no rule demands, with `rule: none`. Write one defect per change a developer would make; one that breaks several rules cites them all, keeps the highest severity, and goes under the heading of that rule. Cite another skill's rule with its skill: `ux path-2`. Number the defects across headings; a heading with no defect says `none`. `Set aside` lists script findings judged false, each with why. Open by hand what the script cannot: custom widgets' arrow keys, hover-only menus, the worst data, a slow network.
 
 ## Commands
-Open the page, then call `browser_run_code_unsafe` with `{ "filename": "<this skill's folder>/scripts/components.js" }`, or pass the file's content as `code` if the path is refused. It loads the page with reduced motion, walks the focus at 1440 × 900 (indicator kind, width, offset, contrast on a flat ground), reads names that leave out their visible label, menu roles in a navigation, positive `tabindex`, disabled submits and the ways to skip blocks, then at 1440 and 390 opens every trigger with Enter, Tabs inside what is modal, and presses Escape. Read `references/measures.md` before judging its findings. Only `focus-contrast` (`focus-2`) and `label-in-name` (`element-4`) set `pass` to false.
+Open the page, then call `browser_run_code_unsafe` with `{ "filename": "<this skill's folder>/scripts/components.js" }`, or pass the file's content as `code` if the path is refused. It loads the page with reduced motion, walks the focus at 1440 × 900 (indicator kind, width, offset, contrast on a flat ground), reads names that leave out their visible label, menu roles in a navigation, positive `tabindex`, disabled submits and the ways to skip blocks, then at 1440 and 390 opens with Enter the triggers it can find (`aria-expanded`, `aria-haspopup`, `aria-controls`, `popovertarget`, `commandfor`, `summary`, buttons in a header or navigation; twelve per width), Tabs inside what is modal, and presses Escape. Read `references/measures.md` before judging its findings: what it does not open is listed there. Only `focus-contrast` (`focus-2`) and `label-in-name` (`element-4`) set `pass` to false.
 
 ## References
 - `references/system.md`: the third repetition, state in attributes, tokens, mockup and build. For decision 1.

@@ -20,7 +20,12 @@ test('a clean page passes and its components are described', async () => {
   assert.equal(report.pass, true, JSON.stringify(report.issues));
   assert.deepEqual(report.issues, []);
   assert.ok(report.focus.kinds.drawn >= 8, JSON.stringify(report.focus));
-  assert.deepEqual(report.focus.unmeasured, [], 'every ring is on a flat ground');
+  assert.deepEqual(report.focus.unmeasured, [], 'every ring is on a flat ground, the skip link included');
+  assert.equal(report.bypass.skip, true);
+  assert.ok(report.focus.rings.some((r) => /Révision complète/.test(r)), 'the card draws its link\'s ring');
+  assert.ok(report.focus.rings.some((r) => /logo "Atelier Rayon"/.test(r)), 'a ring that fades in is read once it has');
+  assert.ok(report.focus.rings.some((r) => /^input: .* on rgb\(247 245 240\)$/.test(r)), 'the chip around an unseen radio carries its ring, on the page');
+  assert.ok(report.focus.measured >= 10, JSON.stringify(report.focus));
   assert.ok(report.focus.rings.some((r) => /Voir les horaires.*9\.\d:1/.test(r)), 'the dark band has its own ring');
   assert.ok(report.overlays.some((o) => /Menu/.test(o.at) && o.expanded === 'false → true' && o.escape === 'closes' && o.returns === 'trigger'), JSON.stringify(report.overlays));
   assert.ok(report.overlays.some((o) => o.modal && o.focus === 'inside' && !o.leaves && o.returns === 'trigger'), 'the dialog holds and returns focus');
@@ -34,8 +39,9 @@ test('only the ring contrast and the label in name fail; the rest is reported', 
   const kinds = (k) => report.issues.filter((i) => i.kind === k);
   assert.ok(kinds('focus-contrast').some((i) => /pale/.test(i.at)), JSON.stringify(report.issues));
   assert.ok(kinds('label-in-name').some((i) => /Envoyer/.test(i.detail)), JSON.stringify(report.issues));
+  assert.ok(kinds('label-in-name').some((i) => /Courriel/.test(i.detail)), 'a field named apart from its label');
   for (const k of ['overlay-state', 'overlay-escape', 'overlay-focus', 'overlay-leak', 'menu-role', 'tabindex', 'disabled-submit', 'bypass']) assert.ok(kinds(k).length, `${k}: ${JSON.stringify(report.issues)}`);
-  assert.ok(kinds('overlay-state').every((i) => /burger/.test(i.at)), 'a trigger with aria-expanded is not flagged');
+  assert.ok(kinds('overlay-state').every((i) => /burger/.test(i.at)), 'only the burger opens without aria-expanded: a trigger with it, or a view switch, is not flagged');
   assert.ok(kinds('overlay-focus').some((i) => /faq/.test(i.at)));
   assert.ok(kinds('overlay-leak').some((i) => /open-quote/.test(i.at)));
   const failing = new Set(report.issues.filter((i) => ['focus-contrast', 'label-in-name'].includes(i.kind)).map((i) => i.rule));
@@ -47,6 +53,11 @@ test('headings are enough to skip blocks, without a main landmark', async () => 
   assert.deepEqual(report.issues.filter((i) => i.kind === 'bypass'), []);
   assert.equal(report.bypass.main, false);
   assert.ok(report.bypass.headings >= 2);
+});
+
+test('a dark page without a painted ground is measured on the dark canvas', async () => {
+  const report = await components('dark.html');
+  assert.ok(report.issues.some((i) => i.kind === 'focus-contrast'), JSON.stringify(report.focus));
 });
 
 const text = (file) => readFileSync(join(DIR, file), 'utf8');

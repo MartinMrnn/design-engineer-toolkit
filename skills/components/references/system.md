@@ -20,7 +20,7 @@ State lives in the attribute assistive technology reads (`system-2`): `aria-expa
 Variants are attributes too: `data-variant="quiet"`, `data-size="sm"`. In a Tailwind stack, Kowalski's picks build them with `cva` (variants with a typed API) and `clsx` (conditional classes).
 
 ## Values from the tokens
-Every colour, radius, space, duration and curve comes from `tokens.css` (`system-3`): `var(--primary)`, `var(--radius)`, `var(--spacing-gutter)`, `var(--duration-press)`, `var(--ease-out)`. `check.js` reports a value written by hand from phase 3 (`token`). A component that needs a value the tokens lack asks for a token; it does not invent one.
+Every colour, radius, space, duration and curve comes from `tokens.css` (`system-3`): `var(--primary)`, `var(--radius)`, `var(--spacing-gutter)`, `var(--duration-press)`, `var(--ease-out)`. `check.js` reports a value written by hand from phase 3 (`token`). A component that needs a value the tokens lack asks for a token (the user, inside the studio; used alone, say so in your answer); it does not invent one.
 
 Components carry no gesture of their own (`system-4`). The direction's gesture already lives in its colour, type, layout, imagery and motion; the controls let it through. A press scales as `motion` says, a ring takes `--ring`, a corner takes `--radius`.
 

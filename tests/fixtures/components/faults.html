@@ -29,7 +29,7 @@
         <li role="none"><a role="menuitem" href="#atelier">L'atelier</a></li>
       </ul>
     </nav>
-    <button class="burger" type="button">Menu</button>
+    <button class="burger">Menu</button>
     <div class="panel" hidden>
       <a href="#reparations">Réparations</a>
       <a href="#contact">Contact</a>
@@ -49,13 +49,23 @@
     </div>
     <form>
       <label for="mail">Courriel</label>
-      <input id="mail" type="email">
+      <input id="mail" type="email" aria-label="Adresse électronique">
       <button type="submit" aria-label="Valider">Envoyer</button>
       <button type="submit" disabled>M'inscrire</button>
     </form>
+    <!-- Buttons that switch a view (Linear's product demo): not menus, even inside a nav and without aria-expanded. -->
+    <nav aria-label="Vues">
+      <button class="view-button" data-view="view-1">L'atelier</button>
+      <button class="view-button" data-view="view-2">La boutique</button>
+    </nav>
+    <div id="view-1" class="view"><a href="#atelier">Voir l'atelier</a></div>
+    <div id="view-2" class="view" hidden><a href="#boutique">Voir la boutique</a></div>
     <p><a href="#fin">Mentions</a></p>
   </div>
 <script>
+  for (const b of document.querySelectorAll('.view-button')) b.addEventListener('click', () => {
+    for (const v of document.querySelectorAll('.view')) v.hidden = v.id !== b.dataset.view;
+  });
   // A menu button with no aria-expanded, whose panel ignores Escape.
   const burger = document.querySelector('.burger');
   const panel = document.querySelector('.panel');

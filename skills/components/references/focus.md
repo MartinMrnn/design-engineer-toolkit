@@ -12,7 +12,7 @@ One rule for the whole site, in the base styles (`focus-1`):
 
 - `:focus-visible`, not `:focus`: the keyboard gets the ring, a mouse click on a button does not; fields always show it.
 - An outline, not a `box-shadow`: it follows `border-radius` (Safari 16.4 and later), stays visible in forced colours where box-shadows vanish, and takes no layout space. The user chose it on a live demo against the browser default and a box-shadow ring; 6 of 9 measured products draw theirs.
-- `--ring` is `colour`'s token, already checked at 3:1 by `palette` (`colour proof-2`). `components.js` measures the ring as drawn (`focus-2`): on its real ground, at its real offset.
+- `--ring` is `colour`'s token, already checked at 3:1 by `palette` (`colour proof-2`). Used without `colour`, take the accent or the foreground, whichever keeps 3:1 against every ground the ring touches. `components.js` measures the ring as drawn (`focus-2`): on its real ground, at its real offset.
 - Never `outline: none` without this rule in its place. A component may draw its focus differently (a field's border turning `--ring`), as long as it keeps 3:1 and is at least as visible.
 - A group lights up with `:focus-within` when the focus is inside it: a search field with its button inside one border.
 - A card whose heading link covers it shows its ring on the card: `.card:has(a:focus-visible) { outline: 2px solid var(--ring); outline-offset: 2px; }`, and none on the link.
