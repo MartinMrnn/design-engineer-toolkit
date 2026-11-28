@@ -21,7 +21,7 @@ The knowledge skills draw on the work below. MIT or CC BY: text may be adapted w
 | Coursey | Paco Coursey | https://paco.me/writing/redesign-2021 | none found | principle cited |
 | Puckett | Josh Puckett | https://joshpuckett.me/ | OFL-1.1 (Allo typeface) | read, nothing used |
 | Floguo | Floguo | https://www.floguo.com/ | not applicable | read, nothing used |
-| shadcn | shadcn | https://github.com/shadcn-ui/ui | MIT | token names used in `colour`, `type` and `layout`; nothing used in `ux` |
+| shadcn | shadcn | https://github.com/shadcn-ui/ui | MIT | token names used in `colour`, `type`, `layout` and `components`; nothing used in `ux` |
 | CSS Color 4 | W3C | https://www.w3.org/TR/css-color-4/ | W3C Software and Document License | published constants used |
 | Ottosson 2020 | Björn Ottosson | https://bottosson.github.io/posts/oklab/ | code public domain or MIT | published constants used |
 | Machado 2009 | G. M. Machado, M. M. Oliveira, L. A. F. Fernandes | https://doi.org/10.1109/TVCG.2009.113 | IEEE, all rights reserved | published constants used |
@@ -92,4 +92,12 @@ The knowledge skills draw on the work below. MIT or CC BY: text may be adapted w
 | Motion | Motion | https://github.com/motiondivision/motion | MIT | library named, no code shipped |
 | GSAP | Webflow (GreenSock) | https://gsap.com/standard-license | GSAP Standard "No Charge" License | library named, no code shipped |
 | Lenis | darkroom.engineering | https://github.com/darkroomengineering/lenis | MIT | library named, no code shipped |
+| APG | W3C Web Accessibility Initiative | https://www.w3.org/WAI/ARIA/apg/ | W3C Document License (prose); W3C Software and Document License (repository) | principle cited |
+| Pickering | Heydon Pickering | https://inclusive-components.design/ | none found; a paid book exists | principle cited |
+| Soueidan | Sara Soueidan | https://www.sarasoueidan.com/ | © all rights reserved | principle cited |
+| Krehel accessibility | Jakub Krehel | https://github.com/jakubkrehel/skills | MIT | principle cited |
+| Base UI | MUI | https://github.com/mui/base-ui | MIT | library named, no code shipped |
+| Sonner | Emil Kowalski | https://github.com/emilkowalski/sonner | MIT | library named, no code shipped |
+| Vaul | Emil Kowalski | https://github.com/emilkowalski/vaul | MIT | library named, no code shipped |
+| cmdk | Paco Coursey | https://github.com/pacocoursey/cmdk | MIT | library named, no code shipped |
 | Studio | this project | https://github.com/MartinMrnn/design-engineer-toolkit | MIT | text adapted |
